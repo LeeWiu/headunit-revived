@@ -1,9 +1,7 @@
 syntax = "proto2";
 
-package com.andrerinas.headunitrevived.proto;
+package com.andrerinas.headunitrevived.aap.protocol.proto;
 
-option java_package = "com.andrerinas.headunitrevived.proto";
-option java_outer_classname = "Wireless";
 
 enum AccessPointType {
     STATIC = 0;

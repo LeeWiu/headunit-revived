@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
-import com.andrerinas.headunitrevived.proto.Wireless
+import com.andrerinas.headunitrevived.aap.protocol.proto.Wireless
 import com.andrerinas.headunitrevived.utils.AppLog
 import java.io.DataInputStream
 import java.io.IOException
