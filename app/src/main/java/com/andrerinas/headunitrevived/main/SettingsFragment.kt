@@ -57,6 +57,8 @@ class SettingsFragment : Fragment() {
     private var pendingMicInputSource: Int? = null
     private var pendingUseNativeSsl: Boolean? = null
     private var pendingAutoStartSelfMode: Boolean? = null
+    private var pendingAutoStartBtName: String? = null
+    private var pendingAutoStartBtMac: String? = null
     private var pendingScreenOrientation: Settings.ScreenOrientation? = null
     private var pendingAppLanguage: String? = null
     private var pendingThresholdLux: Int? = null
@@ -107,6 +109,8 @@ class SettingsFragment : Fragment() {
         pendingMicInputSource = settings.micInputSource
         pendingUseNativeSsl = settings.useNativeSsl
         pendingAutoStartSelfMode = settings.autoStartSelfMode
+        pendingAutoStartBtName = settings.autoStartBluetoothDeviceName
+        pendingAutoStartBtMac = settings.autoStartBluetoothDeviceMac
         pendingScreenOrientation = settings.screenOrientation
         pendingAppLanguage = settings.appLanguage
         
@@ -205,6 +209,8 @@ class SettingsFragment : Fragment() {
         pendingMicInputSource?.let { settings.micInputSource = it }
         pendingUseNativeSsl?.let { settings.useNativeSsl = it }
         pendingAutoStartSelfMode?.let { settings.autoStartSelfMode = it }
+        pendingAutoStartBtName?.let { settings.autoStartBluetoothDeviceName = it }
+        pendingAutoStartBtMac?.let { settings.autoStartBluetoothDeviceMac = it }
         pendingScreenOrientation?.let { settings.screenOrientation = it }
 
         val languageChanged = pendingAppLanguage != settings.appLanguage
@@ -218,7 +224,18 @@ class SettingsFragment : Fragment() {
         pendingWifiConnectionMode?.let { mode ->
             settings.wifiConnectionMode = mode
             val intent = Intent(requireContext(), AapService::class.java).apply {
-                action = if (mode == 2) AapService.ACTION_START_WIRELESS else AapService.ACTION_STOP_WIRELESS
+                action = when (mode) {
+                    2 -> AapService.ACTION_START_WIRELESS
+                    3 -> AapService.ACTION_START_NATIVE_AA
+                    else -> AapService.ACTION_STOP_WIRELESS // This also stops native AA if we implement stop properly
+                }
+            }
+            if (mode != 3) {
+                // Ensure native AA is stopped if switching away from it
+                val stopNativeIntent = Intent(requireContext(), AapService::class.java).apply {
+                    action = AapService.ACTION_STOP_NATIVE_AA
+                }
+                ContextCompat.startForegroundService(requireContext(), stopNativeIntent)
             }
             ContextCompat.startForegroundService(requireContext(), intent)
         }
@@ -278,6 +295,7 @@ class SettingsFragment : Fragment() {
                         pendingMicInputSource != settings.micInputSource ||
                         pendingUseNativeSsl != settings.useNativeSsl ||
                         pendingAutoStartSelfMode != settings.autoStartSelfMode ||
+                        pendingAutoStartBtMac != settings.autoStartBluetoothDeviceMac ||
                         pendingScreenOrientation != settings.screenOrientation ||
                         pendingAppLanguage != settings.appLanguage ||
                         pendingInsetLeft != settings.insetLeft ||
@@ -506,6 +524,15 @@ class SettingsFragment : Fragment() {
                 pendingAutoStartSelfMode = isChecked
                 checkChanges()
                 updateSettingsList()
+            }
+        ))
+
+        items.add(SettingItem.SettingEntry(
+            stableId = "autoStartBt",
+            nameResId = R.string.auto_start_bt_label,
+            value = if (pendingAutoStartBtName.isNullOrEmpty()) getString(R.string.bt_device_not_set) else pendingAutoStartBtName!!,
+            onClick = {
+                showBluetoothDeviceSelector()
             }
         ))
 
@@ -938,5 +965,56 @@ class SettingsFragment : Fragment() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun showBluetoothDeviceSelector() {
+        if (Build.VERSION.SDK_INT >= 31 && ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT), BT_CONNECT_PERMISSION_CODE)
+            return
+        }
+
+        val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val adapter = bluetoothManager.adapter
+        val bondedDevices = adapter.bondedDevices.toList()
+
+        if (bondedDevices.isEmpty()) {
+            Toast.makeText(requireContext(), "No paired Bluetooth devices found", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val deviceNames = bondedDevices.map { it.name ?: "Unknown Device" }.toTypedArray()
+
+        MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+            .setTitle(R.string.select_bt_device)
+            .setItems(deviceNames) { _, which ->
+                val device = bondedDevices[which]
+                pendingAutoStartBtMac = device.address
+                pendingAutoStartBtName = device.name
+                checkChanges()
+                updateSettingsList()
+            }
+            .setNeutralButton(R.string.remove) { _, _ ->
+                pendingAutoStartBtMac = ""
+                pendingAutoStartBtName = ""
+                checkChanges()
+                updateSettingsList()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == BT_CONNECT_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                showBluetoothDeviceSelector()
+            } else {
+                Toast.makeText(requireContext(), "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    companion object {
+        private const val BT_CONNECT_PERMISSION_CODE = 101
+        private val SAVE_ITEM_ID = 1001
     }
 }

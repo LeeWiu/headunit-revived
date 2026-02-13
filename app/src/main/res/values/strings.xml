@@ -112,6 +112,10 @@
     <string name="category_general">General</string>
     <string name="auto_start_self_mode">Auto start Self-Mode</string>
     <string name="auto_start_self_mode_description">Automatically start Self-Mode when the application is opened.</string>
+    <string name="auto_start_bt_label">Auto-start on Bluetooth</string>
+    <string name="auto_start_bt_description">Automatically open Headunit Revived when a specific Bluetooth device connects.</string>
+    <string name="select_bt_device">Select Bluetooth Device</string>
+    <string name="bt_device_not_set">Not set</string>
     <string name="right_hand_drive">Right-hand drive</string>
     <string name="right_hand_drive_description">Position UI for right-side driving</string>
     <string name="category_graphic">Graphic</string>
@@ -132,6 +136,7 @@
         <item>Manual (List)</item>
         <item>Auto-search (Headunit Server)</item>
         <item>Wireless Helper (Waiting for Phone)</item>
+        <item>Native AA (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect Last Session</string>
     <string name="auto_connect_last_session_description">Automatically reconnect to the last used device on app startup</string>

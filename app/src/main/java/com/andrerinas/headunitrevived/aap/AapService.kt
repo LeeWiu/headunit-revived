@@ -50,6 +50,7 @@ class AapService : Service(), UsbReceiver.Listener {
     private lateinit var usbReceiver: UsbReceiver
     private var nightModeManager: NightModeManager? = null
     private var wirelessServer: WirelessServer? = null
+    private var nativeAaServer: com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer? = null
 
     private var pendingConnectionType: String = ""
     private var pendingConnectionIp: String = ""
@@ -113,6 +114,8 @@ class AapService : Service(), UsbReceiver.Listener {
         val mode = App.provide(this).settings.wifiConnectionMode
         if (mode == 2) {
             startWirelessServer();
+        } else if (mode == 3) {
+            startNativeAaServer();
         }
     }
 
@@ -143,6 +146,7 @@ class AapService : Service(), UsbReceiver.Listener {
     override fun onDestroy() {
         AppLog.i("AapService destroying...");
         stopWirelessServer();
+        stopNativeAaServer();
         serviceJob.cancel();
         onDisconnect();
         nightModeManager?.stop()
@@ -167,12 +171,18 @@ class AapService : Service(), UsbReceiver.Listener {
             ACTION_START_WIRELESS -> {
                 startWirelessServer();
             }
+            ACTION_START_NATIVE_AA -> {
+                startNativeAaServer();
+            }
             ACTION_START_WIRELESS_SCAN -> {
                 val mode = App.provide(this).settings.wifiConnectionMode
-                startDiscovery(oneShot = (mode != 2))
+                startDiscovery(oneShot = (mode != 2 && mode != 3))
             }
             ACTION_STOP_WIRELESS -> {
                 stopWirelessServer();
+            }
+            ACTION_STOP_NATIVE_AA -> {
+                stopNativeAaServer();
             }
             else -> {
                 handleConnectionIntent(intent);
@@ -221,6 +231,19 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     private var networkDiscovery: NetworkDiscovery? = null
+
+    private fun startNativeAaServer() {
+        if (nativeAaServer != null) return
+        nativeAaServer = com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer(this).apply { start() }
+        
+        // Native AA also requires the Wireless TCP server to be listening
+        startWirelessServer()
+    }
+
+    private fun stopNativeAaServer() {
+        nativeAaServer?.stop()
+        nativeAaServer = null
+    }
 
     private fun startWirelessServer() {
         if (wirelessServer != null) return
@@ -536,8 +559,10 @@ class AapService : Service(), UsbReceiver.Listener {
         var pendingSocket: java.net.Socket? = null;
         const val ACTION_START_SELF_MODE = "com.andrerinas.headunitrevived.ACTION_START_SELF_MODE";
         const val ACTION_START_WIRELESS = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS";
-        const val ACTION_START_WIRELESS_SCAN = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS_SCAN";
+        const val ACTION_START_NATIVE_AA = "com.andrerinas.headunitrevived.ACTION_START_NATIVE_AA";
         const val ACTION_STOP_WIRELESS = "com.andrerinas.headunitrevived.ACTION_STOP_WIRELESS";
+        const val ACTION_STOP_NATIVE_AA = "com.andrerinas.headunitrevived.ACTION_STOP_NATIVE_AA";
+        const val ACTION_START_WIRELESS_SCAN = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS_SCAN";
         const val ACTION_SCAN_STARTED = "com.andrerinas.headunitrevived.ACTION_SCAN_STARTED"
         const val ACTION_SCAN_FINISHED = "com.andrerinas.headunitrevived.ACTION_SCAN_FINISHED"
         const val ACTION_STOP_SERVICE = "com.andrerinas.headunitrevived.ACTION_STOP_SERVICE";

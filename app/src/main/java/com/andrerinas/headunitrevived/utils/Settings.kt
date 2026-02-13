@@ -178,7 +178,7 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("right-hand-drive", false)
         set(value) { prefs.edit().putBoolean("right-hand-drive", value).apply() }
 
-    // 0 = Manual, 1 = Auto (Headunit Server), 2 = Helper (Wifi Launcher)
+    // 0 = Manual, 1 = Auto (Headunit Server), 2 = Helper (Wifi Launcher), 3 = Native AA (Experimental)
     var wifiConnectionMode: Int
         get() {
             // Migration: Check if old boolean exists
@@ -252,6 +252,14 @@ class Settings(context: Context) {
     var autoStartSelfMode: Boolean
         get() = prefs.getBoolean("auto-start-self-mode", false)
         set(value) { prefs.edit().putBoolean("auto-start-self-mode", value).apply() }
+
+    var autoStartBluetoothDeviceName: String
+        get() = prefs.getString("auto-start-bt-name", "")!!
+        set(value) { prefs.edit().putString("auto-start-bt-name", value).apply() }
+
+    var autoStartBluetoothDeviceMac: String
+        get() = prefs.getString("auto-start-bt-mac", "")!!
+        set(value) { prefs.edit().putString("auto-start-bt-mac", value).apply() }
 
     var appLanguage: String
         get() = prefs.getString("app-language", "")!!
