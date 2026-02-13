@@ -264,6 +264,24 @@ class SettingsFragment : Fragment() {
 
         Toast.makeText(context, getString(R.string.settings_saved), Toast.LENGTH_SHORT).show()
 
+        // Check for Overlay permission if BT Auto-start is configured
+        if (!pendingAutoStartBtMac.isNullOrEmpty() && Build.VERSION.SDK_INT >= 23) {
+            if (!android.provider.Settings.canDrawOverlays(requireContext())) {
+                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                    .setTitle(R.string.overlay_permission_title)
+                    .setMessage(R.string.overlay_permission_description)
+                    .setPositiveButton(R.string.open_settings) { _, _ ->
+                        val intent = Intent(
+                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            android.net.Uri.parse("package:${requireContext().packageName}")
+                        )
+                        startActivity(intent)
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            }
+        }
+
         // Restart activity if language changed to apply new locale
         if (languageChanged) {
             requireActivity().recreate()

@@ -20,6 +20,16 @@
     <string name="mic_sample_rate">Частота дискретизации микрофона</string>
     <string name="keymap">Раскладка клавиш</string>
     <string name="night_mode">Ночной режим</string>
+    <string name="night_mode_threshold">Порог ночного режима</string>
+    <string name="enter_threshold_value">Введите пороговое значение</string>
+    <string name="threshold_lux_desc">Значение люкс (0-10000). Ниже = Ночь.</string>
+    <string name="threshold_brightness_desc">Значение яркости (0-255). Ниже = Ночь.</string>
+    <string name="night_mode_start">Время начала ночного режима</string>
+    <string name="night_mode_end">Время окончания ночного режима</string>
+
+    <string name="reconnection_required_title">Требуется переподключение</string>
+    <string name="reconnection_required_message">Устройство находится в режиме ожидания. Отсоедините и снова подключите USB-кабель для перезапуска Android Auto.</string>
+
     <string name="bluetooth_address_s">Адрес Bluetooth</string>
     <string name="enter_bluetooth_mac">Введите MAC-адрес Bluetooth</string>
     <string name="reset">Сброс</string>
@@ -98,20 +108,17 @@
     <string name="system_default">По умолчанию системы</string>
     <string name="change_language">Изменить язык</string>
 
-    <string name="night_mode_threshold">Порог ночного режима</string>
-    <string name="enter_threshold_value">Введите пороговое значение</string>
-    <string name="threshold_lux_desc">Значение люкс (0-10000). Ниже = Ночь.</string>
-    <string name="threshold_brightness_desc">Значение яркости (0-255). Ниже = Ночь.</string>
-    <string name="night_mode_start">Время начала ночного режима</string>
-    <string name="night_mode_end">Время окончания ночного режима</string>
-
-    <string name="reconnection_required_title">Требуется переподключение</string>
-    <string name="reconnection_required_message">Устройство находится в режиме ожидания. Отсоедините и снова подключите USB-кабель для перезапуска Android Auto.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">Общие</string>
     <string name="auto_start_self_mode">Автоматический автономный режим</string>
     <string name="auto_start_self_mode_description">Автоматически включать автономный режим при запуске приложения.</string>
+    <string name="auto_start_bt_label">Автозапуск при Bluetooth</string>
+    <string name="auto_start_bt_description">Автоматически открывать Headunit Revived при подключении определенного Bluetooth-устройства.</string>
+    <string name="select_bt_device">Выбрать Bluetooth-устройство</string>
+    <string name="bt_device_not_set">Не задано</string>
+    <string name="overlay_permission_title">Разрешение на запуск в фоне</string>
+    <string name="overlay_permission_description">Чтобы Headunit Revived мог автоматически открываться при подключении Bluetooth, включите разрешение "Показывать поверх других приложений" на следующем экране.</string>
+    <string name="open_settings">Настройки</string>
     <string name="right_hand_drive">Праворульный автомобиль</string>
     <string name="right_hand_drive_description">Адаптировать интерфейс для праворульного автомобиля</string>
     <string name="category_graphic">Графика</string>
@@ -132,6 +139,7 @@
         <item>Вручную (список)</item>
         <item>Автопоиск (Headunit Server)</item>
         <item>Wireless Helper (ожидание телефона)</item>
+        <item>Native AA (Экспериментально)</item>
     </string-array>
     <string name="auto_connect_last_session">Автоподключение последней сессии</string>
     <string name="auto_connect_last_session_description">Автоматически подключаться к последнему использованному устройству при запуске приложения</string>
@@ -148,8 +156,6 @@
     <string name="enable_audio_sink_description">Если выключить этот параметр, то ГУ не будет выводить звук. Звук будет воспроизводиться на телефоне.</string>
     <string name="use_aac_audio">Использовать AAC</string>
     <string name="use_aac_audio_description">Использовать кодек AAC для аудио для экономии трафика (Экспериментально).</string>
-
-    <!-- Info Settings -->
     <string name="mic_input_source">Источник микрофона</string>
     <string name="mic_input_source_description">Выберите источник звука для микрофона.</string>
     <string-array name="mic_input_sources">
@@ -159,10 +165,11 @@
         <item>Голосовая связь</item>
     </string-array>
 
+    <!-- Info Settings -->
     <string name="category_info">Информация</string>
     <string name="about">Справка и поддержка</string>
     <string name="about_description">Узнать больше о Headunit Revived</string>
-    <string name="version">Версия</string>
+    <string name="version">Версія</string>
     <string name="about_title">О Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -178,5 +185,41 @@
         <b>3. Отсутствие аффилированности</b><br/>
         Этот проект является независимой инициативой с открытым исходным кодом и ни коим образом не связан с Google LLC или брендом Android Auto.
     ]]></string>
-</resources>
 
+    <!-- Toast Messages -->
+    <string name="searching">Поиск…</string>
+    <string name="auto_connecting_to">Автоподключение к %s…</string>
+    <string name="auto_connecting_usb">Автоподключение к USB-устройству…</string>
+    <string name="already_connected">Уже подключено</string>
+    <string name="already_scanning">Сканирование уже выполняется…</string>
+    <string name="searching_headunit_server">Поиск Headunit Server…</string>
+    <string name="already_searching_phone">Поиск телефона уже выполняется…</string>
+    <string name="searching_phone">Поиск телефона…</string>
+    <string name="key_mappings_reset">Раскладка клавиш сброшена</string>
+    <string name="press_key_to_assign">Нажмите клавишу для назначения на \'%s\'…</string>
+    <string name="key_assigned">\'%1$s\' назначено на \'%2$s\'</string>
+    <string name="last_key_press">Последнее нажатие: %1$s (%2$d)</string>
+    <string name="scan">Сканировать</string>
+    <string name="scanning_network">Сканирование сети…</string>
+    <string name="found_connecting">Найдено %s, подключение…</string>
+    <string name="no_devices_found">Устройства не найдены</string>
+    <string name="unsaved_changes">Несохраненные изменения</string>
+    <string name="unsaved_changes_message">У вас есть несохраненные изменения. Хотите отменить их?</string>
+    <string name="discard">Отменить</string>
+    <string name="stopping_service">Остановка службы для применения изменений…</string>
+    <string name="settings_saved">Настройки сохранены</string>
+    <string name="logs_exported">Логи экспортированы</string>
+    <string name="log_saved_to">Лог сохранен в:\n%s</string>
+    <string name="share">Поделиться</string>
+    <string name="close">Закрыть</string>
+    <string name="failed_export_logs">Ошибка экспорта логов</string>
+    <string name="switching_to_android_auto">Переключение в Android Auto…</string>
+    <string name="switch_failed">Ошибка переключения</string>
+    <string name="requesting_usb_permission">Запрос разрешения USB…</string>
+    <string name="enter_ip_address">Введите IP-адрес</string>
+    <string name="switching_usb_accessory_mode">Переключение USB-устройства в режим аксессуара %s</string>
+    <string name="success">Успешно</string>
+    <string name="failed">Ошибка</string>
+    <string name="failed_start_android_auto">Не удалось запустить Android Auto</string>
+    <string name="android_auto_starting">Запуск Android Auto…</string>
+</resources>

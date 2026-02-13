@@ -5,8 +5,7 @@
 
     <string name="title_activity_settings">Einstellungen</string>
     <string name="dummy_button">Test Button</string>
-    <string name="dummy_content">DUMMY
-INHALT</string>
+    <string name="dummy_content">DUMMY\nINHALT</string>
     <string name="allowed">Erlaubt</string>
     <string name="ignored">Ignoriert</string>
     <string name="exit">Beenden</string>
@@ -21,6 +20,16 @@ INHALT</string>
     <string name="mic_sample_rate">Mikrofon-Abtastrate</string>
     <string name="keymap">Tastenbelegung</string>
     <string name="night_mode">Nachtmodus</string>
+    <string name="night_mode_threshold">Nachtmodus Schwellenwert</string>
+    <string name="enter_threshold_value">Schwellenwert eingeben</string>
+    <string name="threshold_lux_desc">Lux Wert (0-10000). Darunter = Nacht.</string>
+    <string name="threshold_brightness_desc">Helligkeit (0-255). Darunter = Nacht.</string>
+    <string name="night_mode_start">Nachtmodus Startzeit</string>
+    <string name="night_mode_end">Nachtmodus Endzeit</string>
+
+    <string name="reconnection_required_title">Neuverbindung erforderlich</string>
+    <string name="reconnection_required_message">Das Gerät befindet sich in einem Wartezustand. Bitte ziehen Sie das USB-Kabel ab und stecken Sie es wieder ein, um Android Auto neu zu starten.</string>
+
     <string name="bluetooth_address_s">Bluetooth Adresse</string>
     <string name="enter_bluetooth_mac">Bluetooth MAC eingeben</string>
     <string name="reset">Zurücksetzen</string>
@@ -63,7 +72,7 @@ INHALT</string>
     <string name="disconnected">Getrennt</string>
     <string name="running">Läuft</string>
     <string name="not_running">Läuft nicht</string>
-    <string name="no_android_auto_device_connected">Kein Android AutoGerät verbunden. Bitte USB prüfen.</string>
+    <string name="no_android_auto_device_connected">Kein Android Auto Gerät verbunden. Bitte USB prüfen.</string>
     <string name="no_usb_device_connected">Kein USB Gerät gefunden.</string>
     <string name="press_back_again_to_exit">Erneut drücken zum Beenden</string>
     <string name="back">Zurück</string>
@@ -99,20 +108,17 @@ INHALT</string>
     <string name="system_default">Systemstandard</string>
     <string name="change_language">Sprache ändern</string>
 
-    <string name="night_mode_threshold">Nachtmodus Schwellenwert</string>
-    <string name="enter_threshold_value">Schwellenwert eingeben</string>
-    <string name="threshold_lux_desc">Lux Wert (0-10000). Darunter = Nacht.</string>
-    <string name="threshold_brightness_desc">Helligkeit (0-255). Darunter = Nacht.</string>
-    <string name="night_mode_start">Nachtmodus Startzeit</string>
-    <string name="night_mode_end">Nachtmodus Endzeit</string>
-
-    <string name="reconnection_required_title">Neuverbindung erforderlich</string>
-    <string name="reconnection_required_message">Das Gerät befindet sich in einem Wartezustand. Bitte ziehen Sie das USB-Kabel ab und stecken Sie es wieder ein, um Android Auto neu zu starten.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">Allgemein</string>
     <string name="auto_start_self_mode">Auto-Start Self-Mode</string>
     <string name="auto_start_self_mode_description">Startet den Self-Mode automatisch beim Öffnen der App.</string>
+    <string name="auto_start_bt_label">Auto-Start bei Bluetooth</string>
+    <string name="auto_start_bt_description">Startet Headunit Revived automatisch, wenn sich ein bestimmtes Bluetooth-Gerät verbindet.</string>
+    <string name="select_bt_device">Bluetooth-Gerät wählen</string>
+    <string name="bt_device_not_set">Nicht festgelegt</string>
+    <string name="overlay_permission_title">Hintergrund-Start Berechtigung</string>
+    <string name="overlay_permission_description">Damit Headunit Revived automatisch starten kann, wenn Bluetooth verbindet, aktivieren Sie bitte die Berechtigung "Über anderen Apps einblenden" im nächsten Bildschirm.</string>
+    <string name="open_settings">Einstellungen</string>
     <string name="right_hand_drive">Rechtslenker</string>
     <string name="right_hand_drive_description">Benutzeroberfläche für Rechtsverkehr ausrichten</string>
     <string name="category_graphic">Grafik</string>
@@ -121,6 +127,29 @@ INHALT</string>
     <string name="inset_bottom">Unten</string>
     <string name="inset_left">Links</string>
     <string name="inset_right">Rechts</string>
+    <string name="category_debug">Debug</string>
+
+    <!-- Video Settings -->
+    <string name="category_video">Video</string>
+    <string name="force_software_decoding">Software-Decoding erzwingen</string>
+    <string name="force_software_decoding_description">Kann Probleme auf manchen Geräten beheben, ist aber langsamer</string>
+    <string name="wireless_mode">Wireless Modus</string>
+    <string name="wireless_mode_description">Wählen Sie, wie sich die App kabellos verbindet (Manuelle Liste, Auto-Suche nach Handy oder Helper-Modus)</string>
+    <string-array name="wireless_connection_modes">
+        <item>Manuell (Liste)</item>
+        <item>Auto-Suche (Headunit Server)</item>
+        <item>Wireless Helper (Warten auf Handy)</item>
+        <item>Natives AA (Experimentell)</item>
+    </string-array>
+    <string name="auto_connect_last_session">Auto-Connect letzte Sitzung</string>
+    <string name="auto_connect_last_session_description">Verbindet beim App-Start automatisch mit dem zuletzt genutzten Gerät</string>
+    <string name="video_codec">Video Codec</string>
+    <string name="fps_limit">FPS Limit</string>
+    <string name="save">Speichern</string>
+    <string name="save_and_restart">Speichern (Neustart nötig)</string>
+    <string name="add_new">Hinzufügen</string>
+    <string name="cancel">Abbrechen</string>
+
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>
     <string name="enable_audio_sink">Audio-Ausgabe</string>
@@ -140,7 +169,7 @@ INHALT</string>
     <string name="category_info">Info</string>
     <string name="about">Über &amp; Support</string>
     <string name="about_description">Mehr Informationen über Headunit Revived</string>
-    <string name="version">Version</string>
+    <string name="version">Версія</string>
     <string name="about_title">Über Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -156,4 +185,41 @@ INHALT</string>
         <b>3. Keine Zugehörigkeit</b><br/>
         Dieses Projekt ist eine unabhängige Open-Source-Initiative und steht in keiner Verbindung zu Google LLC oder der Marke Android Auto.
     ]]></string>
+
+    <!-- Toast Messages -->
+    <string name="searching">Suche…</string>
+    <string name="auto_connecting_to">Auto-Verbindung zu %s…</string>
+    <string name="auto_connecting_usb">Auto-Verbindung zu USB-Gerät…</string>
+    <string name="already_connected">Bereits verbunden</string>
+    <string name="already_scanning">Scan läuft bereits…</string>
+    <string name="searching_headunit_server">Suche nach Headunit Server…</string>
+    <string name="already_searching_phone">Suche nach Handy läuft bereits…</string>
+    <string name="searching_phone">Suche nach Handy…</string>
+    <string name="key_mappings_reset">Tastenbelegung zurückgesetzt</string>
+    <string name="press_key_to_assign">Drücke eine Taste für \'%s\'…</string>
+    <string name="key_assigned">\'%1$s\' zugewiesen zu \'%2$s\'</string>
+    <string name="last_key_press">Letzter Tastendruck: %1$s (%2$d)</string>
+    <string name="scan">Scan</string>
+    <string name="scanning_network">Scanne Netzwerk…</string>
+    <string name="found_connecting">Gefunden %s, verbinde…</string>
+    <string name="no_devices_found">Keine Geräte gefunden</string>
+    <string name="unsaved_changes">Ungespeicherte Änderungen</string>
+    <string name="unsaved_changes_message">Sie haben ungespeicherte Änderungen. Wollen Sie diese verwerfen?</string>
+    <string name="discard">Verwerfen</string>
+    <string name="stopping_service">Stoppe Dienst um Änderungen anzuwenden…</string>
+    <string name="settings_saved">Einstellungen gespeichert</string>
+    <string name="logs_exported">Logs exportiert</string>
+    <string name="log_saved_to">Log gespeichert in:\n%s</string>
+    <string name="share">Teilen</string>
+    <string name="close">Schließen</string>
+    <string name="failed_export_logs">Fehler beim Log-Export</string>
+    <string name="switching_to_android_auto">Wechsle zu Android Auto…</string>
+    <string name="switch_failed">Wechsel fehlgeschlagen</string>
+    <string name="requesting_usb_permission">Fordere USB-Berechtigung an…</string>
+    <string name="enter_ip_address">IP-Adresse eingeben</string>
+    <string name="switching_usb_accessory_mode">Schalte USB-Gerät in Zubehörmodus %s</string>
+    <string name="success">Erfolg</string>
+    <string name="failed">Fehlgeschlagen</string>
+    <string name="failed_start_android_auto">Start von Android Auto fehlgeschlagen</string>
+    <string name="android_auto_starting">Android Auto startet…</string>
 </resources>

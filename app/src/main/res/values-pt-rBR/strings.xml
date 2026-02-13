@@ -3,7 +3,7 @@
     <string name="menu">Menu</string>
     <string name="settings">Configurações</string>
 
-    <string name="title_activity_settings">Activity de Configurações</string>
+    <string name="title_activity_settings">Configurações</string>
     <string name="dummy_button">Botão de Teste</string>
     <string name="dummy_content">CONTEÚDO\nDE TESTE</string>
     <string name="allowed">Permitido</string>
@@ -20,6 +20,16 @@
     <string name="mic_sample_rate">Taxa de amostragem do microfone</string>
     <string name="keymap">Mapa de teclas</string>
     <string name="night_mode">Modo noturno</string>
+    <string name="night_mode_threshold">Limiar do Modo Noturno</string>
+    <string name="enter_threshold_value">Inserir valor do limiar</string>
+    <string name="threshold_lux_desc">Valor Lux (0-10000). Abaixo disto = Noite.</string>
+    <string name="threshold_brightness_desc">Valor de brilho (0-255). Abaixo disto = Noite.</string>
+    <string name="night_mode_start">Hora de início do modo noturno</string>
+    <string name="night_mode_end">Hora de término do modo noturno</string>
+
+    <string name="reconnection_required_title">Reconexão necessária</string>
+    <string name="reconnection_required_message">O dispositivo está em espera. Desconecte e reconecte o cabo USB para reiniciar o Android Auto.</string>
+
     <string name="bluetooth_address_s">Endereço Bluetooth</string>
     <string name="enter_bluetooth_mac">Insira o MAC do Bluetooth</string>
     <string name="reset">Redefinir</string>
@@ -98,20 +108,17 @@
     <string name="system_default">Padrão do sistema</string>
     <string name="change_language">Alterar idioma</string>
 
-    <string name="night_mode_threshold">Limiar do Modo Noturno</string>
-    <string name="enter_threshold_value">Inserir valor do limiar</string>
-    <string name="threshold_lux_desc">Valor Lux (0-10000). Abaixo disto = Noite.</string>
-    <string name="threshold_brightness_desc">Valor de brilho (0-255). Abaixo disto = Noite.</string>
-    <string name="night_mode_start">Hora de início do modo noturno</string>
-    <string name="night_mode_end">Hora de término do modo noturno</string>
-
-    <string name="reconnection_required_title">Reconexão necessária</string>
-    <string name="reconnection_required_message">O dispositivo está em espera. Desconecte e reconecte o cabo USB para reiniciar o Android Auto.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">Geral</string>
     <string name="auto_start_self_mode">Iniciar Self Mode automaticamente</string>
     <string name="auto_start_self_mode_description">Inicia o Self Mode automaticamente ao abrir o aplicativo.</string>
+    <string name="auto_start_bt_label">Início automático por Bluetooth</string>
+    <string name="auto_start_bt_description">Abrir automaticamente o Headunit Revived quando um dispositivo Bluetooth específico se conectar.</string>
+    <string name="select_bt_device">Selecionar dispositivo Bluetooth</string>
+    <string name="bt_device_not_set">Não definido</string>
+    <string name="overlay_permission_title">Permissão de início em segundo plano</string>
+    <string name="overlay_permission_description">Para permitir que o Headunit Revived abra automaticamente quando o Bluetooth conectar, ative a permissão "Sobrepor a outros apps" na próxima tela.</string>
+    <string name="open_settings">Configurações</string>
     <string name="right_hand_drive">Direção à direita</string>
     <string name="right_hand_drive_description">Posiciona a interface para direção pelo lado direito</string>
     <string name="category_graphic">Gráfico</string>
@@ -132,6 +139,7 @@
         <item>Manual (Lista)</item>
         <item>Busca automática (Headunit Server)</item>
         <item>Auxiliar sem fio (Aguardando telefone)</item>
+        <item>AA Nativo (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Conectar automaticamente à última sessão</string>
     <string name="auto_connect_last_session_description">Reconecta automaticamente ao último dispositivo usado ao iniciar o app</string>
@@ -148,8 +156,6 @@
     <string name="enable_audio_sink_description">Se desativado, a central não atuará como receptor de áudio. O áudio tocará no celular.</string>
     <string name="use_aac_audio">Usar áudio AAC</string>
     <string name="use_aac_audio_description">Usa o codec AAC para áudio para economizar banda (experimental).</string>
-
-    <!-- Info Settings -->
     <string name="mic_input_source">Fonte de entrada do microfone</string>
     <string name="mic_input_source_description">Escolha a fonte de áudio para o microfone.</string>
     <string-array name="mic_input_sources">
@@ -159,6 +165,7 @@
         <item>Comunicação de voz</item>
     </string-array>
 
+    <!-- Info Settings -->
     <string name="category_info">Informações</string>
     <string name="about">Sobre &amp; Suporte</string>
     <string name="about_description">Obtenha mais informações sobre o Headunit Revived</string>
@@ -178,4 +185,41 @@
         <b>3. Sem afiliação</b><br/>
         Este projeto é uma iniciativa independente de código aberto e não é afiliado, endossado ou conectado à Google LLC ou à marca Android Auto.
     ]]></string>
+
+    <!-- Toast Messages -->
+    <string name="searching">Buscando…</string>
+    <string name="auto_connecting_to">Conectando automaticamente a %s…</string>
+    <string name="auto_connecting_usb">Conectando automaticamente ao dispositivo USB…</string>
+    <string name="already_connected">Já conectado</string>
+    <string name="already_scanning">Escaneamento já em andamento…</string>
+    <string name="searching_headunit_server">Buscando Headunit Server…</string>
+    <string name="already_searching_phone">Busca por telefone já em andamento…</string>
+    <string name="searching_phone">Buscando telefone…</string>
+    <string name="key_mappings_reset">Mapeamento de teclas redefinido</string>
+    <string name="press_key_to_assign">Pressione uma tecla para atribuir a \'%s\'…</string>
+    <string name="key_assigned">\'%1$s\' atribuído a \'%2$s\'</string>
+    <string name="last_key_press">Última tecla pressionada: %1$s (%2$d)</string>
+    <string name="scan">Escanear</string>
+    <string name="scanning_network">Escaneando rede…</string>
+    <string name="found_connecting">Encontrado %s, conectando…</string>
+    <string name="no_devices_found">Nenhum dispositivo encontrado</string>
+    <string name="unsaved_changes">Alterações nicht salvas</string>
+    <string name="unsaved_changes_message">Você tem alterações não salvas. Deseja descartá-las?</string>
+    <string name="discard">Descartar</string>
+    <string name="stopping_service">Parando serviço para aplicar alterações…</string>
+    <string name="settings_saved">Configurações salvas</string>
+    <string name="logs_exported">Logs exportados</string>
+    <string name="log_saved_to">Log salvo em:\n%s</string>
+    <string name="share">Compartilhar</string>
+    <string name="close">Fechar</string>
+    <string name="failed_export_logs">Falha ao exportar logs</string>
+    <string name="switching_to_android_auto">Alternando para Android Auto…</string>
+    <string name="switch_failed">Falha ao alternar</string>
+    <string name="requesting_usb_permission">Solicitando permissão USB…</string>
+    <string name="enter_ip_address">Digite o endereço IP</string>
+    <string name="switching_usb_accessory_mode">Alternando dispositivo USB para modo acessório %s</string>
+    <string name="success">Sucesso</string>
+    <string name="failed">Falha</string>
+    <string name="failed_start_android_auto">Falha ao iniciar Android Auto</string>
+    <string name="android_auto_starting">Android Auto está iniciando…</string>
 </resources>

@@ -20,6 +20,16 @@
     <string name="mic_sample_rate">Frecuencia de muestreo del micrófono</string>
     <string name="keymap">Mapa de teclas</string>
     <string name="night_mode">Modo nocturno</string>
+    <string name="night_mode_threshold">Umbral del modo noche</string>
+    <string name="enter_threshold_value">Ingrese el valor del umbral</string>
+    <string name="threshold_lux_desc">Valor de lux (0-10000). Por debajo de esto = Noche.</string>
+    <string name="threshold_brightness_desc">Valor de brillo (0-255). Por debajo de esto = Noche.</string>
+    <string name="night_mode_start">Hora de inicio del modo noche</string>
+    <string name="night_mode_end">Hora de fin del modo noche</string>
+
+    <string name="reconnection_required_title">Reconexión necesaria</string>
+    <string name="reconnection_required_message">El dispositivo está en estado de espera. Por favor, desconecte y vuelva a conectar el cable USB para reiniciar Android Auto.</string>
+
     <string name="bluetooth_address_s">Dirección Bluetooth</string>
     <string name="enter_bluetooth_mac">Ingrese la dirección MAC Bluetooth</string>
     <string name="reset">Restablecer</string>
@@ -98,20 +108,17 @@
     <string name="system_default">Por defecto del sistema</string>
     <string name="change_language">Cambiar idioma</string>
 
-    <string name="night_mode_threshold">Umbral del modo noche</string>
-    <string name="enter_threshold_value">Ingrese el valor del umbral</string>
-    <string name="threshold_lux_desc">Valor de lux (0-10000). Por debajo de esto = Noche.</string>
-    <string name="threshold_brightness_desc">Valor de brillo (0-255). Por debajo de esto = Noche.</string>
-    <string name="night_mode_start">Hora de inicio del modo noche</string>
-    <string name="night_mode_end">Hora de fin del modo noche</string>
-
-    <string name="reconnection_required_title">Reconexión necesaria</string>
-    <string name="reconnection_required_message">El dispositivo está en estado de espera. Por favor, desconecte y vuelva a conectar el cable USB para reiniciar Android Auto.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">General</string>
     <string name="auto_start_self_mode">Iniciar Modo Autónomo automáticamente</string>
     <string name="auto_start_self_mode_description">Inicia el Modo Autónomo automáticamente al abrir la aplicación.</string>
+    <string name="auto_start_bt_label">Auto-inicio por Bluetooth</string>
+    <string name="auto_start_bt_description">Abrir automáticamente Headunit Revived cuando se conecte un dispositivo Bluetooth específico.</string>
+    <string name="select_bt_device">Seleccionar dispositivo Bluetooth</string>
+    <string name="bt_device_not_set">No establecido</string>
+    <string name="overlay_permission_title">Permiso de inicio en segundo plano</string>
+    <string name="overlay_permission_description">Para permitir que Headunit Revived se abra automáticamente cuando se conecta Bluetooth, habilite el permiso "Mostrar sobre otras aplicaciones" en la siguiente pantalla.</string>
+    <string name="open_settings">Ajustes</string>
     <string name="right_hand_drive">Conducción por la derecha</string>
     <string name="right_hand_drive_description">Posiciona la interfaz para conducción por el lado derecho</string>
     <string name="category_graphic">Gráficos</string>
@@ -131,7 +138,8 @@
     <string-array name="wireless_connection_modes">
         <item>Manual (lista)</item>
         <item>Búsqueda automática (Headunit Server)</item>
-        <item>Asistente inalámbrico (esperando al teléfono)</item>
+        <item>Wireless Helper (esperando al teléfono)</item>
+        <item>AA Nativo (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Conectar automáticamente a la última sesión</string>
     <string name="auto_connect_last_session_description">Reconecta automáticamente al último dispositivo usado al iniciar la app</string>
@@ -145,10 +153,9 @@
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>
     <string name="enable_audio_sink">Activar receptor de audio</string>
-    <string name="enable_audio_sink_description">Si está desactivado, este dispositivo no actuará como receptor de audio. El audio se reproducirá en el teléfono conectado.</string>
+    <string name="enable_audio_sink_description">Si está desactivado, el audio se reproducirá en el teléfono conectado.</string>
     <string name="use_aac_audio">Usar audio AAC</string>
-    <string name="use_aac_audio_description">Usa el códec AAC para audio para ahorrar ancho de banda (experimental).</string>
-
+    <string name="use_aac_audio_description">Usa el códec AAC para audio para ahorrar ancho de banda.</string>
     <string name="mic_input_source">Fuente de entrada del micrófono</string>
     <string name="mic_input_source_description">Elija la fuente de audio para el micrófono.</string>
     <string-array name="mic_input_sources">
@@ -162,9 +169,22 @@
     <string name="category_info">Información</string>
     <string name="about">Acerca de &amp; Soporte</string>
     <string name="about_description">Obtenga más información sobre Headunit Revived</string>
-    <string name="version">Versión</string>
+    <string name="version">Версія</string>
     <string name="about_title">Acerca de Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
+
+    <!-- Safety Disclaimer -->
+    <string name="disclaimer_title">Seguridad &amp; Responsabilidad</string>
+    <string name="disclaimer_header">Aviso Importante</string>
+    <string name="disclaimer_accept">Entiendo y acepto</string>
+    <string name="disclaimer_text"><![CDATA[
+        <b>1. Enfóquese en la carretera</b><br/>
+        Operar este software mientras conduce puede ser distractivo y peligroso. Priorice siempre la conducción segura y siga todas las normas de tráfico locales. Use esta aplicación solo cuando sea seguro hacerlo.<br/><br/>
+        <b>2. Limitación de responsabilidad</b><br/>
+        Headunit Revived se proporciona \"tal cual\", sin garantía de ningún tipo. Los desarrolladores no asumen responsabilidad por ningún accidente, daño a su vehículo/dispositivo o consecuencias legales derivadas del uso de este software.<br/><br/>
+        <b>3. Sin afiliación</b><br/>
+        Este projeto es una iniciativa independiente de código abierto y no está afiliado, respaldado o conectado a Google LLC o la marca Android Auto.
+    ]]></string>
 
     <!-- Toast Messages -->
     <string name="searching">Buscando…</string>
@@ -202,17 +222,4 @@
     <string name="failed">Error</string>
     <string name="failed_start_android_auto">Error al iniciar Android Auto</string>
     <string name="android_auto_starting">Android Auto está iniciando…</string>
-
-    <!-- Safety Disclaimer -->
-    <string name="disclaimer_title">Seguridad &amp; Responsabilidad</string>
-    <string name="disclaimer_header">Aviso Importante</string>
-    <string name="disclaimer_accept">Entiendo y acepto</string>
-    <string name="disclaimer_text"><![CDATA[
-        <b>1. Enfócate en la carretera</b><br/>
-        Operar este software mientras conduce puede ser distractivo y peligroso. Priorice siempre la conducción segura y siga todas las normas de tráfico locales. Use esta aplicación solo cuando sea seguro hacerlo.<br/><br/>
-        <b>2. Limitación de responsabilidad</b><br/>
-        Headunit Revived se proporciona \"tal cual\", sin garantía de ningún tipo. Los desarrolladores no asumen responsabilidad por ningún accidente, daño a su vehículo/dispositivo o consecuencias legales derivadas del uso de este software.<br/><br/>
-        <b>3. Sin afiliación</b><br/>
-        Este proyecto es una iniciativa independiente de código abierto y no está afiliado, respaldado o conectado a Google LLC o la marca Android Auto.
-    ]]></string>
 </resources>

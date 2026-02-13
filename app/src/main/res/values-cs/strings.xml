@@ -20,6 +20,16 @@
     <string name="mic_sample_rate">Vzorkovací frekvence mikrofonu</string>
     <string name="keymap">Mapování kláves</string>
     <string name="night_mode">Noční režim</string>
+    <string name="night_mode_threshold">Práh nočního režimu</string>
+    <string name="enter_threshold_value">Zadejte hodnotu prahu</string>
+    <string name="threshold_lux_desc">Hodnota Lux (0-10000). Pod touto hodnotou = Noc.</string>
+    <string name="threshold_brightness_desc">Hodnota jasu (0-255). Pod touto hodnotou = Noc.</string>
+    <string name="night_mode_start">Čas zahájení nočního režimu</string>
+    <string name="night_mode_end">Čas ukončení nočního režimu</string>
+
+    <string name="reconnection_required_title">Vyžadováno opětovné připojení</string>
+    <string name="reconnection_required_message">Zařízení čeká. Odpojte a znovu připojte kabel USB pro restart Android Auto.</string>
+
     <string name="bluetooth_address_s">Bluetooth adresa</string>
     <string name="enter_bluetooth_mac">Zadejte MAC adresu Bluetooth</string>
     <string name="reset">Resetovat</string>
@@ -98,20 +108,17 @@
     <string name="system_default">Výchozí systémový</string>
     <string name="change_language">Změnit jazyk</string>
 
-    <string name="night_mode_threshold">Práh nočního režimu</string>
-    <string name="enter_threshold_value">Zadejte hodnotu prahu</string>
-    <string name="threshold_lux_desc">Hodnota Lux (0-10000). Pod touto hodnotou = Noc.</string>
-    <string name="threshold_brightness_desc">Hodnota jasu (0-255). Pod touto hodnotou = Noc.</string>
-    <string name="night_mode_start">Čas zahájení nočního režimu</string>
-    <string name="night_mode_end">Čas ukončení nočního režimu</string>
-
-    <string name="reconnection_required_title">Vyžadováno opětovné připojení</string>
-    <string name="reconnection_required_message">Zařízení čeká. Odpojte a znovu připojte kabel USB pro restart Android Auto.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">Obecné</string>
     <string name="auto_start_self_mode">Automaticky spustit Self-Mode</string>
     <string name="auto_start_self_mode_description">Automaticky spustit Self-Mode při otevření aplikace.</string>
+    <string name="auto_start_bt_label">Automaticky spustit při Bluetooth</string>
+    <string name="auto_start_bt_description">Automaticky otevřít Headunit Revived při připojení konkrétního Bluetooth zařízení.</string>
+    <string name="select_bt_device">Vybrat Bluetooth zařízení</string>
+    <string name="bt_device_not_set">Nenastaveno</string>
+    <string name="overlay_permission_title">Oprávnění pro spuštění na pozadí</string>
+    <string name="overlay_permission_description">Pro automatické otevření Headunit Revived při připojení Bluetooth povolte prosím oprávnění "Zobrazit přes ostatní aplikace" na další obrazovce.</string>
+    <string name="open_settings">Nastavení</string>
     <string name="right_hand_drive">Pravostranné řízení</string>
     <string name="right_hand_drive_description">Upravit rozhraní pro řízení na pravé straně</string>
     <string name="category_graphic">Grafické</string>
@@ -132,6 +139,7 @@
         <item>Ručně (seznam)</item>
         <item>Automatické vyhledávání (Headunit Server)</item>
         <item>Bezdrátový pomocník (čekání na telefon)</item>
+        <item>Nativní AA (Experimentální)</item>
     </string-array>
     <string name="auto_connect_last_session">Automaticky připojit poslední relaci</string>
     <string name="auto_connect_last_session_description">Při spuštění aplikace se automaticky znovu připojit k naposledy použitému zařízení</string>
@@ -148,12 +156,20 @@
     <string name="enable_audio_sink_description">Pokud je zakázáno, hlavní jednotka nebude přijímat zvuk. Zvuk se bude přehrávat z telefonu.</string>
     <string name="use_aac_audio">Použít AAC audio</string>
     <string name="use_aac_audio_description">Použít kodek AAC pro zvuk pro úsporu šířky pásma (experimentální).</string>
+    <string name="mic_input_source">Zdroj vstupu mikrofonu</string>
+    <string name="mic_input_source_description">Vyberte zdroj zvuku pro mikrofon.</string>
+    <string-array name="mic_input_sources">
+        <item>Výchozí</item>
+        <item>Mikrofon</item>
+        <item>Rozpoznávání hlasu</item>
+        <item>Hlasová komunikace</item>
+    </string-array>
 
     <!-- Info Settings -->
     <string name="category_info">Informace</string>
     <string name="about">O aplikaci a podpora</string>
     <string name="about_description">Získat více informací o Headunit Revived</string>
-    <string name="version">Verze</string>
+    <string name="version">Версія</string>
     <string name="about_title">O aplikaci Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -169,4 +185,41 @@
         <b>3. Žádná spojitost</b><br/>
         Tento projekt je nezávislá open-source iniciativa a není spojen se společností Google LLC ani značkou Android Auto, není jimi podporován ani s nimi nijak nesouvisí.
     ]]></string>
+
+    <!-- Toast Messages -->
+    <string name="searching">Hledám…</string>
+    <string name="auto_connecting_to">Automatické připojování k %s…</string>
+    <string name="auto_connecting_usb">Automatické připojování k USB zařízení…</string>
+    <string name="already_connected">Již připojeno</string>
+    <string name="already_scanning">Skenování již probíhá…</string>
+    <string name="searching_headunit_server">Hledání serveru Headunit…</string>
+    <string name="already_searching_phone">Hledání telefonu již probíhá…</string>
+    <string name="searching_phone">Hledání telefonu…</string>
+    <string name="key_mappings_reset">Mapování kláves obnoveno</string>
+    <string name="press_key_to_assign">Stiskněte klávesu pro přiřazení k \'%s\'…</string>
+    <string name="key_assigned">\'%1$s\' přiřazeno k \'%2$s\'</string>
+    <string name="last_key_press">Poslední stisk klávesy: %1$s (%2$d)</string>
+    <string name="scan">Skenovat</string>
+    <string name="scanning_network">Skenování sítě…</string>
+    <string name="found_connecting">Nalezeno %s, připojování…</string>
+    <string name="no_devices_found">Žádná zařízení nenalezena</string>
+    <string name="unsaved_changes">Neuložené změny</string>
+    <string name="unsaved_changes_message">Máte neuložené změny. Chcete je zahodit?</string>
+    <string name="discard">Zahodit</string>
+    <string name="stopping_service">Zastavování služby pro použití změn…</string>
+    <string name="settings_saved">Nastavení uloženo</string>
+    <string name="logs_exported">Protokoly exportovány</string>
+    <string name="log_saved_to">Protokol uložen do:\n%s</string>
+    <string name="share">Sdílet</string>
+    <string name="close">Zavřít</string>
+    <string name="failed_export_logs">Export protokolů selhal</string>
+    <string name="switching_to_android_auto">Přepínání do Android Auto…</string>
+    <string name="switch_failed">Přepnutí selhalo</string>
+    <string name="requesting_usb_permission">Vyžadování oprávnění USB…</string>
+    <string name="enter_ip_address">Zadejte IP adresu</string>
+    <string name="switching_usb_accessory_mode">Přepínání USB zařízení do režimu příslušenství %s</string>
+    <string name="success">Úspěch</string>
+    <string name="failed">Selhalo</string>
+    <string name="failed_start_android_auto">Spuštění Android Auto selhalo</string>
+    <string name="android_auto_starting">Android Auto se spouští…</string>
 </resources>

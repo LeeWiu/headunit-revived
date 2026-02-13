@@ -2,7 +2,7 @@
     <string name="app_name">Headunit Revived</string>
     <string name="menu">Menu</string>
     <string name="settings">Instellingen</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">Instellingen</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="allowed">Toegestaan</string>
@@ -19,6 +19,16 @@
     <string name="mic_sample_rate">Samplefrequentie van de microfoon</string>
     <string name="keymap">Keymap</string>
     <string name="night_mode">Nacht modes</string>
+    <string name="night_mode_threshold">Drempelwaarde nachtmodus</string>
+    <string name="enter_threshold_value">Voer drempelwaarde in</string>
+    <string name="threshold_lux_desc">Lux waarde (0-10000). Hieronder = Nacht.</string>
+    <string name="threshold_brightness_desc">Helderheidswaarde (0-255). Hieronder = Nacht.</string>
+    <string name="night_mode_start">Starttijd nachtmodus</string>
+    <string name="night_mode_end">Eindtijd nachtmodus</string>
+
+    <string name="reconnection_required_title">Opnieuw verbinden vereist</string>
+    <string name="reconnection_required_message">Het apparaat staat in de wachtstand. Koppel de USB-kabel los en sluit deze opnieuw aan om Android Auto opnieuw te starten.</string>
+
     <string name="bluetooth_address_s">Bluetooth adres</string>
     <string name="enter_bluetooth_mac">Geef bluetooth MAC in</string>
     <string name="reset">Reset</string>
@@ -52,10 +62,8 @@
     <string name="margin_right">Rechts</string>
     <string name="margin_bottom">Onder</string>
 
-
     <string name="start_in_fullscreen_mode">Start in volledig scherm modus</string>
-    <string name="start_in_fullscreen_mode_description">Toggle full screen mode. Je moet de app opnieuw opstarten om de wijzigingen toe te passen.</string>
-
+    <string name="start_in_fullscreen_mode_description">Toggle full screen mode. Je moet de app opnieuw opstarten om de wijzigigens toe te passen.</string>
 
     <string name="usb_status">USB Status: %s</string>
     <string name="projection_status">Projectie Status: %s</string>
@@ -75,7 +83,6 @@
     <string name="use_native_ssl_description">Gebruik de native OpenSSL-bibliotheek (sneller op oudere apparaten). Vereist een herstart.</string>
     <string name="not_set">Niet ingesteld</string>
     <string name="keymap_description">Wijzig de toetsencombinaties voor uw autoradio.</string>
-
 
     <string name="key_soft_left">Zacht Links</string>
     <string name="key_soft_right">Zacht Rechts</string>
@@ -100,20 +107,17 @@
     <string name="system_default">Systeemstandaard</string>
     <string name="change_language">Taal wijzigen</string>
 
-    <string name="night_mode_threshold">Drempelwaarde nachtmodus</string>
-    <string name="enter_threshold_value">Voer drempelwaarde in</string>
-    <string name="threshold_lux_desc">Lux waarde (0-10000). Hieronder = Nacht.</string>
-    <string name="threshold_brightness_desc">Helderheidswaarde (0-255). Hieronder = Nacht.</string>
-    <string name="night_mode_start">Starttijd nachtmodus</string>
-    <string name="night_mode_end">Eindtijd nachtmodus</string>
-
-    <string name="reconnection_required_title">Opnieuw verbinden vereist</string>
-    <string name="reconnection_required_message">Het apparaat staat in de wachtstand. Koppel de USB-kabel los en sluit deze opnieuw aan om Android Auto opnieuw te starten.</string>
-
     <!-- Categories for SettingsFragment -->
     <string name="category_general">Algemeen</string>
     <string name="auto_start_self_mode">Auto start Self-Mode</string>
     <string name="auto_start_self_mode_description">Start de zelfmodus automatisch wanneer de applicatie wordt geopend.</string>
+    <string name="auto_start_bt_label">Automatisch starten bij Bluetooth</string>
+    <string name="auto_start_bt_description">Start Headunit Revived automatisch wanneer een specifiek Bluetooth-apparaat verbinding maakt.</string>
+    <string name="select_bt_device">Selecteer Bluetooth-apparaat</string>
+    <string name="bt_device_not_set">Niet ingesteld</string>
+    <string name="overlay_permission_title">Toestemming voor starten op achtergrond</string>
+    <string name="overlay_permission_description">Om Headunit Revived automatisch te openen wanneer Bluetooth verbinding maakt, dient u de toestemming "Weergeven over andere apps" in te schakelen in het volgende scherm.</string>
+    <string name="open_settings">Instellingen</string>
     <string name="right_hand_drive">Rechts hand gestuurd</string>
     <string name="right_hand_drive_description">Positioneer de gebruikersinterface voor rechts rijden.</string>
     <string name="category_graphic">Grafisch</string>
@@ -123,7 +127,6 @@
     <string name="inset_left">Links</string>
     <string name="inset_right">Rechts</string>
     <string name="category_debug">Debug</string>
-
 
     <!-- Video Settings -->
     <string name="category_video">Video</string>
@@ -135,6 +138,7 @@
         <item>Handmatig (lijst)</item>
         <item>Automatisch zoeken (Headunit Server)</item>
         <item>Draadloze helper (wachten op telefoon)</item>
+        <item>Native AA (Experimenteel)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect laatste Sessie</string>
     <string name="auto_connect_last_session_description">Automatisch opnieuw verbinding maken met het laatst gebruikte apparaat bij het opstarten van de app.</string>
@@ -145,15 +149,12 @@
     <string name="add_new">Nieuwe toevoegen</string>
     <string name="cancel">Annuleren</string>
 
-
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>
     <string name="enable_audio_sink">Audio-sink inschakelen</string>
     <string name="enable_audio_sink_description">Indien uitgeschakeld, fungeert de autoradio niet als audio-uitgang. Het geluid wordt dan vanaf de telefoon afgespeeld.</string>
     <string name="use_aac_audio">Gebruik AAC Audio</string>
     <string name="use_aac_audio_description">Gebruik de AAC-codec voor audio om bandbreedte te besparen (experimenteel).</string>
-
-
     <string name="mic_input_source">Microfoon ingangsbron</string>
     <string name="mic_input_source_description">Kies de audiobron voor de microfoon.</string>
     <string-array name="mic_input_sources">
@@ -171,7 +172,6 @@
     <string name="about_title">Over Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
-
     <!-- Safety Disclaimer -->
     <string name="disclaimer_title">Veiligheid &amp; Betrouwbaarheid</string>
     <string name="disclaimer_header">Belangrijke Waarschuwing</string>
@@ -184,4 +184,41 @@
         <b>3. No Affiliation</b><br/>
         This project is an independent open-source initiative and is not affiliated with, endorsed by, or connected to Google LLC or the Android Auto brand.
     ]]></string>
+
+    <!-- Toast Messages -->
+    <string name="searching">Zoeken…</string>
+    <string name="auto_connecting_to">Automatisch verbinden met %s…</string>
+    <string name="auto_connecting_usb">Automatisch verbinden met USB-apparaat…</string>
+    <string name="already_connected">Reeds verbonden</string>
+    <string name="already_scanning">Reeds aan het scannen…</string>
+    <string name="searching_headunit_server">Zoeken naar Headunit Server…</string>
+    <string name="already_searching_phone">Reeds aan het zoeken naar telefoon…</string>
+    <string name="searching_phone">Zoeken naar telefoon…</string>
+    <string name="key_mappings_reset">Toetscombinaties gereset</string>
+    <string name="press_key_to_assign">Druk op een toets om toe te wijzen aan \'%s\'…</string>
+    <string name="key_assigned">\'%1$s\' toegewezen aan \'%2$s\'</string>
+    <string name="last_key_press">Laatste toetsaanslag: %1$s (%2$d)</string>
+    <string name="scan">Scannen</string>
+    <string name="scanning_network">Netwerk scannen…</string>
+    <string name="found_connecting">Gevonden %s, verbinden…</string>
+    <string name="no_devices_found">Geen apparaten gevonden</string>
+    <string name="unsaved_changes">Niet-opgeslagen wijzigingen</string>
+    <string name="unsaved_changes_message">U hebt niet-opgeslagen wijzigingen. Wilt u ze weggooien?</string>
+    <string name="discard">Weggooien</string>
+    <string name="stopping_service">Dienst stoppen om wijzigingen toe te passen…</string>
+    <string name="settings_saved">Instellingen opgeslagen</string>
+    <string name="logs_exported">Logs geëxporteerd</string>
+    <string name="log_saved_to">Log opgeslagen in:\n%s</string>
+    <string name="share">Delen</string>
+    <string name="close">Sluiten</string>
+    <string name="failed_export_logs">Exporteren van logs mislukt</string>
+    <string name="switching_to_android_auto">Overschakelen naar Android Auto…</string>
+    <string name="switch_failed">Overschakelen mislukt</string>
+    <string name="requesting_usb_permission">USB-toestemming aanvragen…</string>
+    <string name="enter_ip_address">Voer IP-adres in</string>
+    <string name="switching_usb_accessory_mode">USB-apparaat overschakelen naar accessoiremodus %s</string>
+    <string name="success">Succes</string>
+    <string name="failed">Mislukt</string>
+    <string name="failed_start_android_auto">Starten van Android Auto mislukt</string>
+    <string name="android_auto_starting">Android Auto start op…</string>
 </resources>
