@@ -10,8 +10,6 @@ import com.andrerinas.headunitrevived.utils.AppLog
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.net.InetAddress
-import java.net.NetworkInterface
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -20,10 +18,18 @@ class NativeAaBluetoothServer(private val context: Context) {
     private var serverSocket: BluetoothServerSocket? = null
     private var thread: Thread? = null
     private var isRunning = false
+    private val wifiDirectManager = WifiDirectManager(context)
 
     @SuppressLint("MissingPermission")
     fun start() {
         if (isRunning) return
+
+        // Preliminary permission check for logging
+        val hasLocation = androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (!hasLocation) {
+            AppLog.w("NativeAA: WARNING - ACCESS_FINE_LOCATION not granted. WiFi Direct will likely fail.")
+        }
+
         isRunning = true
         thread = Thread {
             val adapter = BluetoothAdapter.getDefaultAdapter()
@@ -46,12 +52,12 @@ class NativeAaBluetoothServer(private val context: Context) {
                     }
 
                     if (socket != null) {
-                        AppLog.i("Bluetooth client connected: ${socket.remoteDevice.name} (${socket.remoteDevice.address})")
+                        AppLog.i("NativeAA: Bluetooth client connected: ${socket.remoteDevice.name} (${socket.remoteDevice.address})")
                         handleConnection(socket)
                     }
                 }
             } catch (e: IOException) {
-                AppLog.e("Native AA Bluetooth server error: ${e.message}")
+                AppLog.e("NativeAA: Bluetooth server error: ${e.message}")
             } finally {
                 stop()
             }
@@ -62,12 +68,14 @@ class NativeAaBluetoothServer(private val context: Context) {
     }
 
     fun stop() {
+        AppLog.i("NativeAA: Stopping Bluetooth server...")
         isRunning = false
         try {
             serverSocket?.close()
         } catch (e: Exception) {}
         serverSocket = null
         thread = null
+        wifiDirectManager.stop()
     }
 
     private fun handleConnection(socket: BluetoothSocket) {
@@ -76,28 +84,39 @@ class NativeAaBluetoothServer(private val context: Context) {
                 val input = DataInputStream(socket.inputStream)
                 val output = socket.outputStream
 
-                val myIp = getLocalIpAddress()
-                if (myIp == null) {
-                    AppLog.e("Could not determine local IP address for Bluetooth handshake")
-                    return@Thread
+                AppLog.i("NativeAA: Starting Bluetooth handshake thread...")
+
+                // 1. Create Wifi Direct Group to get credentials
+                wifiDirectManager.createGroup { ssid, psk, ip ->
+                    AppLog.i("NativeAA: WifiDirect Group ready. Credentials: SSID=$ssid, IP=$ip")
+                    
+                    try {
+                        // 2. Send WifiStartRequest (our IP and port 5288)
+                        sendWifiStartRequest(output, ip, 5288)
+                        AppLog.i("NativeAA: WifiStartRequest sent. Waiting for response...")
+                        
+                        // 3. Wait for Phone to request security info (Type 2)
+                        val response = readProtobuf(input)
+                        if (response.type == 2) {
+                            AppLog.i("NativeAA: Phone requested security info (Type 2). Sending SSID/PSK...")
+                            sendWifiSecurityResponse(output, ssid, psk)
+                            AppLog.i("NativeAA: Security response sent.")
+                        } else {
+                            AppLog.w("NativeAA: Unexpected message type from phone: ${response.type}. Payload size: ${response.payload.size}")
+                        }
+                    } catch (e: Exception) {
+                        AppLog.e("NativeAA: Error during Bluetooth handshake steps: ${e.message}", e)
+                    }
                 }
 
-                AppLog.i("Starting Bluetooth handshake. Local IP: $myIp")
-                
-                // 1. Send WifiStartRequest (our IP and port 5288)
-                sendWifiStartRequest(output, myIp, 5288)
-                
-                // 2. Read response and handle security info if needed
-                readAndHandleResponse(input, output)
-
             } catch (e: Exception) {
-                AppLog.e("Error in Bluetooth handshake: ${e.message}")
+                AppLog.e("NativeAA: Error initiating handshake: ${e.message}")
             } finally {
-                try {
-                    // Give it some time to finish sending if needed
-                    Thread.sleep(1000)
-                    socket.close() 
-                } catch (e: Exception) {}
+                // Keep socket open for a bit to ensure messages are sent
+                serviceScopeLaunch {
+                    kotlinx.coroutines.delay(5000)
+                    try { socket.close() } catch (e: Exception) {}
+                }
             }
         }.apply {
             name = "NativeAaBtHandshake"
@@ -105,29 +124,11 @@ class NativeAaBluetoothServer(private val context: Context) {
         }
     }
 
-    private fun getLocalIpAddress(): String? {
-        try {
-            val interfaces = NetworkInterface.getNetworkInterfaces()
-            while (interfaces.hasMoreElements()) {
-                val iface = interfaces.nextElement()
-                if (iface.isLoopback || !iface.isUp) continue
-                
-                val addresses = iface.inetAddresses
-                while (addresses.hasMoreElements()) {
-                    val addr = addresses.nextElement()
-                    if (addr is java.net.Inet4Address) {
-                        // Prefer 192.168.x.x (hotspot) or other private IPs
-                        val ip = addr.hostAddress
-                        if (ip.startsWith("192.168.") || ip.startsWith("10.")) {
-                            return ip
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            AppLog.e("Error getting local IP", e)
-        }
-        return null
+    // Small helper since we don't have serviceScope here easily without passing it
+    private fun serviceScopeLaunch(block: suspend () -> Unit) {
+        Thread {
+            kotlinx.coroutines.runBlocking { block() }
+        }.start()
     }
 
     private fun sendWifiStartRequest(output: OutputStream, ip: String, port: Int) {
@@ -137,6 +138,18 @@ class NativeAaBluetoothServer(private val context: Context) {
             .build()
         
         sendProtobuf(output, request.toByteArray(), 1) // Type 1: WifiStartRequest
+    }
+
+    private fun sendWifiSecurityResponse(output: OutputStream, ssid: String, key: String) {
+        val response = Wireless.WifiInfoResponse.newBuilder()
+            .setSsid(ssid)
+            .setKey(key)
+            .setBssid("00:00:00:00:00:00") // Phone usually doesn't care about BSSID
+            .setSecurityMode(Wireless.SecurityMode.WPA2_PERSONAL)
+            .setAccessPointType(Wireless.AccessPointType.STATIC)
+            .build()
+        
+        sendProtobuf(output, response.toByteArray(), 3) // Type 3: WifiInfoResponse
     }
 
     private fun sendProtobuf(output: OutputStream, data: ByteArray, type: Short) {
@@ -150,7 +163,9 @@ class NativeAaBluetoothServer(private val context: Context) {
         AppLog.i("Sent Bluetooth Protobuf type $type, size ${data.size}")
     }
 
-    private fun readAndHandleResponse(input: DataInputStream, output: OutputStream) {
+    data class ProtobufMessage(val type: Int, val payload: ByteArray)
+
+    private fun readProtobuf(input: DataInputStream): ProtobufMessage {
         val header = ByteArray(4)
         input.readFully(header)
         
@@ -159,16 +174,12 @@ class NativeAaBluetoothServer(private val context: Context) {
         
         AppLog.i("Received Bluetooth Protobuf type $type, size $size")
         
-        if (size > 0) {
-            val payload = ByteArray(size)
-            input.readFully(payload)
-            
-            if (type == 2) { // Phone wants security credentials?
-                // In some cases, the phone might want to know OUR hotspot credentials.
-                // For now, we assume the phone is connecting to us.
-                AppLog.i("Phone requested security info (Type 2)")
-                // TODO: If we start a hotspot, send credentials here (Type 3)
-            }
-        }
+        val payload = if (size > 0) {
+            val p = ByteArray(size)
+            input.readFully(p)
+            p
+        } else ByteArray(0)
+        
+        return ProtobufMessage(type, payload)
     }
 }

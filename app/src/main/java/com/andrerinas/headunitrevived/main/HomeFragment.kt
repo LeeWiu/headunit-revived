@@ -227,6 +227,18 @@ class HomeFragment : Fragment() {
                         ContextCompat.startForegroundService(requireContext(), intent)
                     }
                 }
+                3 -> { // Native AA (Experimental)
+                    if (AapService.isConnected) {
+                        Toast.makeText(requireContext(), getString(R.string.already_connected), Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Native AA: Waiting for Bluetooth connection...", Toast.LENGTH_LONG).show()
+                        // Ensure the server is running (it should be started by AapService already, but we can re-trigger if needed)
+                        val intent = Intent(requireContext(), AapService::class.java).apply {
+                            action = AapService.ACTION_START_NATIVE_AA
+                        }
+                        ContextCompat.startForegroundService(requireContext(), intent)
+                    }
+                }
                 else -> { // Manual (0) -> Open List
                     val controller = findNavController()
                     if (controller.currentDestination?.id == R.id.homeFragment) {

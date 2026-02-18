@@ -176,7 +176,9 @@ class AapService : Service(), UsbReceiver.Listener {
             }
             ACTION_START_WIRELESS_SCAN -> {
                 val mode = App.provide(this).settings.wifiConnectionMode
-                startDiscovery(oneShot = (mode != 2 && mode != 3))
+                if (mode != 3) {
+                    startDiscovery(oneShot = (mode != 2))
+                }
             }
             ACTION_STOP_WIRELESS -> {
                 stopWirelessServer();
@@ -249,7 +251,10 @@ class AapService : Service(), UsbReceiver.Listener {
         if (wirelessServer != null) return
         wirelessServer = WirelessServer().apply { start() }
         
-        startDiscovery()
+        val mode = App.provide(this).settings.wifiConnectionMode
+        if (mode != 3) {
+            startDiscovery()
+        }
     }
 
     private fun startDiscovery(oneShot: Boolean = false) {
@@ -383,6 +388,12 @@ class AapService : Service(), UsbReceiver.Listener {
         }
 
         private fun registerNsd() {
+            val mode = App.provide(this@AapService).settings.wifiConnectionMode
+            if (mode == 3) {
+                AppLog.i("NativeAA: Skipping NSD registration (not needed)")
+                return
+            }
+
             val serviceInfo = NsdServiceInfo().apply {
                 serviceName = "AAWireless";
                 serviceType = "_aawireless._tcp";
