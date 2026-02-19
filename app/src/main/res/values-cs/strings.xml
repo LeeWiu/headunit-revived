@@ -143,6 +143,9 @@
     </string-array>
     <string name="auto_connect_last_session">Automaticky připojit poslední relaci</string>
     <string name="auto_connect_last_session_description">Při spuštění aplikace se automaticky znovu připojit k naposledy použitému zařízení</string>
+    <string name="auto_connect_single_usb">Automaticky připojit USB zařízení</string>
+    <string name="auto_connect_single_usb_description">Automaticky připojit, když je dostupné pouze jedno kompatibilní zařízení</string>
+    <string name="auto_connecting_single_usb">Automatické připojování k USB zařízení…</string>
     <string name="video_codec">Video kodek</string>
     <string name="fps_limit">Limit FPS</string>
     <string name="save">Uložit</string>

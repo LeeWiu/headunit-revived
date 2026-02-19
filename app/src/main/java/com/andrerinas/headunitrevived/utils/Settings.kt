@@ -209,6 +209,10 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("auto-connect-last-session", false)
         set(value) { prefs.edit().putBoolean("auto-connect-last-session", value).apply() }
 
+    var autoConnectSingleUsbDevice: Boolean
+        get() = prefs.getBoolean("auto-connect-single-usb", false)
+        set(value) { prefs.edit().putBoolean("auto-connect-single-usb", value).apply() }
+
     var lastConnectionType: String
         get() = prefs.getString("last-connection-type", "")!!
         set(value) { prefs.edit().putString("last-connection-type", value).apply() }

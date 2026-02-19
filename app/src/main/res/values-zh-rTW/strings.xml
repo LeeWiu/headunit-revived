@@ -142,6 +142,9 @@
     </string-array>
     <string name="auto_connect_last_session">自動連接上次會話</string>
     <string name="auto_connect_last_session_description">應用程式啟動時自動重新連線到上次使用的裝置</string>
+    <string name="auto_connect_single_usb">自動連接 USB 裝置</string>
+    <string name="auto_connect_single_usb_description">當只有一個相容裝置可用時自動連接</string>
+    <string name="auto_connecting_single_usb">正在自動連接 USB 裝置…</string>
     <string name="video_codec">視訊編碼</string>
     <string name="fps_limit">FPS 限制</string>
     <string name="save">儲存</string>

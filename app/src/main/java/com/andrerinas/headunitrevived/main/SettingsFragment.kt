@@ -50,6 +50,7 @@ class SettingsFragment : Fragment() {
     private var pendingRightHandDrive: Boolean? = null
     private var pendingWifiConnectionMode: Int? = null
     private var pendingAutoConnectLastSession: Boolean? = null
+    private var pendingAutoConnectSingleUsb: Boolean? = null
     private var pendingVideoCodec: String? = null
     private var pendingFpsLimit: Int? = null
     private var pendingDebugMode: Boolean? = null
@@ -106,6 +107,7 @@ class SettingsFragment : Fragment() {
         pendingRightHandDrive = settings.rightHandDrive
         pendingWifiConnectionMode = settings.wifiConnectionMode
         pendingAutoConnectLastSession = settings.autoConnectLastSession
+        pendingAutoConnectSingleUsb = settings.autoConnectSingleUsbDevice
         pendingVideoCodec = settings.videoCodec
         pendingFpsLimit = settings.fpsLimit
         pendingDebugMode = settings.debugMode
@@ -244,6 +246,7 @@ class SettingsFragment : Fragment() {
         }
 
         pendingAutoConnectLastSession?.let { settings.autoConnectLastSession = it }
+        pendingAutoConnectSingleUsb?.let { settings.autoConnectSingleUsbDevice = it }
 
         // Notify Service about Night Mode changes immediately
         val nightModeUpdateIntent = Intent(AapService.ACTION_REQUEST_NIGHT_MODE_UPDATE)
@@ -307,6 +310,7 @@ class SettingsFragment : Fragment() {
                         pendingRightHandDrive != settings.rightHandDrive ||
                         pendingWifiConnectionMode != settings.wifiConnectionMode ||
                         pendingAutoConnectLastSession != settings.autoConnectLastSession ||
+                        pendingAutoConnectSingleUsb != settings.autoConnectSingleUsbDevice ||
                         pendingVideoCodec != settings.videoCodec ||
                         pendingFpsLimit != settings.fpsLimit ||
                         pendingDebugMode != settings.debugMode ||
@@ -567,6 +571,18 @@ class SettingsFragment : Fragment() {
             isChecked = pendingAutoConnectLastSession!!,
             onCheckedChanged = { isChecked ->
                 pendingAutoConnectLastSession = isChecked
+                checkChanges()
+                updateSettingsList()
+            }
+        ))
+
+        items.add(SettingItem.ToggleSettingEntry(
+            stableId = "autoConnectSingleUsb",
+            nameResId = R.string.auto_connect_single_usb,
+            descriptionResId = R.string.auto_connect_single_usb_description,
+            isChecked = pendingAutoConnectSingleUsb!!,
+            onCheckedChanged = { isChecked ->
+                pendingAutoConnectSingleUsb = isChecked
                 checkChanges()
                 updateSettingsList()
             }

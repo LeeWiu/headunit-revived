@@ -19,6 +19,7 @@ import com.andrerinas.headunitrevived.App
 import com.andrerinas.headunitrevived.R
 import com.andrerinas.headunitrevived.aap.AapProjectionActivity
 import com.andrerinas.headunitrevived.aap.AapService
+import com.andrerinas.headunitrevived.connection.UsbAccessoryMode
 import com.andrerinas.headunitrevived.connection.UsbDeviceCompat
 import com.andrerinas.headunitrevived.contract.ConnectedIntent
 import com.andrerinas.headunitrevived.contract.DisconnectIntent
@@ -36,6 +37,7 @@ class HomeFragment : Fragment() {
     private lateinit var exitButton: Button
     private lateinit var self_mode_text: TextView
     private var hasAttemptedAutoConnect = false
+    private var hasAttemptedSingleUsbAutoConnect = false
     private var isScanning = false
 
     private val connectionStatusReceiver = object : BroadcastReceiver() {
@@ -112,6 +114,12 @@ class HomeFragment : Fragment() {
             hasAutoStarted = true
             startSelfMode()
         }
+
+        // 3. Priority: Auto-connect single USB device
+        if (appSettings.autoConnectSingleUsbDevice && !hasAttemptedSingleUsbAutoConnect && !AapService.isConnected) {
+            hasAttemptedSingleUsbAutoConnect = true
+            attemptSingleUsbAutoConnect()
+        }
     }
 
     private fun startSelfMode() {
@@ -164,6 +172,42 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun attemptSingleUsbAutoConnect() {
+        val appSettings = App.provide(requireContext()).settings
+
+        if (!appSettings.autoConnectSingleUsbDevice ||
+            !appSettings.hasAcceptedDisclaimer ||
+            AapService.isConnected) {
+            return
+        }
+
+        val usbManager = requireContext().getSystemService(Context.USB_SERVICE) as UsbManager
+        val devices = usbManager.deviceList.values.map { UsbDeviceCompat(it) }
+        val nonAccessoryDevices = devices.filter { !it.isInAccessoryMode }
+
+        if (nonAccessoryDevices.size == 1) {
+            val device = nonAccessoryDevices[0]
+            if (usbManager.hasPermission(device.wrappedDevice)) {
+                AppLog.i("Auto-connect single USB: Connecting to ${device.uniqueName}")
+                Toast.makeText(requireContext(), getString(R.string.auto_connecting_single_usb), Toast.LENGTH_SHORT).show()
+                val usbMode = UsbAccessoryMode(usbManager)
+                usbMode.connectAndSwitch(device.wrappedDevice)
+            } else {
+                AppLog.i("Auto-connect single USB: Device ${device.uniqueName} found but no permission")
+            }
+        } else if (devices.size == 1 && devices[0].isInAccessoryMode) {
+            // Single device already in accessory mode - start AapService directly
+            val device = devices[0]
+            if (usbManager.hasPermission(device.wrappedDevice)) {
+                AppLog.i("Auto-connect single USB: Device already in accessory mode, starting service")
+                Toast.makeText(requireContext(), getString(R.string.auto_connecting_single_usb), Toast.LENGTH_SHORT).show()
+                ContextCompat.startForegroundService(requireContext(), AapService.createIntent(device.wrappedDevice, requireContext()))
+            }
+        } else {
+            AppLog.i("Auto-connect single USB: ${devices.size} devices found, skipping")
         }
     }
 

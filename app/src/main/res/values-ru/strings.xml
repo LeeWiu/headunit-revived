@@ -143,6 +143,9 @@
     </string-array>
     <string name="auto_connect_last_session">Автоподключение последней сессии</string>
     <string name="auto_connect_last_session_description">Автоматически подключаться к последнему использованному устройству при запуске приложения</string>
+    <string name="auto_connect_single_usb">Автоподключение USB-устройства</string>
+    <string name="auto_connect_single_usb_description">Автоматически подключаться, если доступно только одно совместимое устройство</string>
+    <string name="auto_connecting_single_usb">Автоподключение к USB-устройству…</string>
     <string name="video_codec">Видеокодек</string>
     <string name="fps_limit">Ограничение FPS</string>
     <string name="save">Сохранить</string>

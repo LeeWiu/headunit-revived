@@ -142,6 +142,9 @@
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect laatste Sessie</string>
     <string name="auto_connect_last_session_description">Automatisch opnieuw verbinding maken met het laatst gebruikte apparaat bij het opstarten van de app.</string>
+    <string name="auto_connect_single_usb">USB-apparaat automatisch verbinden</string>
+    <string name="auto_connect_single_usb_description">Automatisch verbinden wanneer slechts één compatibel apparaat beschikbaar is</string>
+    <string name="auto_connecting_single_usb">Automatisch verbinden met USB-apparaat…</string>
     <string name="video_codec">Video Codec</string>
     <string name="fps_limit">FPS Limiet</string>
     <string name="save">Opslaan</string>

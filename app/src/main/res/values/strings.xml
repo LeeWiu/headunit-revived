@@ -143,6 +143,9 @@
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect Last Session</string>
     <string name="auto_connect_last_session_description">Automatically reconnect to the last used device on app startup</string>
+    <string name="auto_connect_single_usb">Auto-connect USB device</string>
+    <string name="auto_connect_single_usb_description">Automatically connect when only one compatible device is available</string>
+    <string name="auto_connecting_single_usb">Auto-connecting to USB device…</string>
     <string name="video_codec">Video Codec</string>
     <string name="fps_limit">FPS Limit</string>
     <string name="save">Save</string>

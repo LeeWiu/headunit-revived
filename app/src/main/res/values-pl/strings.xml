@@ -143,6 +143,9 @@
     </string-array>
     <string name="auto_connect_last_session">Auto-łączenie ostatniej sesji</string>
     <string name="auto_connect_last_session_description">Automatycznie połącz z ostatnio używanym urządzeniem przy starcie aplikacji</string>
+    <string name="auto_connect_single_usb">Automatyczne połączenie urządzenia USB</string>
+    <string name="auto_connect_single_usb_description">Automatyczne połączenie, gdy dostępne jest tylko jedno kompatybilne urządzenie</string>
+    <string name="auto_connecting_single_usb">Automatyczne łączenie z urządzeniem USB…</string>
     <string name="video_codec">Kodek wideo</string>
     <string name="fps_limit">Limit FPS</string>
     <string name="save">Zapisz</string>
