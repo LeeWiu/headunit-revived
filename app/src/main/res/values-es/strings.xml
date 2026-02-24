@@ -112,6 +112,8 @@
     <string name="category_general">General</string>
     <string name="auto_start_self_mode">Iniciar Modo Autónomo automáticamente</string>
     <string name="auto_start_self_mode_description">Inicia el Modo Autónomo automáticamente al abrir la aplicación.</string>
+    <string name="usb_auto_connect">Conexión automática USB</string>
+    <string name="usb_auto_connect_description">Se conecta automáticamente a un dispositivo USB conocido tan pronto como se abre la aplicación.</string>
     <string name="auto_start_bt_label">Auto-inicio por Bluetooth</string>
     <string name="auto_start_bt_description">Abrir automáticamente Headunit Revived cuando se conecte un dispositivo Bluetooth específico.</string>
     <string name="select_bt_device">Seleccionar dispositivo Bluetooth</string>
@@ -139,7 +141,6 @@
         <item>Manual (lista)</item>
         <item>Búsqueda automática (Headunit Server)</item>
         <item>Wireless Helper (esperando al teléfono)</item>
-        <item>AA Nativo (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Conectar automáticamente a la última sesión</string>
     <string name="auto_connect_last_session_description">Reconecta automáticamente al último dispositivo usado al iniciar la app</string>
@@ -156,6 +157,10 @@
     <string name="enable_audio_sink_description">Si está desactivado, el audio se reproducirá en el teléfono conectado.</string>
     <string name="use_aac_audio">Usar audio AAC</string>
     <string name="use_aac_audio_description">Usa el códec AAC para audio para ahorrar ancho de banda.</string>
+    <string name="audio_volume_offset">Ajustes de volumen</string>
+    <string name="media_volume_offset">Multimedia</string>
+    <string name="assistant_volume_offset">Asistente</string>
+    <string name="navigation_volume_offset">Navegación</string>
     <string name="mic_input_source">Fuente de entrada del micrófono</string>
     <string name="mic_input_source_description">Elija la fuente de audio para el micrófono.</string>
     <string-array name="mic_input_sources">
@@ -169,7 +174,7 @@
     <string name="category_info">Información</string>
     <string name="about">Acerca de &amp; Soporte</string>
     <string name="about_description">Obtenga más información sobre Headunit Revived</string>
-    <string name="version">Версія</string>
+    <string name="version">Versión</string>
     <string name="about_title">Acerca de Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -179,7 +184,7 @@
     <string name="disclaimer_accept">Entiendo y acepto</string>
     <string name="disclaimer_text"><![CDATA[
         <b>1. Enfóquese en la carretera</b><br/>
-        Operar este software mientras conduce puede ser distractivo y peligroso. Priorice siempre la conducción segura y siga todas las normas de tráfico locales. Use esta aplicación solo cuando sea seguro hacerlo.<br/><br/>
+        Operar este software mientras conduce puede ser distractivo y peligroso. Enfóquese siempre en la conducción segura y siga todas las normas de tráfico locales. Use esta aplicación solo cuando sea seguro hacerlo.<br/><br/>
         <b>2. Limitación de responsabilidad</b><br/>
         Headunit Revived se proporciona \"tal cual\", sin garantía de ningún tipo. Los desarrolladores no asumen responsabilidad por ningún accidente, daño a su vehículo/dispositivo o consecuencias legales derivadas del uso de este software.<br/><br/>
         <b>3. Sin afiliación</b><br/>

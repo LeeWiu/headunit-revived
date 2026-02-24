@@ -139,7 +139,6 @@
         <item>Ręcznie (lista)</item>
         <item>Auto-wyszukiwanie (Headunit Server)</item>
         <item>Pomocnik bezprzewodowy (oczekiwanie na telefon)</item>
-        <item>Natywne AA (Eksperymentalne)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-łączenie ostatniej sesji</string>
     <string name="auto_connect_last_session_description">Automatycznie połącz z ostatnio używanym urządzeniem przy starcie aplikacji</string>
@@ -156,6 +155,10 @@
     <string name="enable_audio_sink_description">Jeśli wyłączone, jednostka nie będzie działać jako wyjście dźwięku. Dźwięk będzie odtwarzany z telefonu.</string>
     <string name="use_aac_audio">Użyj dźwięku AAC</string>
     <string name="use_aac_audio_description">Użyj kodeka AAC dla dźwięku, aby oszczędzać przepustowość (Eksperymentalne).</string>
+    <string name="audio_volume_offset">Przesunięcie głośności</string>
+    <string name="media_volume_offset">Multimedia</string>
+    <string name="assistant_volume_offset">Asystent</string>
+    <string name="navigation_volume_offset">Nawigacja</string>
     <string name="mic_input_source">Źródło wejściowe mikrofonu</string>
     <string name="mic_input_source_description">Wybierz źródło dźwięku dla mikrofonu.</string>
     <string-array name="mic_input_sources">

@@ -14,6 +14,21 @@
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -48,6 +63,7 @@
         android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/title"
+        android:appCategory="maps"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
@@ -82,6 +98,7 @@
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.APP_MAPS" />
 
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -92,6 +109,30 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="headunit" android:host="connect" />
             </intent-filter>
+
+            <!-- Navigation Intent Filters -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="geo" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="google.navigation" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.NAVIGATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity
@@ -106,8 +147,14 @@
 
         <receiver android:name=".app.RemoteControlReceiver"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="com.android.music.musicservicecommand" />
+                <action android:name="com.android.music.playstatechanged" />
+                <action android:name="com.android.music.metachanged" />
+                <action android:name="com.android.music.playbackcomplete" />
+                <action android:name="com.android.music.queuechanged" />
+                <action android:name="com.syu.ms.action.external_command" />
             </intent-filter>
         </receiver>
 

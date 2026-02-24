@@ -138,7 +138,6 @@
         <item>Handmatig (lijst)</item>
         <item>Automatisch zoeken (Headunit Server)</item>
         <item>Draadloze helper (wachten op telefoon)</item>
-        <item>Native AA (Experimenteel)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect laatste Sessie</string>
     <string name="auto_connect_last_session_description">Automatisch opnieuw verbinding maken met het laatst gebruikte apparaat bij het opstarten van de app.</string>
@@ -155,6 +154,10 @@
     <string name="enable_audio_sink_description">Indien uitgeschakeld, fungeert de autoradio niet als audio-uitgang. Het geluid wordt dan vanaf de telefoon afgespeeld.</string>
     <string name="use_aac_audio">Gebruik AAC Audio</string>
     <string name="use_aac_audio_description">Gebruik de AAC-codec voor audio om bandbreedte te besparen (experimenteel).</string>
+    <string name="audio_volume_offset">Volume-offsets</string>
+    <string name="media_volume_offset">Media</string>
+    <string name="assistant_volume_offset">Assistent</string>
+    <string name="navigation_volume_offset">Navigatie</string>
     <string name="mic_input_source">Microfoon ingangsbron</string>
     <string name="mic_input_source_description">Kies de audiobron voor de microfoon.</string>
     <string-array name="mic_input_sources">

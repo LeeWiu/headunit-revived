@@ -139,7 +139,6 @@
         <item>Manual (Lista)</item>
         <item>Auto (Headunit Server)</item>
         <item>Wireless Helper</item>
-        <item>Native AA (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-conectar última sesión</string>
     <string name="auto_connect_last_session_description">Conectar automáticamente al último dispositivo al iniciar</string>
@@ -169,7 +168,7 @@
     <string name="category_info">Información</string>
     <string name="about">Acerca de</string>
     <string name="about_description">Más información sobre Headunit Revived</string>
-    <string name="version">Версія</string>
+    <string name="version">Versión</string>
     <string name="about_title">Acerca de Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 

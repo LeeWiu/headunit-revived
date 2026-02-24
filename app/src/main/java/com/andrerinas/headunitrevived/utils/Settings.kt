@@ -29,7 +29,7 @@ class Settings(context: Context) {
         }
 
     var bluetoothAddress: String
-        get() = prefs.getString("bt-address", "40:EF:4C:A3:CB:A5")!!
+        get() = prefs.getString("bt-address", "")!!
         set(value) = prefs.edit().putString("bt-address", value).apply()
 
     var lastKnownLocation: Location
@@ -259,11 +259,23 @@ class Settings(context: Context) {
 
     var autoStartBluetoothDeviceMac: String
         get() = prefs.getString("auto-start-bt-mac", "")!!
-        set(value) { prefs.edit().putString("auto-start-bt-mac", value).apply() }
+        set(value) = prefs.edit().putString("auto-start-bt-mac", value).apply()
 
     var appLanguage: String
         get() = prefs.getString("app-language", "")!!
         set(value) { prefs.edit().putString("app-language", value).apply() }
+
+    var mediaVolumeOffset: Int
+        get() = prefs.getInt("media-volume-offset", 0)
+        set(value) { prefs.edit().putInt("media-volume-offset", value).apply() }
+
+    var assistantVolumeOffset: Int
+        get() = prefs.getInt("assistant-volume-offset", 0)
+        set(value) { prefs.edit().putInt("assistant-volume-offset", value).apply() }
+
+    var navigationVolumeOffset: Int
+        get() = prefs.getInt("navigation-volume-offset", 0)
+        set(value) { prefs.edit().putInt("navigation-volume-offset", value).apply() }
 
     @SuppressLint("ApplySharedPref")
     fun commit() {

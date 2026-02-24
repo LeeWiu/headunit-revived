@@ -13,27 +13,39 @@ internal class AapReadMultipleMessages(
         handler: AapMessageHandler)
     : AapRead.Base(connection, ssl, handler) {
 
-    private val fifo = ByteBuffer.allocate(Messages.DEF_BUFFER_LENGTH * 2)
+    private val fifo = ByteBuffer.allocate(Messages.DEF_BUFFER_LENGTH * 4) // Increased buffer size
     private val recvBuffer = ByteArray(Messages.DEF_BUFFER_LENGTH)
     private val recvHeader = AapMessageIncoming.EncryptedHeader()
     private val msgBuffer = ByteArray(65535) // unsigned short max
+    private val skipBuffer = ByteArray(4)
 
     override fun doRead(connection: AccessoryConnection): Int {
-        val size = connection.recvBlocking(recvBuffer, recvBuffer.size, 150, false)
+        val size = try {
+            connection.recvBlocking(recvBuffer, recvBuffer.size, 150, false)
+        } catch (e: Exception) {
+            AppLog.e("AapRead: Fatal USB read error: ${e.message}")
+            return -1
+        }
+
         if (size <= 0) {
             return 0
         }
+
         try {
-            processBulk(size, recvBuffer)
+            if (fifo.remaining() < size) {
+                AppLog.w("AapRead: FIFO overflow risk. Clearing buffer to recover. Lost ${fifo.position()} bytes.")
+                fifo.clear()
+            }
+            fifo.put(recvBuffer, 0, size)
+            processBulk()
         } catch (e: Exception) {
-            AppLog.e("AapRead: Error in USB processBulk (ignored): ${e.message}")
-            return 0 // Continue even on bulk error
+            AppLog.e("AapRead: Error in processBulk: ${e.message}")
+            fifo.clear() // Hard reset on error
         }
         return 0
     }
 
-    private fun processBulk(size: Int, buf: ByteArray) {
-        fifo.put(buf, 0, size)
+    private fun processBulk() {
         fifo.flip()
 
         while (fifo.remaining() >= AapMessageIncoming.EncryptedHeader.SIZE) {
@@ -46,12 +58,13 @@ internal class AapReadMultipleMessages(
                     fifo.reset()
                     break
                 }
-                fifo.get(ByteArray(4), 0, 4) // Skip totalSize for now (Handled in AapReadSingle)
+                fifo.get(skipBuffer, 0, 4)
             }
 
-            if (recvHeader.enc_len > msgBuffer.size) {
-                AppLog.e("AapRead: Message too large (${recvHeader.enc_len} bytes). Skipping.")
-                break // Cannot safely skip without knowing where next header is if this is corrupted
+            if (recvHeader.enc_len > msgBuffer.size || recvHeader.enc_len < 0) {
+                AppLog.e("AapRead: Invalid message length (${recvHeader.enc_len}). Resetting FIFO.")
+                fifo.clear()
+                return 
             }
 
             if (fifo.remaining() < recvHeader.enc_len) {
@@ -64,17 +77,11 @@ internal class AapReadMultipleMessages(
             try {
                 val msg = AapMessageIncoming.decrypt(recvHeader, 0, msgBuffer, ssl)
 
-                if (msg == null) {
-                    if (AppLog.LOG_VERBOSE) {
-                        AppLog.d("AapRead: Decryption returned no message (likely SSL control packet). Continuing.")
-                    }
-                    continue 
+                if (msg != null) {
+                    handler.handle(msg)
                 }
-
-                handler.handle(msg)
             } catch (e: Exception) {
-                AppLog.e("AapRead: Error handling USB message (ignored): ${e.message}")
-                // Continue with next message in FIFO
+                AppLog.e("AapRead: Decryption/Handling error: ${e.message}")
             }
         }
 

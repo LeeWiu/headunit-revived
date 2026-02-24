@@ -20,32 +20,53 @@ internal class AapAudio(
 
     private var audioFocusRequest: AudioFocusRequest? = null
 
-    fun requestFocusChange(stream: Int, focusRequest: Int, callback: AudioManager.OnAudioFocusChangeListener) {
+    fun requestFocusChange(stream: Int, focusRequest: Int, callback: AudioManager.OnAudioFocusChangeListener): Int {
+        AppLog.i("Audio Focus Request: stream=$stream, type=$focusRequest")
+        
+        var result = AudioManager.AUDIOFOCUS_REQUEST_FAILED
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API 26+
             if (focusRequest == Control.AudioFocusRequestNotification.AudioFocusRequestType.RELEASE_VALUE) {
+                AppLog.i("Releasing audio focus")
                 audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
                 audioFocusRequest = null
+                result = AudioManager.AUDIOFOCUS_REQUEST_GRANTED
             } else {
+                val usage = when (stream) {
+                    AudioManager.STREAM_NOTIFICATION -> AudioAttributes.USAGE_NOTIFICATION
+                    AudioManager.STREAM_VOICE_CALL -> AudioAttributes.USAGE_VOICE_COMMUNICATION
+                    else -> AudioAttributes.USAGE_MEDIA
+                }
+
                 val audioAttributes = AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(usage)
+                        .setContentType(if (usage == AudioAttributes.USAGE_MEDIA) AudioAttributes.CONTENT_TYPE_MUSIC else AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build()
 
                 audioFocusRequest = AudioFocusRequest.Builder(focusRequest)
                         .setAudioAttributes(audioAttributes)
+                        .setWillPauseWhenDucked(false)
                         .setOnAudioFocusChangeListener(callback)
                         .build()
-                audioFocusRequest?.let { audioManager.requestAudioFocus(it) }
+                
+                result = audioManager.requestAudioFocus(audioFocusRequest!!)
+                AppLog.i("Audio focus request result: ${if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) "GRANTED" else "FAILED ($result)"}")
             }
         } else { // API < 26
             @Suppress("DEPRECATION")
-            when (focusRequest) {
-                Control.AudioFocusRequestNotification.AudioFocusRequestType.RELEASE_VALUE -> audioManager.abandonAudioFocus(callback)
+            result = when (focusRequest) {
+                Control.AudioFocusRequestNotification.AudioFocusRequestType.RELEASE_VALUE -> {
+                    audioManager.abandonAudioFocus(callback)
+                    AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+                }
                 Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_VALUE -> audioManager.requestAudioFocus(callback, stream, AudioManager.AUDIOFOCUS_GAIN)
                 Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_TRANSIENT_VALUE -> audioManager.requestAudioFocus(callback, stream, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                 Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_TRANSIENT_MAY_DUCK_VALUE -> audioManager.requestAudioFocus(callback, stream, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                else -> AudioManager.AUDIOFOCUS_REQUEST_FAILED
             }
+            AppLog.i("Audio focus request result (legacy): ${if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) "GRANTED" else "FAILED"}")
         }
+        return result
     }
 
     /**
@@ -74,8 +95,17 @@ internal class AapAudio(
         if (audioDecoder.getTrack(channel) == null) {
             val config = AudioConfigs.get(channel)
             val stream = AudioManager.STREAM_MUSIC
-            AppLog.i("AudioDecoder.start: channel=$channel, stream=$stream, sampleRate=${config.sampleRate}, numberOfBits=${config.numberOfBits}, numberOfChannels=${config.numberOfChannels}, isAac=${settings.useAacAudio}")
-            audioDecoder.start(channel, stream, config.sampleRate, config.numberOfBits, config.numberOfChannels, settings.useAacAudio)
+
+            val offset = when (channel) {
+                Channel.ID_AUD -> settings.mediaVolumeOffset
+                Channel.ID_AU1 -> settings.assistantVolumeOffset
+                Channel.ID_AU2 -> settings.navigationVolumeOffset
+                else -> 0
+            }
+            val gain = (1.0f + (offset / 100.0f)).coerceIn(0.0f, 2.0f)
+
+            AppLog.i("AudioDecoder.start: channel=$channel, stream=$stream, gain=$gain, sampleRate=${config.sampleRate}, numberOfBits=${config.numberOfBits}, numberOfChannels=${config.numberOfChannels}, isAac=${settings.useAacAudio}")
+            audioDecoder.start(channel, stream, config.sampleRate, config.numberOfBits, config.numberOfChannels, settings.useAacAudio, gain)
         }
 
         audioDecoder.decode(channel, buf, start, length)

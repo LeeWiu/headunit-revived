@@ -25,8 +25,10 @@ import com.andrerinas.headunitrevived.R
 import com.andrerinas.headunitrevived.aap.protocol.messages.NightModeEvent
 import com.andrerinas.headunitrevived.connection.AccessoryConnection
 import com.andrerinas.headunitrevived.connection.NetworkDiscovery
+import android.support.v4.media.session.MediaSessionCompat
 import com.andrerinas.headunitrevived.connection.SocketAccessoryConnection
 import com.andrerinas.headunitrevived.connection.UsbAccessoryConnection
+import com.andrerinas.headunitrevived.connection.UsbAccessoryMode
 import com.andrerinas.headunitrevived.connection.UsbDeviceCompat
 import com.andrerinas.headunitrevived.connection.UsbReceiver
 import com.andrerinas.headunitrevived.contract.ConnectedIntent
@@ -51,12 +53,14 @@ class AapService : Service(), UsbReceiver.Listener {
     private var nightModeManager: NightModeManager? = null
     private var wirelessServer: WirelessServer? = null
     private var nativeAaServer: com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer? = null
+    private var mediaSession: MediaSessionCompat? = null
 
     private var pendingConnectionType: String = ""
     private var pendingConnectionIp: String = ""
     private var pendingConnectionUsbDevice: String = ""
     private val connectionAttemptId = AtomicInteger(0)
     private val isConnecting = AtomicBoolean(false)
+    private var isDestroying = false
 
     private val transport: AapTransport
         get() = App.provide(this).transport
@@ -117,6 +121,38 @@ class AapService : Service(), UsbReceiver.Listener {
         } else if (mode == 3) {
             startNativeAaServer();
         }
+
+        checkAlreadyConnectedUsb();
+    }
+
+    private fun checkAlreadyConnectedUsb() {
+        val settings = App.provide(this).settings
+        if (!settings.autoConnectLastSession || isConnected || isConnecting.get()) return
+
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        val deviceList = usbManager.deviceList
+        for (device in deviceList.values) {
+            val deviceCompat = UsbDeviceCompat(device)
+            if (UsbDeviceCompat.isInAccessoryMode(device)) {
+                AppLog.i("Found device already in accessory mode: ${deviceCompat.uniqueName}")
+                handleConnectionIntent(createIntent(device, this))
+                return
+            }
+
+            if (settings.isConnectingDevice(deviceCompat)) {
+                if (usbManager.hasPermission(device)) {
+                    AppLog.i("Found known USB device with permission: ${deviceCompat.uniqueName}. Switching to accessory mode.")
+                    val usbMode = UsbAccessoryMode(usbManager)
+                    if (usbMode.connectAndSwitch(device)) {
+                         AppLog.i("Successfully requested switch to accessory mode for ${deviceCompat.uniqueName}")
+                         // The device will detach and re-attach as accessory, triggering UsbAttachedActivity or our receiver
+                         return
+                    }
+                } else {
+                    AppLog.i("Found known USB device but no permission: ${deviceCompat.uniqueName}")
+                }
+            }
+        }
     }
 
     private fun createNotification(): Notification {
@@ -130,21 +166,44 @@ class AapService : Service(), UsbReceiver.Listener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        val (notificationIntent, requestCode) = if (isConnected) {
+            AapProjectionActivity.intent(this).apply {
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            } to 100
+        } else {
+            Intent(this, com.andrerinas.headunitrevived.main.MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            } to 101
+        }
+
+        val contentText = if (isConnected) {
+            getString(R.string.notification_projection_active)
+        } else {
+            getString(R.string.notification_service_running)
+        }
+
         return NotificationCompat.Builder(this, App.defaultChannel)
             .setSmallIcon(R.drawable.ic_stat_aa)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .setContentTitle("Headunit Revived")
-            .setContentText("Headunit Revived is running")
-            .setContentIntent(PendingIntent.getActivity(this, 0, 
-                Intent(this, com.andrerinas.headunitrevived.main.MainActivity::class.java),
+            .setContentText(contentText)
+            .setContentIntent(PendingIntent.getActivity(this, requestCode,
+                notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0)))
             .addAction(R.drawable.ic_exit_to_app_white_24dp, getString(R.string.exit), stopPendingIntent)
             .build();
     }
 
+    private fun updateNotification() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.notify(1, createNotification())
+    }
+
     override fun onDestroy() {
         AppLog.i("AapService destroying...");
+        isDestroying = true
+        stopForeground(true)
         stopWirelessServer();
         stopNativeAaServer();
         serviceJob.cancel();
@@ -158,13 +217,19 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP_SERVICE) {
+            AppLog.i("Stop action received.");
+            isDestroying = true
+            if (isConnected) {
+                transport.stop()
+            }
+            stopForeground(true)
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         startForeground(1, createNotification());
         when (intent?.action) {
-            ACTION_STOP_SERVICE -> {
-                AppLog.i("Stop action received.");
-                stopSelf();
-                return START_NOT_STICKY;
-            }
             ACTION_START_SELF_MODE -> {
                 startSelfMode();
             }
@@ -183,10 +248,22 @@ class AapService : Service(), UsbReceiver.Listener {
             ACTION_STOP_WIRELESS -> {
                 stopWirelessServer();
             }
+            ACTION_DISCONNECT -> {
+                AppLog.i("Disconnect action received.");
+                if (isConnected) {
+                    transport.stop()
+                }
+            }
+            ACTION_CHECK_USB -> {
+                checkAlreadyConnectedUsb();
+            }
             ACTION_STOP_NATIVE_AA -> {
                 stopNativeAaServer();
             }
             else -> {
+                if (intent?.action == null || intent.action == Intent.ACTION_MAIN) {
+                    checkAlreadyConnectedUsb()
+                }
                 handleConnectionIntent(intent);
             }
         }
@@ -225,10 +302,25 @@ class AapService : Service(), UsbReceiver.Listener {
         val attemptId = connectionAttemptId.incrementAndGet();
 
         serviceScope.launch {
-            val connectionResult = withContext(Dispatchers.IO) {
-                conn?.connect() ?: false;
+            var retryCount = 0
+            val maxRetries = 3
+            var success = false
+
+            while (retryCount <= maxRetries && !success) {
+                if (retryCount > 0) {
+                    AppLog.i("Retrying USB connection (attempt ${retryCount + 1}/$maxRetries)...")
+                    delay(1500)
+                }
+
+                success = withContext(Dispatchers.IO) {
+                    conn?.connect() ?: false
+                }
+
+                if (success || connectionType != TYPE_USB) break
+                retryCount++
             }
-            onConnectionResult(connectionResult, attemptId, conn);
+
+            onConnectionResult(success, attemptId, conn)
         }
     }
 
@@ -237,7 +329,7 @@ class AapService : Service(), UsbReceiver.Listener {
     private fun startNativeAaServer() {
         if (nativeAaServer != null) return
         nativeAaServer = com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer(this).apply { start() }
-        
+
         // Native AA also requires the Wireless TCP server to be listening
         startWirelessServer()
     }
@@ -485,8 +577,14 @@ class AapService : Service(), UsbReceiver.Listener {
 
                 if (transportStarted) {
                     isConnected = true;
+                    updateNotification();
                     sendBroadcast(ConnectedIntent());
                     
+                    // Create MediaSession to get higher audio priority
+                    mediaSession = MediaSessionCompat(this@AapService, "HeadunitRevived").apply {
+                        isActive = true
+                    }
+
                     // Sync current night mode state immediately after connection
                     nightModeManager?.resendCurrentState()
                     
@@ -519,7 +617,13 @@ class AapService : Service(), UsbReceiver.Listener {
 
     private fun onDisconnect(isClean: Boolean = false) {
         isConnected = false;
+        if (!isDestroying) {
+            updateNotification();
+        }
         sendBroadcast(DisconnectIntent(isClean));
+        mediaSession?.isActive = false
+        mediaSession?.release()
+        mediaSession = null
         reset();
         accessoryConnection?.disconnect();
         accessoryConnection = null;
@@ -560,7 +664,13 @@ class AapService : Service(), UsbReceiver.Listener {
         }
     }
 
-    override fun onUsbAttach(device: UsbDevice) {}
+    override fun onUsbAttach(device: UsbDevice) {
+        val settings = App.provide(this).settings
+        if (settings.autoConnectLastSession) {
+            AppLog.i("USB attached and auto-connect enabled, checking USB.")
+            checkAlreadyConnectedUsb()
+        }
+    }
     override fun onUsbPermission(granted: Boolean, connect: Boolean, device: UsbDevice) {}
 
     companion object {
@@ -572,11 +682,13 @@ class AapService : Service(), UsbReceiver.Listener {
         const val ACTION_START_WIRELESS = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS";
         const val ACTION_START_NATIVE_AA = "com.andrerinas.headunitrevived.ACTION_START_NATIVE_AA";
         const val ACTION_STOP_WIRELESS = "com.andrerinas.headunitrevived.ACTION_STOP_WIRELESS";
+        const val ACTION_CHECK_USB = "com.andrerinas.headunitrevived.ACTION_CHECK_USB";
         const val ACTION_STOP_NATIVE_AA = "com.andrerinas.headunitrevived.ACTION_STOP_NATIVE_AA";
         const val ACTION_START_WIRELESS_SCAN = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS_SCAN";
         const val ACTION_SCAN_STARTED = "com.andrerinas.headunitrevived.ACTION_SCAN_STARTED"
         const val ACTION_SCAN_FINISHED = "com.andrerinas.headunitrevived.ACTION_SCAN_FINISHED"
         const val ACTION_STOP_SERVICE = "com.andrerinas.headunitrevived.ACTION_STOP_SERVICE";
+        const val ACTION_DISCONNECT = "com.andrerinas.headunitrevived.ACTION_DISCONNECT";
         const val ACTION_REQUEST_NIGHT_MODE_UPDATE = "com.andrerinas.headunitrevived.ACTION_REQUEST_NIGHT_MODE_UPDATE"
         private const val TYPE_USB = 1;
         private const val TYPE_WIFI = 2;

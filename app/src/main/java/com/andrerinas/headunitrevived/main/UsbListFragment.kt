@@ -165,18 +165,18 @@ class UsbListFragment : Fragment() {
                 notifyDataSetChanged()
             } else {
                 if (AapService.isConnected) {
-                    // Already connected -> just open UI
-                    val aapIntent = Intent(mContext, AapProjectionActivity::class.java)
-                    aapIntent.putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
+
+                    // Already connected -> bring existing projection to front
+                    val aapIntent = AapProjectionActivity.intent(mContext).apply {
+                        putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
                     mContext.startActivity(aapIntent)
                 } else if (device.isInAccessoryMode) {
                     // Device is in Accessory Mode but we are NOT connected.
-                    // This likely means the previous session ended and the phone needs a reset.
-                    MaterialAlertDialogBuilder(mContext, R.style.DarkAlertDialog)
-                        .setTitle(R.string.reconnection_required_title)
-                        .setMessage(R.string.reconnection_required_message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
+                    // Start connection immediately.
+                    Toast.makeText(mContext, R.string.android_auto_starting, Toast.LENGTH_SHORT).show()
+                    ContextCompat.startForegroundService(mContext, AapService.createIntent(device.wrappedDevice, mContext))
                 } else {
                     // Standard connection flow
                     val usbManager = mContext.getSystemService(Context.USB_SERVICE) as UsbManager

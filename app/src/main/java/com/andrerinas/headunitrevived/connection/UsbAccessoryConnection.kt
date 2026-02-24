@@ -65,16 +65,22 @@ class UsbAccessoryConnection(private val usbMgr: UsbManager, private val device:
 
     @Throws(UsbOpenException::class)
     private fun usbOpen(device: UsbDevice) {
-        try {
-            usbDeviceConnection = usbMgr.openDevice(device)
-        } catch (e: Throwable) {
-            AppLog.e(e)
-            throw UsbOpenException(e)
+        var connection: UsbDeviceConnection? = null
+        var lastError: Throwable? = null
+        
+        // Try up to 3 times to open the device, with a small delay
+        for (i in 0 until 3) {
+            try {
+                connection = usbMgr.openDevice(device)
+                if (connection != null) break
+            } catch (e: Throwable) {
+                lastError = e
+                AppLog.w("Attempt ${i+1} to openDevice failed: ${e.message}")
+            }
+            if (i < 2) try { Thread.sleep(500) } catch (e: Exception) {}
         }
-
-        if (usbDeviceConnection == null) {
-            throw UsbOpenException("openDevice: connection is null")
-        }
+        
+        usbDeviceConnection = connection ?: throw UsbOpenException(lastError ?: Throwable("openDevice: connection is null"))
 
         AppLog.i("Established connection: " + usbDeviceConnection!!)
 
@@ -124,6 +130,26 @@ class UsbAccessoryConnection(private val usbMgr: UsbManager, private val device:
         return 0                                                         // Done success
     }
 
+    private fun resetInterface() {
+        synchronized(sLock) {
+            val connection = usbDeviceConnection ?: return
+            val iface = usbInterface ?: return
+            AppLog.w("Attempting USB interface soft-reset...")
+            try {
+                connection.releaseInterface(iface)
+                Thread.sleep(100)
+                if (connection.claimInterface(iface, true)) {
+                    AppLog.i("USB interface re-claimed successfully")
+                    initEndpoint()
+                } else {
+                    AppLog.e("Failed to re-claim USB interface")
+                }
+            } catch (e: Exception) {
+                AppLog.e("Error during USB reset: ${e.message}")
+            }
+        }
+    }
+
     override fun disconnect() {                                           // Release interface and close USB device connection. Called only by usb_disconnect()
         synchronized(sLock) {
             if (usbDeviceConnected != null) {
@@ -159,19 +185,32 @@ class UsbAccessoryConnection(private val usbMgr: UsbManager, private val device:
     override val isSingleMessage: Boolean
         get() = false
 
+    private var consecutiveErrors = 0
+    private val maxConsecutiveErrorsBeforeReset = 3
+
     override fun sendBlocking(buf: ByteArray, length: Int, timeout: Int): Int {
         synchronized(sLock) {
-            if (usbDeviceConnected == null) {
-                AppLog.e("Not connected")
-                return -1
-            }
-            return try {
-                usbDeviceConnection!!.bulkTransfer(endpointOut, buf, length, timeout)
-            } catch (e: NullPointerException) {
-                disconnect()
-                AppLog.e(e)
+            val connection = usbDeviceConnection ?: return -1
+            val ep = endpointOut ?: return -1
+
+            val ret = try {
+                connection.bulkTransfer(ep, buf, length, timeout)
+            } catch (e: Exception) {
+                AppLog.e("USB Write Error: ${e.message}")
                 -1
             }
+
+            if (ret < 0) {
+                consecutiveErrors++
+                if (consecutiveErrors >= maxConsecutiveErrorsBeforeReset) {
+                    AppLog.w("Too many write errors, attempting interface reset...")
+                    resetInterface()
+                    consecutiveErrors = 0
+                }
+            } else {
+                consecutiveErrors = 0
+            }
+            return ret
         }
     }
 
@@ -198,14 +237,28 @@ class UsbAccessoryConnection(private val usbMgr: UsbManager, private val device:
                     }
 
                     // 2. Internal buffer empty, read new 16KB chunk from USB
-                    val read = connection.bulkTransfer(ep, internalBuffer, internalBuffer.size, timeout)
+                    val read = try {
+                        connection.bulkTransfer(ep, internalBuffer, internalBuffer.size, timeout)
+                    } catch (e: Exception) {
+                        AppLog.e("USB Read Error: ${e.message}")
+                        -1
+                    }
                     
                     if (read < 0) {
+                        consecutiveErrors++
+                        if (consecutiveErrors >= maxConsecutiveErrorsBeforeReset) {
+                            AppLog.w("Too many read errors, attempting interface reset...")
+                            resetInterface()
+                            consecutiveErrors = 0
+                        }
                         return if (totalReturned > 0) totalReturned else -1
                     }
                     if (read == 0) {
+                        consecutiveErrors = 0
                         return totalReturned
                     }
+                    
+                    consecutiveErrors = 0
 
                     internalBufferPos = 0
                     internalBufferAvailable = read

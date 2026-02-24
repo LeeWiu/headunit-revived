@@ -139,7 +139,6 @@
         <item>Вручную (список)</item>
         <item>Автопоиск (Headunit Server)</item>
         <item>Wireless Helper (ожидание телефона)</item>
-        <item>Native AA (Экспериментально)</item>
     </string-array>
     <string name="auto_connect_last_session">Автоподключение последней сессии</string>
     <string name="auto_connect_last_session_description">Автоматически подключаться к последнему использованному устройству при запуске приложения</string>
@@ -156,6 +155,10 @@
     <string name="enable_audio_sink_description">Если выключить этот параметр, то ГУ не будет выводить звук. Звук будет воспроизводиться на телефоне.</string>
     <string name="use_aac_audio">Использовать AAC</string>
     <string name="use_aac_audio_description">Использовать кодек AAC для аудио для экономии трафика (Экспериментально).</string>
+    <string name="audio_volume_offset">Смещение громкости</string>
+    <string name="media_volume_offset">Медиа</string>
+    <string name="assistant_volume_offset">Ассистент</string>
+    <string name="navigation_volume_offset">Навигация</string>
     <string name="mic_input_source">Источник микрофона</string>
     <string name="mic_input_source_description">Выберите источник звука для микрофона.</string>
     <string-array name="mic_input_sources">
@@ -169,7 +172,7 @@
     <string name="category_info">Информация</string>
     <string name="about">Справка и поддержка</string>
     <string name="about_description">Узнать больше о Headunit Revived</string>
-    <string name="version">Версія</string>
+    <string name="version">Версия</string>
     <string name="about_title">О Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 

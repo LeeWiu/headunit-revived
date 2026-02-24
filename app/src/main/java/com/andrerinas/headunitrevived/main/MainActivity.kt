@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.andrerinas.headunitrevived.R
+import com.andrerinas.headunitrevived.aap.AapProjectionActivity
 import com.andrerinas.headunitrevived.aap.AapService
 import com.andrerinas.headunitrevived.app.BaseActivity
 import com.andrerinas.headunitrevived.utils.AppLog
@@ -30,9 +31,22 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // If an Android Auto session is active, jump straight to projection activity
+        if (AapService.isConnected) {
+            AppLog.i("MainActivity: Active session detected in onCreate, jumping to projection")
+            val aapIntent = AapProjectionActivity.intent(this).apply {
+                putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            }
+            startActivity(aapIntent)
+            finish() // Close MainActivity immediately as we don't need it
+            return
+        }
+
         setTheme(R.style.AppTheme)
         enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val appSettings = Settings(this)
@@ -71,15 +85,37 @@ class MainActivity : BaseActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == android.content.Intent.ACTION_VIEW) {
+        if (intent == null) return
+
+        AppLog.i("MainActivity received intent: ${intent.action}, data: ${intent.data}")
+
+        if (intent.action == Intent.ACTION_VIEW) {
             val data = intent.data
             if (data?.scheme == "headunit" && data.host == "connect") {
                 val ip = data.getQueryParameter("ip")
                 if (!ip.isNullOrEmpty()) {
                     AppLog.i("Received connect intent for IP: $ip")
                     ContextCompat.startForegroundService(this, AapService.createIntent(ip, this))
+                } else {
+                    AppLog.i("Received connect intent without IP -> triggering last session auto-connect")
+                    val autoIntent = Intent(this, AapService::class.java).apply {
+                        action = AapService.ACTION_CHECK_USB
+                    }
+                    ContextCompat.startForegroundService(this, autoIntent)
                 }
+            } else if (data?.scheme == "headunit" && data.host == "disconnect") {
+                AppLog.i("Received disconnect intent")
+                val stopIntent = Intent(this, AapService::class.java).apply {
+                    action = AapService.ACTION_DISCONNECT
+                }
+                ContextCompat.startForegroundService(this, stopIntent)
+            } else if (data?.scheme == "geo" || data?.scheme == "google.navigation" || data?.host == "maps.google.com") {
+                AppLog.i("Received navigation intent: $data")
+                // In the future, we could parse coordinates and send to AA via a custom message
+                // For now, we just ensure the app is opened (which it is by reaching this point)
             }
+        } else if (intent.action == "android.intent.action.NAVIGATE") {
+            AppLog.i("Received generic NAVIGATE intent")
         }
     }
 
@@ -109,6 +145,16 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         setFullscreen()
+
+        // If an Android Auto session is active, bring the projection activity to front
+        if (AapService.isConnected) {
+            AppLog.i("MainActivity: Active session detected, bringing projection to front")
+            val aapIntent = AapProjectionActivity.intent(this).apply {
+                putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            }
+            startActivity(aapIntent)
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -118,20 +164,17 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        AppLog.i("onKeyDown: %d", keyCode)
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            return super.onKeyDown(keyCode, event)
-        }
-        return keyListener?.onKeyEvent(event) ?: super.onKeyDown(keyCode, event)
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        AppLog.i("onKeyUp: %d", keyCode)
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            return super.onKeyUp(keyCode, event)
-        }
-        return keyListener?.onKeyEvent(event) ?: super.onKeyUp(keyCode, event)
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        AppLog.i("dispatchKeyEvent: keyCode=%d, action=%d", event.keyCode, event.action)
+        
+        // Always give the KeymapFragment (if active) a chance to see the key
+        val handled = keyListener?.onKeyEvent(event) ?: false
+        
+        // If the key was handled by our listener (e.g. in KeymapFragment), stop here
+        if (handled) return true
+        
+        // Otherwise continue with standard handling
+        return super.dispatchKeyEvent(event)
     }
 
     override fun onDestroy() {

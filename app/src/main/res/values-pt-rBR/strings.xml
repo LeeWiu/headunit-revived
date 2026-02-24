@@ -139,7 +139,6 @@
         <item>Manual (Lista)</item>
         <item>Busca automática (Headunit Server)</item>
         <item>Auxiliar sem fio (Aguardando telefone)</item>
-        <item>AA Nativo (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Conectar automaticamente à última sessão</string>
     <string name="auto_connect_last_session_description">Reconecta automaticamente ao último dispositivo usado ao iniciar o app</string>
@@ -156,6 +155,10 @@
     <string name="enable_audio_sink_description">Se desativado, a central não atuará como receptor de áudio. O áudio tocará no celular.</string>
     <string name="use_aac_audio">Usar áudio AAC</string>
     <string name="use_aac_audio_description">Usa o codec AAC para áudio para economizar banda (experimental).</string>
+    <string name="audio_volume_offset">Ajustes de volume</string>
+    <string name="media_volume_offset">Multimídia</string>
+    <string name="assistant_volume_offset">Assistente</string>
+    <string name="navigation_volume_offset">Navegação</string>
     <string name="mic_input_source">Fonte de entrada do microfone</string>
     <string name="mic_input_source_description">Escolha a fonte de áudio para o microfone.</string>
     <string-array name="mic_input_sources">

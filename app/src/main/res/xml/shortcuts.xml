@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="connect_last"
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_aa"
+        android:shortcutShortLabel="@string/shortcut_connect_title"
+        android:shortcutLongLabel="@string/shortcut_connect_desc">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.andrerinas.headunitrevived"
+            android:targetClass="com.andrerinas.headunitrevived.main.MainActivity"
+            android:data="headunit://connect" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="disconnect"
+        android:enabled="true"
+        android:icon="@drawable/ic_exit_to_app_white_24dp"
+        android:shortcutShortLabel="@string/shortcut_disconnect_title"
+        android:shortcutLongLabel="@string/shortcut_disconnect_desc">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.andrerinas.headunitrevived"
+            android:targetClass="com.andrerinas.headunitrevived.main.MainActivity"
+            android:data="headunit://disconnect" />
+    </shortcut>
+</shortcuts>

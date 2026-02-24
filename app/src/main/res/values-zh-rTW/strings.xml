@@ -138,7 +138,6 @@
         <item>手動 (列表)</item>
         <item>自動搜尋 (Headunit Server)</item>
         <item>無線助手 (等待手機)</item>
-        <item>原生 AA (實驗性)</item>
     </string-array>
     <string name="auto_connect_last_session">自動連接上次會話</string>
     <string name="auto_connect_last_session_description">應用程式啟動時自動重新連線到上次使用的裝置</string>
@@ -155,6 +154,10 @@
     <string name="enable_audio_sink_description">如果已停用，主機將不會作為音訊接收器。 音訊將從手機播放。</string>
     <string name="use_aac_audio">使用 AAC 音訊</string>
     <string name="use_aac_audio_description">使用 AAC 編碼器進行音訊處理以節省頻寬 (實驗性)。</string>
+    <string name="audio_volume_offset">音量偏移</string>
+    <string name="media_volume_offset">媒體</string>
+    <string name="assistant_volume_offset">語音助理</string>
+    <string name="navigation_volume_offset">導航</string>
     <string name="mic_input_source">麥克風輸入來源</string>
     <string name="mic_input_source_description">選擇麥克風的音訊來源。</string>
     <string-array name="mic_input_sources">

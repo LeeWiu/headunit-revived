@@ -59,7 +59,13 @@ class UsbAccessoryMode(private val usbMgr: UsbManager) {
         AppLog.i("Sending acc start")
         // Send accessory start request. Device should re-enumerate as an accessory.
         len = connection.controlTransfer(UsbConstants.USB_TYPE_VENDOR, ACC_REQ_START, 0, 0, byteArrayOf(), 0, USB_TIMEOUT_IN_MS)
-        return len == 0
+        
+        if (len == 0) {
+            // Give the device and the OS a bit of time to re-enumerate
+            try { Thread.sleep(500) } catch (e: Exception) {}
+            return true
+        }
+        return false
     }
 
     private fun initStringControlTransfer(conn: UsbDeviceConnection, index: Int, string: String) {

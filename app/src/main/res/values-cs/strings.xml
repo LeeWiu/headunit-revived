@@ -112,6 +112,8 @@
     <string name="category_general">Obecné</string>
     <string name="auto_start_self_mode">Automaticky spustit Self-Mode</string>
     <string name="auto_start_self_mode_description">Automaticky spustit Self-Mode při otevření aplikace.</string>
+    <string name="usb_auto_connect">Auto-connect USB</string>
+    <string name="usb_auto_connect_description">Automatically connect to a known USB device when the application is opened.</string>
     <string name="auto_start_bt_label">Automaticky spustit při Bluetooth</string>
     <string name="auto_start_bt_description">Automaticky otevřít Headunit Revived při připojení konkrétního Bluetooth zařízení.</string>
     <string name="select_bt_device">Vybrat Bluetooth zařízení</string>
@@ -139,7 +141,6 @@
         <item>Ručně (seznam)</item>
         <item>Automatické vyhledávání (Headunit Server)</item>
         <item>Bezdrátový pomocník (čekání na telefon)</item>
-        <item>Nativní AA (Experimentální)</item>
     </string-array>
     <string name="auto_connect_last_session">Automaticky připojit poslední relaci</string>
     <string name="auto_connect_last_session_description">Při spuštění aplikace se automaticky znovu připojit k naposledy použitému zařízení</string>
@@ -156,6 +157,10 @@
     <string name="enable_audio_sink_description">Pokud je zakázáno, hlavní jednotka nebude přijímat zvuk. Zvuk se bude přehrávat z telefonu.</string>
     <string name="use_aac_audio">Použít AAC audio</string>
     <string name="use_aac_audio_description">Použít kodek AAC pro zvuk pro úsporu šířky pásma (experimentální).</string>
+    <string name="audio_volume_offset">Posun hlasitosti</string>
+    <string name="media_volume_offset">Média</string>
+    <string name="assistant_volume_offset">Asistent</string>
+    <string name="navigation_volume_offset">Navigace</string>
     <string name="mic_input_source">Zdroj vstupu mikrofonu</string>
     <string name="mic_input_source_description">Vyberte zdroj zvuku pro mikrofon.</string>
     <string-array name="mic_input_sources">
@@ -169,7 +174,7 @@
     <string name="category_info">Informace</string>
     <string name="about">O aplikaci a podpora</string>
     <string name="about_description">Získat více informací o Headunit Revived</string>
-    <string name="version">Версія</string>
+    <string name="version">Verze</string>
     <string name="about_title">O aplikaci Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 

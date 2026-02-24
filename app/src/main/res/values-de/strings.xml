@@ -112,6 +112,8 @@
     <string name="category_general">Allgemein</string>
     <string name="auto_start_self_mode">Auto-Start Self-Mode</string>
     <string name="auto_start_self_mode_description">Startet den Self-Mode automatisch beim Öffnen der App.</string>
+    <string name="usb_auto_connect">USB Auto-Verbindung</string>
+    <string name="usb_auto_connect_description">Verbindet sich automatisch mit einem bekannten USB-Gerät, sobald die App geöffnet wird.</string>
     <string name="auto_start_bt_label">Auto-Start bei Bluetooth</string>
     <string name="auto_start_bt_description">Startet Headunit Revived automatisch, wenn sich ein bestimmtes Bluetooth-Gerät verbindet.</string>
     <string name="select_bt_device">Bluetooth-Gerät wählen</string>
@@ -139,7 +141,6 @@
         <item>Manuell (Liste)</item>
         <item>Auto-Suche (Headunit Server)</item>
         <item>Wireless Helper (Warten auf Handy)</item>
-        <item>Natives AA (Experimentell)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect letzte Sitzung</string>
     <string name="auto_connect_last_session_description">Verbindet beim App-Start automatisch mit dem zuletzt genutzten Gerät</string>
@@ -156,6 +157,10 @@
     <string name="enable_audio_sink_description">Wenn deaktiviert, empfängt die Headunit keinen Ton. Der Ton wird über das Handy abgespielt.</string>
     <string name="use_aac_audio">AAC-Audio verwenden</string>
     <string name="use_aac_audio_description">Verwendet den AAC-Codec für Audio, um Bandbreite zu sparen (Experimentell).</string>
+    <string name="audio_volume_offset">Lautstärke-Offsets</string>
+    <string name="media_volume_offset">Medien</string>
+    <string name="assistant_volume_offset">Assistent</string>
+    <string name="navigation_volume_offset">Navigation</string>
     <string name="mic_input_source">Mikrofon-Eingangsquelle</string>
     <string name="mic_input_source_description">Wählen Sie die Audioquelle für das Mikrofon.</string>
     <string-array name="mic_input_sources">
@@ -169,7 +174,7 @@
     <string name="category_info">Info</string>
     <string name="about">Über &amp; Support</string>
     <string name="about_description">Mehr Informationen über Headunit Revived</string>
-    <string name="version">Версія</string>
+    <string name="version">Version</string>
     <string name="about_title">Über Headunit Revived</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -222,4 +227,10 @@
     <string name="failed">Fehlgeschlagen</string>
     <string name="failed_start_android_auto">Start von Android Auto fehlgeschlagen</string>
     <string name="android_auto_starting">Android Auto startet…</string>
+    <string name="notification_service_running">Headunit Revived läuft</string>
+    <string name="notification_projection_active">Android Auto wird projiziert</string>
+    <string name="shortcut_connect_title">Verbinden</string>
+    <string name="shortcut_connect_desc">Mit letztem Gerät verbinden</string>
+    <string name="shortcut_disconnect_title">Trennen</string>
+    <string name="shortcut_disconnect_desc">Aktuelle Sitzung beenden</string>
 </resources>

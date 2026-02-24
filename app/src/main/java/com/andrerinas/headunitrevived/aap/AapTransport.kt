@@ -57,8 +57,8 @@ class AapTransport(
         AapSslContext(SingleKeyKeyManager(context))
     }
 
-    private val aapAudio: AapAudio
-    private val aapVideo: AapVideo
+    internal val aapAudio: AapAudio
+    internal val aapVideo: AapVideo
     private var sendThread: HandlerThread? = null
     private var pollThread: HandlerThread? = null
     private val micRecorder: MicRecorder = MicRecorder(settings.micSampleRate, context)

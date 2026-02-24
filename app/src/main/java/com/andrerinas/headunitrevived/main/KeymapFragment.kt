@@ -79,6 +79,13 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
         recyclerView.adapter = adapter
 
         setupToolbar()
+
+        // Ensure fragment can receive key events
+        view.isFocusableInTouchMode = true
+        view.requestFocus()
+        view.setOnKeyListener { _, _, event ->
+            onKeyEvent(event)
+        }
     }
 
     private fun setupToolbar() {
@@ -124,6 +131,20 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
 
     private val keyCodeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == "com.andrerinas.headunitrevived.DEBUG_KEY") {
+                val action = intent.getStringExtra("action") ?: "unknown"
+                val command = intent.getStringExtra("command") ?: intent.getStringExtra("action_command") ?: ""
+                val extras = intent.extras?.keySet()?.joinToString { "$it=${intent.extras?.get(it)}" } ?: ""
+                
+                val displayText = if (command.isNotEmpty()) {
+                    "Intent: $action\nCommand: $command"
+                } else {
+                    "Intent: $action\nExtras: $extras"
+                }
+                keypressDebuggerTextView.text = displayText
+                return
+            }
+
             val event: KeyEvent? = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(KeyIntent.extraEvent, KeyEvent::class.java)
             } else {
@@ -136,7 +157,9 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
 
     override fun onResume() {
         super.onResume()
-        ContextCompat.registerReceiver(requireContext(), keyCodeReceiver, IntentFilters.keyEvent, ContextCompat.RECEIVER_NOT_EXPORTED)
+        val filter = IntentFilters.keyEvent
+        filter.addAction("com.andrerinas.headunitrevived.DEBUG_KEY")
+        ContextCompat.registerReceiver(requireContext(), keyCodeReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onPause() {
@@ -164,14 +187,18 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
         if (event == null) return false
 
         val keyCode = event.keyCode
-        if (keyCode == KeyEvent.KEYCODE_BACK) return false
+        // Only ignore BACK if we are NOT in assignment mode
+        if (keyCode == KeyEvent.KEYCODE_BACK && assignTargetCode == KeyEvent.KEYCODE_UNKNOWN) return false
 
-        val keyName = KeyEvent.keyCodeToString(keyCode)
-        keypressDebuggerTextView.text = getString(R.string.last_key_press, keyName, keyCode)
-
-        if (event.action == KeyEvent.ACTION_DOWN) {
-            return true // Consume down events
-        }
+        val keyName = try { KeyEvent.keyCodeToString(keyCode).replace("KEYCODE_", "") } catch (e: Exception) { "UNKNOWN" }
+        val actionName = if (event.action == KeyEvent.ACTION_DOWN) "DOWN" else "UP"
+        val unicodeChar = event.unicodeChar
+        val charSuffix = if (unicodeChar != 0) " (Char: '${unicodeChar.toChar()}')" else ""
+        
+        AppLog.i("KeymapFragment: Captured $keyName ($keyCode) $actionName$charSuffix")
+        
+        keypressDebuggerTextView.text = "Key: $keyName ($keyCode) - $actionName$charSuffix"
+        keypressDebuggerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_green_700))
 
         if (assignTargetCode != KeyEvent.KEYCODE_UNKNOWN) {
             val codesMap = settings.keyCodes

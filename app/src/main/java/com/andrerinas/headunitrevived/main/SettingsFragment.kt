@@ -72,6 +72,10 @@ class SettingsFragment : Fragment() {
     private var pendingInsetRight: Int? = null
     private var pendingInsetBottom: Int? = null
 
+    private var pendingMediaVolumeOffset: Int? = null
+    private var pendingAssistantVolumeOffset: Int? = null
+    private var pendingNavigationVolumeOffset: Int? = null
+
     private var requiresRestart = false
     private var hasChanges = false
     private val SAVE_ITEM_ID = 1001
@@ -119,6 +123,10 @@ class SettingsFragment : Fragment() {
         pendingInsetTop = settings.insetTop
         pendingInsetRight = settings.insetRight
         pendingInsetBottom = settings.insetBottom
+
+        pendingMediaVolumeOffset = settings.mediaVolumeOffset
+        pendingAssistantVolumeOffset = settings.assistantVolumeOffset
+        pendingNavigationVolumeOffset = settings.navigationVolumeOffset
 
         // Intercept system back button
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -214,6 +222,10 @@ class SettingsFragment : Fragment() {
         pendingAutoStartBtMac?.let { settings.autoStartBluetoothDeviceMac = it }
         pendingScreenOrientation?.let { settings.screenOrientation = it }
 
+        pendingMediaVolumeOffset?.let { settings.mediaVolumeOffset = it }
+        pendingAssistantVolumeOffset?.let { settings.assistantVolumeOffset = it }
+        pendingNavigationVolumeOffset?.let { settings.navigationVolumeOffset = it }
+
         val languageChanged = pendingAppLanguage != settings.appLanguage
         pendingAppLanguage?.let { settings.appLanguage = it }
         
@@ -241,7 +253,15 @@ class SettingsFragment : Fragment() {
             ContextCompat.startForegroundService(requireContext(), intent)
         }
 
-        pendingAutoConnectLastSession?.let { settings.autoConnectLastSession = it }
+        pendingAutoConnectLastSession?.let { 
+            settings.autoConnectLastSession = it 
+            if (it) {
+                val intent = Intent(requireContext(), AapService::class.java).apply {
+                    action = AapService.ACTION_CHECK_USB
+                }
+                ContextCompat.startForegroundService(requireContext(), intent)
+            }
+        }
 
         // Notify Service about Night Mode changes immediately
         val nightModeUpdateIntent = Intent(AapService.ACTION_REQUEST_NIGHT_MODE_UPDATE)
@@ -320,7 +340,10 @@ class SettingsFragment : Fragment() {
                         pendingInsetLeft != settings.insetLeft ||
                         pendingInsetTop != settings.insetTop ||
                         pendingInsetRight != settings.insetRight ||
-                        pendingInsetBottom != settings.insetBottom
+                        pendingInsetBottom != settings.insetBottom ||
+                        pendingMediaVolumeOffset != settings.mediaVolumeOffset ||
+                        pendingAssistantVolumeOffset != settings.assistantVolumeOffset ||
+                        pendingNavigationVolumeOffset != settings.navigationVolumeOffset
 
         hasChanges = anyChange
 
@@ -805,6 +828,15 @@ class SettingsFragment : Fragment() {
             }
         ))
 
+        items.add(SettingItem.SettingEntry(
+            stableId = "audioVolumeOffsets",
+            nameResId = R.string.audio_volume_offset,
+            value = "${(100 + (pendingMediaVolumeOffset ?: 0))}% / ${(100 + (pendingAssistantVolumeOffset ?: 0))}% / ${(100 + (pendingNavigationVolumeOffset ?: 0))}%",
+            onClick = {
+                showAudioOffsetsDialog()
+            }
+        ))
+
         // --- Debug Settings ---
         items.add(SettingItem.CategoryHeader("debug", R.string.category_debug))
 
@@ -881,6 +913,59 @@ class SettingsFragment : Fragment() {
         ))
 
         settingsAdapter.submitList(items)
+    }
+
+    private fun showAudioOffsetsDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_audio_offsets, null)
+        
+        val seekMedia = dialogView.findViewById<android.widget.SeekBar>(R.id.seek_media)
+        val seekAssistant = dialogView.findViewById<android.widget.SeekBar>(R.id.seek_assistant)
+        val seekNavigation = dialogView.findViewById<android.widget.SeekBar>(R.id.seek_navigation)
+        
+        val textMedia = dialogView.findViewById<android.widget.TextView>(R.id.text_media_val)
+        val textAssistant = dialogView.findViewById<android.widget.TextView>(R.id.text_assistant_val)
+        val textNavigation = dialogView.findViewById<android.widget.TextView>(R.id.text_navigation_val)
+
+        // Mapping: 0 to 100 on SeekBar -> 0% to 200% Gain. Default is 50 (100% Gain, 0 Offset)
+        // Offset = (seekValue - 50) * 2
+        // seekValue = (offset / 2) + 50
+
+        seekMedia.progress = ((pendingMediaVolumeOffset ?: 0) / 2) + 50
+        seekAssistant.progress = ((pendingAssistantVolumeOffset ?: 0) / 2) + 50
+        seekNavigation.progress = ((pendingNavigationVolumeOffset ?: 0) / 2) + 50
+
+        val updateLabels = {
+            textMedia.text = "${(seekMedia.progress * 2)}%"
+            textAssistant.text = "${(seekAssistant.progress * 2)}%"
+            textNavigation.text = "${(seekNavigation.progress * 2)}%"
+        }
+        updateLabels()
+
+        val listener = object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                updateLabels()
+            }
+            override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
+        }
+
+        seekMedia.setOnSeekBarChangeListener(listener)
+        seekAssistant.setOnSeekBarChangeListener(listener)
+        seekNavigation.setOnSeekBarChangeListener(listener)
+
+        MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+            .setTitle(R.string.audio_volume_offset)
+            .setView(dialogView)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                pendingMediaVolumeOffset = (seekMedia.progress - 50) * 2
+                pendingAssistantVolumeOffset = (seekAssistant.progress - 50) * 2
+                pendingNavigationVolumeOffset = (seekNavigation.progress - 50) * 2
+                checkChanges()
+                updateSettingsList()
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun showCustomInsetsDialog() {

@@ -283,18 +283,34 @@ internal class AapControlService(
     private fun audioFocusRequest(notification: Control.AudioFocusRequestNotification, channel: Int): Int {
         AppLog.i("Audio Focus Request: ${notification.request}")
 
-        aapAudio.requestFocusChange(AudioConfigs.stream(channel), notification.request.number, AudioManager.OnAudioFocusChangeListener {
+        val result = aapAudio.requestFocusChange(AudioConfigs.stream(channel), notification.request.number, AudioManager.OnAudioFocusChangeListener {
             val response = Control.AudioFocusNotification.newBuilder()
 
             focusResponse[notification.request]?.let { newSate ->
                 response.focusState = newSate
-                AppLog.i("Audio Focus new state: $newSate, system focus change: $it ${systemFocusName[it]}")
+                AppLog.i("Audio Focus async change: $newSate, system focus change: $it ${systemFocusName[it]}")
 
                 val msg = AapMessage(channel, Control.ControlMsgType.MESSAGE_AUDIO_FOCUS_NOTIFICATION_VALUE, response.build())
                 AppLog.i(msg.toString())
                 aapTransport.send(msg)
             }
         })
+
+        // Immediate response
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            val response = Control.AudioFocusNotification.newBuilder()
+            focusResponse[notification.request]?.let { state ->
+                response.focusState = state
+                AppLog.i("Sending immediate AudioFocusNotification: $state")
+                val msg = AapMessage(channel, Control.ControlMsgType.MESSAGE_AUDIO_FOCUS_NOTIFICATION_VALUE, response.build())
+                aapTransport.send(msg)
+            }
+        } else {
+            AppLog.w("Audio focus request NOT granted immediately ($result). Sending LOSS.")
+            val msg = AapMessage(channel, Control.ControlMsgType.MESSAGE_AUDIO_FOCUS_NOTIFICATION_VALUE, 
+                Control.AudioFocusNotification.newBuilder().setFocusState(Control.AudioFocusNotification.AudioFocusStateType.STATE_LOSS).build())
+            aapTransport.send(msg)
+        }
 
         return 0
     }

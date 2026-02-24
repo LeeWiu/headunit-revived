@@ -1,6 +1,7 @@
 # Headunit Revived
 
 <a href='https://play.google.com/store/apps/details?id=com.andrerinas.headunitrevived'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width="200"/></a>
+<a href='http://www.amazon.com/gp/mas/dl/android?p=com.andrerinas.headunitrevived'><img alt='Available at Amazon Appstore' src='https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png' width="200"/></a>
 
 <p align="center">
     <img src="https://github.com/user-attachments/assets/20c3d622-89dc-4c20-8eae-b43074f3c144"
@@ -64,9 +65,36 @@ adb shell am start -a android.intent.action.VIEW -d "headunit://connect?ip=192.1
 
 ## Known Issues
 - **Google Maps in Portrait Mode:** Touch interactions (searching, scrolling) within Google Maps may not work as expected when using Portrait Mode. While visual feedback (like ripple effects) might appear, the map itself may remain unresponsive. This appears to be an internal Android Auto / Google Maps limitation or bug in vertical orientations.
-- **Native Wireless Connection on Hotspot:** Connecting to the native AA Headunit Server (Port 5277) may fail if the phone creates a mobile hotspot with Carrier-NAT IPs (e.g., 10.x.x.x). Use Wireless Launcher App instead.
 
 ## Changelog
+
+### v.1.14.3
+- **Automation:** Added App Shortcuts for Samsung Modes & Routines support.
+- **Navigation:** Officially registered as a navigation provider (compatible with NAV buttons).
+- **Stability:** Fixed rare app freezes by improving internal data handling and memory hygiene.
+- **Compatibility:** Improved hardware support for Amazon Fire Tablets and GPS-less devices.
+
+### v.1.14.2
+- Bugfix: Notification and Exit Button do not close the app
+- Improvement: Removed old legacy Invisible Bluetooth Setting to prevent Bluetooth from start on the whole time
+
+### v.1.14.1
+- Improvement: Integrated USB Auto-Connect into "Auto-Connect Last Session". App now behaves like a native headunit and connects automatically on startup or USB plug-in.
+- New Feature: Added USB Soft-Reset logic. Automatic recovery from USB "stalls" without needing to replug the cable.
+- Major Improvement: Audio focus and routing overhaul. Added `MediaSession` support and immediate focus response to phone. Fixes issues where background apps on the tablet would block Android Auto audio.
+- Improvement: Robust Task Switching. Leaving the app via Home button or clicking the Launcher icon no longer breaks the connection. Music continues in background, and clicking the icon/notification correctly returns to the projection.
+- New Feature: Enhanced Key Debugger ("Key-Sniffer"). Prominent display of all key events, including special characters (ö, ü, ß) and proprietary steering wheel intents (MTC, FYT).
+- New Feature: Official Navigation App Registration. HURev is now recognized as a navigation provider (`geo:`, `google.navigation:`, `android.intent.action.NAVIGATE`). Compatible with hardware "NAV" buttons.
+- Bugfix: Removed redundant "Already connected" and "Reconnection required" alerts for a smoother user experience.
+- Localization: All new strings translated into 10 languages.
+
+### v.1.14.0
+- Added Separate volume setting #91
+- Added Auto-Start on Bluetooth Option
+- Merged PR #134 - Fixing Connection on Mediathek Headunits
+- Merged PR #131 - Fixes SystemUI on < Android 6 Devices
+- Merged PR #127 - Fixing Audio Truncation
+
 ### v.1.13.3
 - Fixed Screen Issues on Android 4 with header and navigations #114
 - Fixed Night-Mode Bug #116

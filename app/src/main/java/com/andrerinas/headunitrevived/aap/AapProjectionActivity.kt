@@ -218,6 +218,20 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         ContextCompat.registerReceiver(this, keyCodeReceiver, IntentFilters.keyEvent, ContextCompat.RECEIVER_NOT_EXPORTED)
         
         setFullscreen() // Call setFullscreen here as well
+
+        // Pre-emptively request audio focus to push background apps away
+        App.provide(this).transport.aapAudio?.requestFocusChange(
+            android.media.AudioManager.STREAM_MUSIC,
+            com.andrerinas.headunitrevived.aap.protocol.proto.Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_VALUE,
+            android.media.AudioManager.OnAudioFocusChangeListener { focusChange ->
+                AppLog.i("Activity AudioFocus pre-emptive change: $focusChange")
+            }
+        )
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        AppLog.i("AapProjectionActivity: onNewIntent received")
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -346,11 +360,9 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         unregisterReceiver(disconnectReceiver)
         videoDecoder.dimensionsListener = null
 
-        if (isFinishing && AapService.isConnected) {
-            AppLog.i("AapProjectionActivity closing -> sending stop and disconnect intent to service")
-            transport.stop()
-            sendBroadcast(DisconnectIntent())
-        }
+        // Note: Disconnect is now only handled via explicit user action (Exit button)
+        // or when the phone closes the connection. This prevents accidental closes
+        // during task switching or launcher interaction.
     }
 
     companion object {

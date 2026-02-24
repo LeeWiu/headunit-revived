@@ -139,7 +139,6 @@
         <item>Вручну (список)</item>
         <item>Автопошук (Headunit Server)</item>
         <item>Бездротовий помічник (очікування телефону)</item>
-        <item>Рідний AA (Експериментально)</item>
     </string-array>
     <string name="auto_connect_last_session">Автоматично підключатися до останньої сесії</string>
     <string name="auto_connect_last_session_description">Автоматично підключатися до останнього використаного пристрою під час запуску програми</string>
@@ -156,6 +155,10 @@
     <string name="enable_audio_sink_description">Якщо вимкнено, головний пристрій не працюватиме як аудіоприймач. Звук відтворюватиметься з телефону.</string>
     <string name="use_aac_audio">Використовувати аудіокодек AAC</string>
     <string name="use_aac_audio_description">Використовувати кодек AAC для збереження швидкості (експериментально).</string>
+    <string name="audio_volume_offset">Налаштування гучності</string>
+    <string name="media_volume_offset">Медіа</string>
+    <string name="assistant_volume_offset">Асистент</string>
+    <string name="navigation_volume_offset">Навігація</string>
     <string name="mic_input_source">Джерело мікрофона</string>
     <string name="mic_input_source_description">Виберіть джерело звуку для мікрофона.</string>
     <string-array name="mic_input_sources">
