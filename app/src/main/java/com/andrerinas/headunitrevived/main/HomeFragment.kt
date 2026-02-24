@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,8 @@ import com.andrerinas.headunitrevived.utils.AppLog
 import com.andrerinas.headunitrevived.utils.Settings
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer
+
 class HomeFragment : Fragment() {
 
     private lateinit var self_mode_button: Button
@@ -37,6 +40,100 @@ class HomeFragment : Fragment() {
     private lateinit var self_mode_text: TextView
     private var hasAttemptedAutoConnect = false
     private var isScanning = false
+
+    private fun checkNativeAaCompatibility() {
+        if (NativeAaBluetoothServer.checkCompatibility()) {
+            val appSettings = App.provide(requireContext()).settings
+            if (appSettings.autoStartBluetoothDeviceMac.isEmpty()) {
+                // If no phone is selected, show selector first
+                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                    .setTitle(R.string.select_bt_device)
+                    .setMessage("Please select your phone first to enable active wake-up for Native AA.")
+                    .setPositiveButton("Select") { _, _ ->
+                        showBluetoothDeviceSelector()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+                return
+            }
+
+            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                .setTitle(R.string.supported_nativeaa)
+                .setMessage(R.string.supported_nativeaa_desc)
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    resetBluetoothAndStartServer()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        } else {
+            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                .setTitle(R.string.not_supported_nativeaa)
+                .setMessage(R.string.not_supported_nativeaa_desc)
+                .setPositiveButton("OK", null)
+                .show()
+        }
+    }
+
+    private fun resetBluetoothAndStartServer() {
+        val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
+        if (adapter != null) {
+            AppLog.i("NativeAA: Resetting Bluetooth adapter to clear SDP cache...")
+            adapter.disable()
+            
+            // Wait for it to disable and then re-enable
+            Thread {
+                var waitCount = 0
+                while (adapter.state != android.bluetooth.BluetoothAdapter.STATE_OFF && waitCount < 50) {
+                    Thread.sleep(100)
+                    waitCount++
+                }
+                adapter.enable()
+                
+                // Once enabled, start the server via AapService
+                requireActivity().runOnUiThread {
+                    val intent = Intent(requireContext(), AapService::class.java).apply {
+                        action = AapService.ACTION_START_NATIVE_AA
+                    }
+                    ContextCompat.startForegroundService(requireContext(), intent)
+                    Toast.makeText(requireContext(), "Native AA Server Started", Toast.LENGTH_SHORT).show()
+                }
+            }.start()
+        }
+    }
+
+    private fun showBluetoothDeviceSelector() {
+        if (Build.VERSION.SDK_INT >= 31 && ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT), BT_CONNECT_PERMISSION_CODE)
+            return
+        }
+
+        val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val adapter = bluetoothManager.adapter
+        val bondedDevices = adapter.bondedDevices.toList()
+
+        if (bondedDevices.isEmpty()) {
+            Toast.makeText(requireContext(), "No paired Bluetooth devices found", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val deviceNames = bondedDevices.map { it.name ?: "Unknown Device" }.toTypedArray()
+
+        MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+            .setTitle(R.string.select_bt_device)
+            .setItems(deviceNames) { _, which ->
+                val device = bondedDevices[which]
+                val settings = App.provide(requireContext()).settings
+                settings.autoStartBluetoothDeviceMac = device.address
+                settings.autoStartBluetoothDeviceName = device.name
+                Toast.makeText(requireContext(), "Device selected: ${device.name}", Toast.LENGTH_SHORT).show()
+                
+                // Now that we have a device, continue compatibility check
+                checkNativeAaCompatibility()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
 
     private val connectionStatusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -111,6 +208,17 @@ class HomeFragment : Fragment() {
         if (appSettings.autoStartSelfMode && !hasAutoStarted && !AapService.isConnected) {
             hasAutoStarted = true
             startSelfMode()
+        }
+
+        // 3. Priority: Auto-Start Native AA if already setup
+        if (appSettings.wifiConnectionMode == 3 && !AapService.isConnected) {
+            if (NativeAaBluetoothServer.checkCompatibility()) {
+                AppLog.i("HomeFragment: Native AA mode active and compatible, starting server")
+                val intent = Intent(requireContext(), AapService::class.java).apply {
+                    action = AapService.ACTION_START_NATIVE_AA
+                }
+                ContextCompat.startForegroundService(requireContext(), intent)
+            }
         }
     }
 
@@ -231,12 +339,7 @@ class HomeFragment : Fragment() {
                     if (AapService.isConnected) {
                         Toast.makeText(requireContext(), getString(R.string.already_connected), Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "Native AA: Waiting for Bluetooth connection...", Toast.LENGTH_LONG).show()
-                        // Ensure the server is running (it should be started by AapService already, but we can re-trigger if needed)
-                        val intent = Intent(requireContext(), AapService::class.java).apply {
-                            action = AapService.ACTION_START_NATIVE_AA
-                        }
-                        ContextCompat.startForegroundService(requireContext(), intent)
+                        checkNativeAaCompatibility()
                     }
                 }
                 else -> { // Manual (0) -> Open List
@@ -287,7 +390,18 @@ class HomeFragment : Fragment() {
         requireContext().unregisterReceiver(connectionStatusReceiver)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == BT_CONNECT_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                showBluetoothDeviceSelector()
+            } else {
+                Toast.makeText(requireContext(), "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     companion object {
+        private const val BT_CONNECT_PERMISSION_CODE = 101
         private var hasAutoStarted = false
         fun resetAutoStart() {
             hasAutoStarted = false

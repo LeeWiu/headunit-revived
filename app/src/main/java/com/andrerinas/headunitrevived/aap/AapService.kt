@@ -327,7 +327,8 @@ class AapService : Service(), UsbReceiver.Listener {
     private var networkDiscovery: NetworkDiscovery? = null
 
     private fun startNativeAaServer() {
-        if (nativeAaServer != null) return
+        stopNativeAaServer()
+        AppLog.i("NativeAA: Starting Bluetooth server...")
         nativeAaServer = com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer(this).apply { start() }
 
         // Native AA also requires the Wireless TCP server to be listening

@@ -141,7 +141,13 @@
         <item>Manuell (Liste)</item>
         <item>Auto-Suche (Headunit Server)</item>
         <item>Wireless Helper (Warten auf Handy)</item>
+        <item>Natives AA (Experimentell)</item>
     </string-array>
+
+    <string name="supported_nativeaa">Kompatibler BT-Adapter erkannt</string>
+    <string name="supported_nativeaa_desc">Es sieht so aus, als ob dein BT-Adapter für natives Android Auto Wireless verwendet werden kann. Bluetooth wird nun kurz aus- und wieder eingeschaltet, um die erforderlichen Änderungen vorzunehmen. Bitte lösche die BT-Kopplung zwischen deinem Handy und diesem Gerät und kopple sie erneut. Dies ist notwendig, damit das Handy die neuen Funktionen des Geräts erkennt, andernfalls funktioniert Wireless Android Auto nicht.</string>
+    <string name="not_supported_nativeaa">Natives Wireless nicht unterstützt</string>
+    <string name="not_supported_nativeaa_desc">Der Bluetooth-Stack deines Geräts unterstützt die erforderliche Dienstregistrierung für natives Android Auto Wireless nicht. Bitte verwende stattdessen die App "Wireless Helper" oder den Modus "Auto (Headunit Server)".</string>
     <string name="auto_connect_last_session">Auto-Connect letzte Sitzung</string>
     <string name="auto_connect_last_session_description">Verbindet beim App-Start automatisch mit dem zuletzt genutzten Gerät</string>
     <string name="video_codec">Video Codec</string>

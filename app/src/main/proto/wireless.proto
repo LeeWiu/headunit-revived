@@ -24,6 +24,7 @@ enum SecurityMode {
 message WifiStartRequest {
     required string ip_address = 1;
     required int32 port = 2;
+    optional int32 status = 3;
 }
 
 message WifiInfoResponse {

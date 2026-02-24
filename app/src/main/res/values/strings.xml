@@ -141,6 +141,7 @@
         <item>Manual (List)</item>
         <item>Auto-search (Headunit Server)</item>
         <item>Wireless Helper (Waiting for Phone)</item>
+        <item>Native AA (Experimental)</item>
     </string-array>
     <string name="auto_connect_last_session">Auto-Connect Last Session</string>
     <string name="auto_connect_last_session_description">Automatically reconnect to the last used device on app startup</string>
@@ -233,5 +234,10 @@
     <string name="shortcut_connect_desc">Connect to last known device</string>
     <string name="shortcut_disconnect_title">Disconnect</string>
     <string name="shortcut_disconnect_desc">End current session</string>
+
+    <string name="supported_nativeaa">Compatible BT adapter detected</string>
+    <string name="supported_nativeaa_desc">It looks like your BT Adapter can be used for native Android Auto Wireless. The Bluetooth will be turned on and off now to adjust the needed changes, please forget the BT pairing between your phone and this unit and re-pair them. This is needed so the phone can learn the new capabilities of the unit, otherwise Wireless Android Auto won\'t work.</string>
+    <string name="not_supported_nativeaa">Native Wireless not supported</string>
+    <string name="not_supported_nativeaa_desc">Your device\'s Bluetooth stack does not support the required service registration for native Android Auto Wireless. Please use the "Wireless Helper" app or "Auto (Headunit Server)" mode instead.</string>
 </resources>
 

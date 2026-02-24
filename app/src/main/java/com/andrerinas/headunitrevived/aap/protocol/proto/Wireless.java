@@ -310,6 +310,17 @@ public final class Wireless {
      * @return The port.
      */
     int getPort();
+
+    /**
+     * <code>optional int32 status = 3;</code>
+     * @return Whether the status field is set.
+     */
+    boolean hasStatus();
+    /**
+     * <code>optional int32 status = 3;</code>
+     * @return The status.
+     */
+    int getStatus();
   }
   /**
    * Protobuf type {@code com.andrerinas.headunitrevived.aap.protocol.proto.WifiStartRequest}
@@ -416,6 +427,25 @@ public final class Wireless {
       return port_;
     }
 
+    public static final int STATUS_FIELD_NUMBER = 3;
+    private int status_ = 0;
+    /**
+     * <code>optional int32 status = 3;</code>
+     * @return Whether the status field is set.
+     */
+    @java.lang.Override
+    public boolean hasStatus() {
+      return ((bitField0_ & 0x00000004) != 0);
+    }
+    /**
+     * <code>optional int32 status = 3;</code>
+     * @return The status.
+     */
+    @java.lang.Override
+    public int getStatus() {
+      return status_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -444,6 +474,9 @@ public final class Wireless {
       if (((bitField0_ & 0x00000002) != 0)) {
         output.writeInt32(2, port_);
       }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        output.writeInt32(3, status_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -459,6 +492,10 @@ public final class Wireless {
       if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, port_);
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, status_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -485,6 +522,11 @@ public final class Wireless {
         if (getPort()
             != other.getPort()) return false;
       }
+      if (hasStatus() != other.hasStatus()) return false;
+      if (hasStatus()) {
+        if (getStatus()
+            != other.getStatus()) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -503,6 +545,10 @@ public final class Wireless {
       if (hasPort()) {
         hash = (37 * hash) + PORT_FIELD_NUMBER;
         hash = (53 * hash) + getPort();
+      }
+      if (hasStatus()) {
+        hash = (37 * hash) + STATUS_FIELD_NUMBER;
+        hash = (53 * hash) + getStatus();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -637,6 +683,7 @@ public final class Wireless {
         bitField0_ = 0;
         ipAddress_ = "";
         port_ = 0;
+        status_ = 0;
         return this;
       }
 
@@ -678,6 +725,10 @@ public final class Wireless {
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.port_ = port_;
           to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.status_ = status_;
+          to_bitField0_ |= 0x00000004;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -734,6 +785,9 @@ public final class Wireless {
         if (other.hasPort()) {
           setPort(other.getPort());
         }
+        if (other.hasStatus()) {
+          setStatus(other.getStatus());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -776,6 +830,11 @@ public final class Wireless {
                 bitField0_ |= 0x00000002;
                 break;
               } // case 16
+              case 24: {
+                status_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -909,6 +968,46 @@ public final class Wireless {
       public Builder clearPort() {
         bitField0_ = (bitField0_ & ~0x00000002);
         port_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int status_ ;
+      /**
+       * <code>optional int32 status = 3;</code>
+       * @return Whether the status field is set.
+       */
+      @java.lang.Override
+      public boolean hasStatus() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>optional int32 status = 3;</code>
+       * @return The status.
+       */
+      @java.lang.Override
+      public int getStatus() {
+        return status_;
+      }
+      /**
+       * <code>optional int32 status = 3;</code>
+       * @param value The status to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStatus(int value) {
+
+        status_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 status = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStatus() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        status_ = 0;
         onChanged();
         return this;
       }
@@ -2183,21 +2282,21 @@ public final class Wireless {
   static {
     java.lang.String[] descriptorData = {
       "\n\016wireless.proto\0221com.andrerinas.headuni" +
-      "trevived.aap.protocol.proto\"4\n\020WifiStart" +
+      "trevived.aap.protocol.proto\"D\n\020WifiStart" +
       "Request\022\022\n\nip_address\030\001 \002(\t\022\014\n\004port\030\002 \002(" +
-      "\005\"\363\001\n\020WifiInfoResponse\022\014\n\004ssid\030\001 \002(\t\022\013\n\003" +
-      "key\030\002 \002(\t\022\r\n\005bssid\030\003 \002(\t\022V\n\rsecurity_mod" +
-      "e\030\004 \002(\0162?.com.andrerinas.headunitrevived" +
-      ".aap.protocol.proto.SecurityMode\022]\n\021acce" +
-      "ss_point_type\030\005 \002(\0162B.com.andrerinas.hea" +
-      "dunitrevived.aap.protocol.proto.AccessPo" +
-      "intType**\n\017AccessPointType\022\n\n\006STATIC\020\000\022\013" +
-      "\n\007DYNAMIC\020\001*\312\001\n\014SecurityMode\022\031\n\025UNKNOWN_" +
-      "SECURITY_MODE\020\000\022\010\n\004OPEN\020\001\022\n\n\006WEP_64\020\002\022\013\n" +
-      "\007WEP_128\020\003\022\020\n\014WPA_PERSONAL\020\004\022\021\n\rWPA2_PER" +
-      "SONAL\020\010\022\025\n\021WPA_WPA2_PERSONAL\020\014\022\022\n\016WPA_EN" +
-      "TERPRISE\020\024\022\023\n\017WPA2_ENTERPRISE\020\030\022\027\n\023WPA_W" +
-      "PA2_ENTERPRISE\020\034"
+      "\005\022\016\n\006status\030\003 \001(\005\"\363\001\n\020WifiInfoResponse\022\014" +
+      "\n\004ssid\030\001 \002(\t\022\013\n\003key\030\002 \002(\t\022\r\n\005bssid\030\003 \002(\t" +
+      "\022V\n\rsecurity_mode\030\004 \002(\0162?.com.andrerinas" +
+      ".headunitrevived.aap.protocol.proto.Secu" +
+      "rityMode\022]\n\021access_point_type\030\005 \002(\0162B.co" +
+      "m.andrerinas.headunitrevived.aap.protoco" +
+      "l.proto.AccessPointType**\n\017AccessPointTy" +
+      "pe\022\n\n\006STATIC\020\000\022\013\n\007DYNAMIC\020\001*\312\001\n\014Security" +
+      "Mode\022\031\n\025UNKNOWN_SECURITY_MODE\020\000\022\010\n\004OPEN\020" +
+      "\001\022\n\n\006WEP_64\020\002\022\013\n\007WEP_128\020\003\022\020\n\014WPA_PERSON" +
+      "AL\020\004\022\021\n\rWPA2_PERSONAL\020\010\022\025\n\021WPA_WPA2_PERS" +
+      "ONAL\020\014\022\022\n\016WPA_ENTERPRISE\020\024\022\023\n\017WPA2_ENTER" +
+      "PRISE\020\030\022\027\n\023WPA_WPA2_ENTERPRISE\020\034"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2208,7 +2307,7 @@ public final class Wireless {
     internal_static_com_andrerinas_headunitrevived_aap_protocol_proto_WifiStartRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_andrerinas_headunitrevived_aap_protocol_proto_WifiStartRequest_descriptor,
-        new java.lang.String[] { "IpAddress", "Port", });
+        new java.lang.String[] { "IpAddress", "Port", "Status", });
     internal_static_com_andrerinas_headunitrevived_aap_protocol_proto_WifiInfoResponse_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_com_andrerinas_headunitrevived_aap_protocol_proto_WifiInfoResponse_fieldAccessorTable = new
