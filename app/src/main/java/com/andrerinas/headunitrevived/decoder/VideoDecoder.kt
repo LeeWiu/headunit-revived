@@ -43,6 +43,7 @@ class VideoDecoder(private val settings: Settings) {
 
     // Buffers cache for API < 21
     private var inputBuffers: Array<ByteBuffer>? = null
+    private var legacyFrameBuffer: ByteArray? = null
 
     var dimensionsListener: VideoDimensionsListener? = null
     var onFirstFrameListener: (() -> Unit)? = null
@@ -99,6 +100,7 @@ class VideoDecoder(private val settings: Settings) {
             }
             codec = null
             inputBuffers = null
+            legacyFrameBuffer = null
             codecBufferInfo = null
             codecConfigured = false
             AppLog.i("Decoder stopped: $reason")
@@ -107,19 +109,30 @@ class VideoDecoder(private val settings: Settings) {
 
     fun decode(buffer: ByteArray, offset: Int, size: Int, forceSoftware: Boolean, codecName: String) {
         synchronized(this) {
-            val frameData = if (offset == 0 && size == buffer.size) buffer else buffer.copyOfRange(offset, offset + size)
+            // Avoid copy if we can, but scanForSpsPps currently needs a copy or we need to optimize it too
+            // For now, only copy if it's not the whole buffer
+            val frameData = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // On legacy devices, we reuse a single buffer to avoid GC pressure
+                if (legacyFrameBuffer == null || legacyFrameBuffer!!.size < size) {
+                    legacyFrameBuffer = ByteArray(size + 1024)
+                }
+                System.arraycopy(buffer, offset, legacyFrameBuffer!!, 0, size)
+                legacyFrameBuffer!!
+            } else {
+                if (offset == 0 && size == buffer.size) buffer else buffer.copyOfRange(offset, offset + size)
+            }
             
-            val detectedType = detectCodecType(frameData)
+            val detectedType = detectCodecType(frameData, 0, size)
             val typeToUse = detectedType ?: if (codecName.contains("265")) CodecType.H265 else CodecType.H264
             currentCodecType = typeToUse
 
             if (!codecConfigured) {
-                if (containsCodecConfig(frameData, typeToUse)) {
-                    AppLog.i("${typeToUse.displayName} config detected in frame (${frameData.size} bytes)")
+                if (containsCodecConfig(frameData, 0, size, typeToUse)) {
+                    AppLog.i("${typeToUse.displayName} config detected in frame ($size bytes)")
                     codecConfigured = true
                     
                     if (typeToUse == CodecType.H264) {
-                        scanForSpsPpsH264(frameData)
+                        scanForSpsPpsH264(frameData, 0, size)
                     }
                 }
                 
@@ -145,7 +158,7 @@ class VideoDecoder(private val settings: Settings) {
 
             if (codec == null) return
 
-            val buf = ByteBuffer.wrap(frameData)
+            val buf = ByteBuffer.wrap(frameData, 0, size)
             while (buf.hasRemaining()) {
                 if (!feedInputBuffer(buf)) {
                     return
@@ -154,10 +167,10 @@ class VideoDecoder(private val settings: Settings) {
         }
     }
 
-    private fun detectCodecType(buffer: ByteArray): CodecType? {
-        if (buffer.size < 5) return null
-        val length = buffer.size - 5
-        for (i in 0 until length) {
+    private fun detectCodecType(buffer: ByteArray, offset: Int, size: Int): CodecType? {
+        if (size < 5) return null
+        val length = offset + size - 5
+        for (i in offset until length) {
             if (buffer[i].toInt() == 0 && buffer[i+1].toInt() == 0) {
                 if (buffer[i+2].toInt() == 0 && buffer[i+3].toInt() == 1) {
                     val b = buffer[i+4].toInt()
@@ -177,9 +190,9 @@ class VideoDecoder(private val settings: Settings) {
         return null
     }
 
-    private fun containsCodecConfig(buffer: ByteArray, type: CodecType): Boolean {
-        val length = buffer.size - 5
-        for (i in 0 until length) {
+    private fun containsCodecConfig(buffer: ByteArray, offset: Int, size: Int, type: CodecType): Boolean {
+        val length = offset + size - 5
+        for (i in offset until length) {
             if (buffer[i].toInt() == 0 && buffer[i+1].toInt() == 0) {
                 var nalType = -1
                 if (buffer[i+2].toInt() == 0 && buffer[i+3].toInt() == 1) {
@@ -199,10 +212,10 @@ class VideoDecoder(private val settings: Settings) {
         return false
     }
 
-    private fun scanForSpsPpsH264(buffer: ByteArray) {
-        var offset = 0
-        while (offset < buffer.size - 4) {
-            val limit = buffer.size
+    private fun scanForSpsPpsH264(buffer: ByteArray, startOffset: Int, size: Int) {
+        var offset = startOffset
+        val limit = startOffset + size
+        while (offset < limit - 4) {
             var nextNal = -1
             var nalStartLen = 0
             var i = offset
@@ -313,6 +326,7 @@ class VideoDecoder(private val settings: Settings) {
 
             outputThread = Thread {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DISPLAY)
+                com.andrerinas.headunitrevived.utils.LegacyOptimizer.setHighPriority()
                 outputThreadLoop()
             }.apply {
                 name = "VideoDecoder-Output"

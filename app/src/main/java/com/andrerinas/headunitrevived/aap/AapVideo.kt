@@ -4,11 +4,13 @@ import com.andrerinas.headunitrevived.aap.protocol.messages.Messages
 import com.andrerinas.headunitrevived.decoder.VideoDecoder
 import com.andrerinas.headunitrevived.utils.AppLog
 import com.andrerinas.headunitrevived.utils.Settings
+import com.andrerinas.headunitrevived.utils.LegacyOptimizer
 import java.nio.ByteBuffer
 
 internal class AapVideo(private val videoDecoder: VideoDecoder, private val settings: Settings) {
 
     private val messageBuffer = ByteBuffer.allocate(Messages.DEF_BUFFER_LENGTH * 8)
+    private var legacyAssembledBuffer: ByteArray? = null
 
     fun process(message: AapMessage): Boolean {
 
@@ -52,8 +54,21 @@ internal class AapVideo(private val videoDecoder: VideoDecoder, private val sett
             10 -> {
                 messageBuffer.put(message.data, 0, message.size)
                 messageBuffer.flip()
-                // Decode H264 video fully re-assembled
-                videoDecoder.decode(messageBuffer.array(), 0, messageBuffer.limit(), settings.forceSoftwareDecoding, settings.videoCodec)
+                
+                val assembledSize = messageBuffer.limit()
+                
+                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    // For legacy devices, use recycled buffer if possible to avoid GC
+                    if (legacyAssembledBuffer == null || legacyAssembledBuffer!!.size < assembledSize) {
+                        legacyAssembledBuffer = ByteArray(assembledSize + 1024)
+                    }
+                    messageBuffer.get(legacyAssembledBuffer!!, 0, assembledSize)
+                    videoDecoder.decode(legacyAssembledBuffer!!, 0, assembledSize, settings.forceSoftwareDecoding, settings.videoCodec)
+                } else {
+                    // Modern devices handle short-lived allocations well
+                    videoDecoder.decode(messageBuffer.array(), 0, assembledSize, settings.forceSoftwareDecoding, settings.videoCodec)
+                }
+                
                 messageBuffer.clear()
                 return true
             }
