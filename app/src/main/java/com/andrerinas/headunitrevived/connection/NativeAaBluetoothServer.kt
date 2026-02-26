@@ -5,9 +5,13 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.Intent
+import com.andrerinas.headunitrevived.App
+import com.andrerinas.headunitrevived.aap.AapService
 import com.andrerinas.headunitrevived.aap.protocol.proto.Wireless
 import com.andrerinas.headunitrevived.utils.AppLog
 import com.andrerinas.headunitrevived.utils.Settings
+import androidx.core.content.ContextCompat
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -29,6 +33,7 @@ class NativeAaBluetoothServer(private val context: Context) {
     private var currentSsid: String? = null
     private var currentPsk: String? = null
     private var currentIp: String? = null
+    private var currentBssid: String? = null
 
     companion object {
         private val AA_UUID_STATIC = UUID.fromString("4de17a00-52cb-11e6-bdf4-0800200c9a66")
@@ -54,26 +59,21 @@ class NativeAaBluetoothServer(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     fun start() {
-        if (isRunning) return
+        if (isRunning) {
+            AppLog.d("NativeAA: Server already running, stopping first...")
+            stop()
+        }
         isRunning = true
 
-        AppLog.i("NativeAA: Starting services...")
-
-        // 1. Start WiFi Direct immediately to have credentials ready
-        wifiDirectManager.createGroup { ssid, psk, ip ->
-            AppLog.i("NativeAA: WiFi Direct Ready. SSID=$ssid, IP=$ip")
-            currentSsid = ssid
-            currentPsk = psk
-            currentIp = ip
-        }
-
-        // 2. Start RFCOMM Listeners
+        AppLog.i("NativeAA: Starting Bluetooth server listeners...")
         startListeners()
 
-        // 3. Optional: Try to wake up last known phone
         val lastMac = settings.autoStartBluetoothDeviceMac
         if (lastMac.isNotEmpty()) {
-            activeConnectToPhone(lastMac)
+            Thread {
+                try { Thread.sleep(2000) } catch (e: Exception) {}
+                activeConnectToPhone(lastMac)
+            }.start()
         }
     }
 
@@ -83,17 +83,17 @@ class NativeAaBluetoothServer(private val context: Context) {
             val adapter = BluetoothAdapter.getDefaultAdapter() ?: return@Thread
             try {
                 aaServerSocket = adapter.listenUsingRfcommWithServiceRecord("Headunit Revived AA", AA_UUID)
-                AppLog.i("NativeAA: AA Bluetooth server listening on $AA_UUID")
+                AppLog.i("NativeAA: AA server listening on $AA_UUID")
 
                 while (isRunning) {
                     val socket = aaServerSocket?.accept()
                     if (socket != null) {
-                        AppLog.i("NativeAA: BT client connected to AA profile: ${socket.remoteDevice.name}")
+                        AppLog.i("NativeAA: BT connection accepted from: ${socket.remoteDevice.name}")
                         handleConnection(socket)
                     }
                 }
             } catch (e: IOException) {
-                if (isRunning) AppLog.d("NativeAA: AA server socket closed: ${e.message}")
+                if (isRunning) AppLog.d("NativeAA: AA server socket closed")
             }
         }.apply { name = "NativeAaBtServer"; start() }
 
@@ -101,21 +101,23 @@ class NativeAaBluetoothServer(private val context: Context) {
             val adapter = BluetoothAdapter.getDefaultAdapter() ?: return@Thread
             try {
                 hfpServerSocket = adapter.listenUsingRfcommWithServiceRecord("HFP", HFP_UUID)
-                AppLog.i("NativeAA: HFP Bluetooth server listening on $HFP_UUID")
+                AppLog.i("NativeAA: HFP server listening on $HFP_UUID")
 
                 while (isRunning) {
                     val socket = hfpServerSocket?.accept()
                     if (socket != null) {
-                        AppLog.i("NativeAA: BT client connected to HFP profile: ${socket.remoteDevice.name}")
-                        // HUR just accepts and closes or keeps open. Some phones need this to proceed.
+                        AppLog.i("NativeAA: HFP connection from: ${socket.remoteDevice.name}")
                         Thread {
-                            try { socket.inputStream.read(ByteArray(1024)) } catch (e: Exception) {}
+                            try {
+                                val buf = ByteArray(1024)
+                                socket.inputStream.read(buf)
+                            } catch (e: Exception) {}
                             finally { try { socket.close() } catch (e: Exception) {} }
                         }.start()
                     }
                 }
             } catch (e: IOException) {
-                if (isRunning) AppLog.d("NativeAA: HFP server socket closed: ${e.message}")
+                if (isRunning) AppLog.d("NativeAA: HFP server socket closed")
             }
         }.apply { name = "NativeAaHfpServer"; start() }
     }
@@ -123,18 +125,17 @@ class NativeAaBluetoothServer(private val context: Context) {
     @SuppressLint("MissingPermission")
     private fun activeConnectToPhone(mac: String) {
         Thread {
-            AppLog.i("NativeAA: Attempting active wakeup connect to $mac...")
+            AppLog.i("NativeAA: Attempting active poke to phone ($mac)...")
             val adapter = BluetoothAdapter.getDefaultAdapter() ?: return@Thread
             val device = try { adapter.getRemoteDevice(mac) } catch (e: Exception) { null } ?: return@Thread
             
             try {
-                // Try connecting to A2DP Source/Headset AG to trigger AA on phone
                 val socket = device.createRfcommSocketToServiceRecord(A2DP_SOURCE)
                 socket.connect()
-                AppLog.i("NativeAA: Successfully poked phone ($mac) via A2DP/HFP profile")
+                AppLog.i("NativeAA: Successfully poked phone ($mac).")
                 socket.close()
             } catch (e: IOException) {
-                AppLog.d("NativeAA: Active poke to $mac failed (phone might be busy or offline): ${e.message}")
+                AppLog.d("NativeAA: Active poke failed: ${e.message}")
             }
         }.apply { name = "NativeAaWakeup"; start() }
     }
@@ -145,40 +146,53 @@ class NativeAaBluetoothServer(private val context: Context) {
                 val input = DataInputStream(socket.inputStream)
                 val output = socket.outputStream
 
-                AppLog.i("NativeAA: Starting Bluetooth handshake...")
+                AppLog.i("NativeAA: BT Handshake started. Initializing WiFi Direct...")
 
-                // Wait up to 30s for WiFi credentials if they aren't ready yet
+                var wifiReady = false
+                wifiDirectManager.createGroup { resSsid, resPsk, resIp, resBssid ->
+                    currentSsid = resSsid
+                    currentPsk = resPsk
+                    currentIp = resIp
+                    currentBssid = resBssid
+                    wifiReady = true
+                }
+
                 var waitCount = 0
-                while ((currentSsid == null || currentIp == null) && waitCount < 60) {
+                while (!wifiReady && waitCount < 40) {
                     Thread.sleep(500)
                     waitCount++
                 }
 
-                val ssid = currentSsid
-                val psk = currentPsk
-                val ip = currentIp
-
-                if (ssid == null || ip == null) {
-                    AppLog.e("NativeAA: Handshake failed - WiFi Direct not ready in time")
+                if (!wifiReady) {
+                    AppLog.e("NativeAA: WiFi Direct group creation timed out!")
                     return@Thread
                 }
 
-                // Step 1: Send WifiStartRequest (Type 1)
+                val ssid = currentSsid!!
+                val ip = currentIp!!
+                val psk = currentPsk ?: ""
+
+                // REFRESH TCP SERVER: Restart Wireless Server to ensure it listens on the new P2P interface
+                AppLog.i("NativeAA: Refreshing Wireless TCP Server for P2P interface...")
+                val refreshIntent = Intent(context, AapService::class.java).apply {
+                    action = AapService.ACTION_START_WIRELESS
+                }
+                ContextCompat.startForegroundService(context, refreshIntent)
+
+                AppLog.i("NativeAA: WiFi Ready. SSID=$ssid, IP=$ip. Sending WifiStartRequest (Type 1)...")
                 sendWifiStartRequest(output, ip, 5288)
                 
-                // Step 2: Read response
                 val response = readProtobuf(input)
                 if (response.type == 2) {
-                    AppLog.i("NativeAA: Phone requested security info (Type 2). Sending credentials...")
-                    sendWifiSecurityResponse(output, ssid, psk ?: "")
-                } else {
-                    AppLog.w("NativeAA: Unexpected message type ${response.type}")
+                    AppLog.i("NativeAA: Phone requested security info (Type 2). Sending Credentials (Type 3)...")
+                    sendWifiSecurityResponse(output, ssid, psk)
+                    AppLog.i("NativeAA: Handshake finished successfully. Waiting for phone to connect to WiFi...")
                 }
 
             } catch (e: Exception) {
                 AppLog.e("NativeAA: Handshake error: ${e.message}")
             } finally {
-                Thread.sleep(2000) // Keep socket alive briefly
+                Thread.sleep(3000)
                 try { socket.close() } catch (e: Exception) {}
             }
         }.apply { name = "NativeAaHandshake"; start() }
@@ -188,7 +202,7 @@ class NativeAaBluetoothServer(private val context: Context) {
         val request = Wireless.WifiStartRequest.newBuilder()
             .setIpAddress(ip)
             .setPort(port)
-            .setStatus(0) // Status 0 = Success
+            .setStatus(0)
             .build()
         sendProtobuf(output, request.toByteArray(), 1)
     }

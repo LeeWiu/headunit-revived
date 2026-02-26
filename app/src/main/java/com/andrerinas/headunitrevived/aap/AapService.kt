@@ -327,8 +327,17 @@ class AapService : Service(), UsbReceiver.Listener {
     private var networkDiscovery: NetworkDiscovery? = null
 
     private fun startNativeAaServer() {
-        stopNativeAaServer()
-        AppLog.i("NativeAA: Starting Bluetooth server...")
+        if (nativeAaServer != null) {
+            AppLog.d("NativeAA: Server already active, skipping start.")
+            return
+        }
+        AppLog.i("NativeAA: Initializing Bluetooth server...")
+        
+        // Signal system that we are in car mode
+        try {
+            uiModeManager.enableCarMode(0)
+        } catch (e: Exception) {}
+
         nativeAaServer = com.andrerinas.headunitrevived.connection.NativeAaBluetoothServer(this).apply { start() }
 
         // Native AA also requires the Wireless TCP server to be listening
@@ -442,7 +451,7 @@ class AapService : Service(), UsbReceiver.Listener {
                 while (running) {
                     val clientSocket = serverSocket?.accept();
                     if (clientSocket != null) {
-                        AppLog.i("Wireless client connected: ${clientSocket.inetAddress}");
+                        AppLog.i("Wireless client connected from ${clientSocket.inetAddress}:${clientSocket.port}");
                         
                         serviceScope.launch {
                             if (isConnected) {

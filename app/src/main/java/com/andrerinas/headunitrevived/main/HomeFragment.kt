@@ -209,17 +209,6 @@ class HomeFragment : Fragment() {
             hasAutoStarted = true
             startSelfMode()
         }
-
-        // 3. Priority: Auto-Start Native AA if already setup
-        if (appSettings.wifiConnectionMode == 3 && !AapService.isConnected) {
-            if (NativeAaBluetoothServer.checkCompatibility()) {
-                AppLog.i("HomeFragment: Native AA mode active and compatible, starting server")
-                val intent = Intent(requireContext(), AapService::class.java).apply {
-                    action = AapService.ACTION_START_NATIVE_AA
-                }
-                ContextCompat.startForegroundService(requireContext(), intent)
-            }
-        }
     }
 
     private fun startSelfMode() {
