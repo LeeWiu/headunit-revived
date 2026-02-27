@@ -29,7 +29,6 @@ class NativeAaBluetoothServer(private val context: Context) {
     private val wifiDirectManager = WifiDirectManager(context)
     private val settings = Settings(context)
 
-    // Cached credentials
     private var currentSsid: String? = null
     private var currentPsk: String? = null
     private var currentIp: String? = null
@@ -39,19 +38,16 @@ class NativeAaBluetoothServer(private val context: Context) {
         private val AA_UUID_STATIC = UUID.fromString("4de17a00-52cb-11e6-bdf4-0800200c9a66")
 
         fun checkCompatibility(): Boolean {
-            if (android.os.Build.VERSION.SDK_INT >= 30) {
-                AppLog.w("NativeAA: Android 11+ detected. Native Wireless is not supported due to system restrictions.")
-                return false
-            }
             val adapter = BluetoothAdapter.getDefaultAdapter() ?: return false
             if (!adapter.isEnabled) return false
             
             return try {
                 val socket = adapter.listenUsingRfcommWithServiceRecord("Compatibility Check", AA_UUID_STATIC)
                 socket.close()
+                AppLog.i("NativeAA: Compatibility Check SUCCESS")
                 true
             } catch (e: Exception) {
-                AppLog.w("NativeAA: Device is NOT compatible with Native Wireless (RFCOMM error)")
+                AppLog.w("NativeAA: Compatibility Check FAILED: ${e.message}")
                 false
             }
         }
@@ -65,7 +61,16 @@ class NativeAaBluetoothServer(private val context: Context) {
         }
         isRunning = true
 
-        AppLog.i("NativeAA: Starting Bluetooth server listeners...")
+        AppLog.i("NativeAA: Starting Bluetooth server listeners and WiFi Direct...")
+
+        wifiDirectManager.createGroup { resSsid, resPsk, resIp, resBssid ->
+            AppLog.i("NativeAA: WiFi Direct Group initialized. SSID=$resSsid, IP=$resIp, BSSID=$resBssid")
+            currentSsid = resSsid
+            currentPsk = resPsk
+            currentIp = resIp
+            currentBssid = resBssid
+        }
+
         startListeners()
 
         val lastMac = settings.autoStartBluetoothDeviceMac
@@ -143,57 +148,51 @@ class NativeAaBluetoothServer(private val context: Context) {
     private fun handleConnection(socket: BluetoothSocket) {
         Thread {
             try {
+                AapService.isNativeHandshakeActive = true
                 val input = DataInputStream(socket.inputStream)
                 val output = socket.outputStream
 
-                AppLog.i("NativeAA: BT Handshake started. Initializing WiFi Direct...")
-
-                var wifiReady = false
-                wifiDirectManager.createGroup { resSsid, resPsk, resIp, resBssid ->
-                    currentSsid = resSsid
-                    currentPsk = resPsk
-                    currentIp = resIp
-                    currentBssid = resBssid
-                    wifiReady = true
-                }
+                AppLog.i("NativeAA: BT Handshake started. Waiting for cached WiFi credentials...")
 
                 var waitCount = 0
-                while (!wifiReady && waitCount < 40) {
+                while ((currentSsid == null || currentIp == null) && waitCount < 60) {
                     Thread.sleep(500)
                     waitCount++
                 }
 
-                if (!wifiReady) {
-                    AppLog.e("NativeAA: WiFi Direct group creation timed out!")
+                if (currentSsid == null || currentIp == null) {
+                    AppLog.e("NativeAA: Handshake failed - WiFi Direct not ready in time")
                     return@Thread
                 }
 
                 val ssid = currentSsid!!
                 val ip = currentIp!!
                 val psk = currentPsk ?: ""
+                val bssid = currentBssid ?: "00:00:00:00:00:00"
 
-                // REFRESH TCP SERVER: Restart Wireless Server to ensure it listens on the new P2P interface
                 AppLog.i("NativeAA: Refreshing Wireless TCP Server for P2P interface...")
                 val refreshIntent = Intent(context, AapService::class.java).apply {
                     action = AapService.ACTION_START_WIRELESS
                 }
                 ContextCompat.startForegroundService(context, refreshIntent)
 
-                AppLog.i("NativeAA: WiFi Ready. SSID=$ssid, IP=$ip. Sending WifiStartRequest (Type 1)...")
+                AppLog.i("NativeAA: WiFi Ready. SSID=$ssid, IP=$ip, BSSID=$bssid. Sending WifiStartRequest (Type 1)...")
                 sendWifiStartRequest(output, ip, 5288)
                 
                 val response = readProtobuf(input)
                 if (response.type == 2) {
-                    AppLog.i("NativeAA: Phone requested security info (Type 2). Sending Credentials (Type 3)...")
-                    sendWifiSecurityResponse(output, ssid, psk)
-                    AppLog.i("NativeAA: Handshake finished successfully. Waiting for phone to connect to WiFi...")
+                    AppLog.i("NativeAA: Phone requested security info (Type 2). Sending Credentials (Type 3) SSID=$ssid, PSK=$psk, BSSID=$bssid")
+                    sendWifiSecurityResponse(output, ssid, psk, bssid)
+                    AppLog.i("NativeAA: Handshake finished successfully. Keeping BT alive for 20s for WiFi transition...")
                 }
 
             } catch (e: Exception) {
                 AppLog.e("NativeAA: Handshake error: ${e.message}")
             } finally {
-                Thread.sleep(3000)
+                Thread.sleep(20000) // Keep Bluetooth open much longer (20s)
                 try { socket.close() } catch (e: Exception) {}
+                AapService.isNativeHandshakeActive = false
+                AppLog.i("NativeAA: Handshake thread finished.")
             }
         }.apply { name = "NativeAaHandshake"; start() }
     }
@@ -207,11 +206,11 @@ class NativeAaBluetoothServer(private val context: Context) {
         sendProtobuf(output, request.toByteArray(), 1)
     }
 
-    private fun sendWifiSecurityResponse(output: OutputStream, ssid: String, key: String) {
+    private fun sendWifiSecurityResponse(output: OutputStream, ssid: String, key: String, bssid: String) {
         val response = Wireless.WifiInfoResponse.newBuilder()
             .setSsid(ssid)
             .setKey(key)
-            .setBssid("00:00:00:00:00:00")
+            .setBssid("") // Empty BSSID as per HUR 6.3
             .setSecurityMode(Wireless.SecurityMode.WPA2_PERSONAL)
             .setAccessPointType(Wireless.AccessPointType.STATIC)
             .build()

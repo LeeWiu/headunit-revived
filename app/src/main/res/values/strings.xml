@@ -199,6 +199,7 @@
     <string name="already_connected">Already connected</string>
     <string name="already_scanning">Already scanning…</string>
     <string name="searching_headunit_server">Searching for Headunit Server…</string>
+    <string name="not_now">Not now</string>
     <string name="already_searching_phone">Already searching for phone…</string>
     <string name="searching_phone">Searching for phone…</string>
     <string name="key_mappings_reset">Key mappings reset</string>
@@ -235,8 +236,8 @@
     <string name="shortcut_disconnect_title">Disconnect</string>
     <string name="shortcut_disconnect_desc">End current session</string>
 
-    <string name="supported_nativeaa">Compatible BT adapter detected</string>
-    <string name="supported_nativeaa_desc">It looks like your BT Adapter can be used for native Android Auto Wireless. The Bluetooth will be turned on and off now to adjust the needed changes, please forget the BT pairing between your phone and this unit and re-pair them. This is needed so the phone can learn the new capabilities of the unit, otherwise Wireless Android Auto won\'t work.</string>
+    <string name="supported_nativeaa">Enhanced Wireless Support</string>
+    <string name="supported_nativeaa_desc">Great news! Your device supports "Native Wireless" mode, which provides a more seamless Android Auto experience. \n\nTo enable this, we need to refresh your Bluetooth cache. Please: \n1. Remove the existing pairing on your phone \n2. Click OK to restart Bluetooth \n3. Re-pair your phone \n\nWould you like to switch to Native AA mode now?</string>
     <string name="not_supported_nativeaa">Native Wireless not supported</string>
     <string name="not_supported_nativeaa_desc">Your device\'s Bluetooth stack does not support the required service registration for native Android Auto Wireless. Please use the "Wireless Helper" app or "Auto (Headunit Server)" mode instead.</string>
 </resources>

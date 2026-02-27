@@ -41,32 +41,34 @@ class HomeFragment : Fragment() {
     private var hasAttemptedAutoConnect = false
     private var isScanning = false
 
-    private fun checkNativeAaCompatibility() {
+    private fun checkNativeAaCompatibility(autoPrompt: Boolean = false) {
         if (NativeAaBluetoothServer.checkCompatibility()) {
             val appSettings = App.provide(requireContext()).settings
-            if (appSettings.autoStartBluetoothDeviceMac.isEmpty()) {
-                // If no phone is selected, show selector first
-                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                    .setTitle(R.string.select_bt_device)
-                    .setMessage("Please select your phone first to enable active wake-up for Native AA.")
-                    .setPositiveButton("Select") { _, _ ->
-                        showBluetoothDeviceSelector()
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-                return
-            }
-
+            
+            // If this is an auto-prompt, and user has already seen it, skip
+            if (autoPrompt && appSettings.hasSeenNativeAaPrompt) return
+            
             MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
                 .setTitle(R.string.supported_nativeaa)
                 .setMessage(R.string.supported_nativeaa_desc)
                 .setPositiveButton("OK") { dialog, _ ->
+                    appSettings.wifiConnectionMode = 3 // Set to Native AA
+                    appSettings.hasSeenNativeAaPrompt = true
                     dialog.dismiss()
-                    resetBluetoothAndStartServer()
+                    
+                    if (appSettings.autoStartBluetoothDeviceMac.isEmpty()) {
+                        // Now ask to select a phone if not yet done
+                        showBluetoothDeviceSelector()
+                    } else {
+                        resetBluetoothAndStartServer()
+                    }
                 }
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(if (autoPrompt) R.string.not_now else android.R.string.cancel) { dialog, _ ->
+                    if (autoPrompt) appSettings.hasSeenNativeAaPrompt = true
+                    dialog.dismiss()
+                }
                 .show()
-        } else {
+        } else if (!autoPrompt) {
             MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
                 .setTitle(R.string.not_supported_nativeaa)
                 .setMessage(R.string.not_supported_nativeaa_desc)
@@ -128,8 +130,10 @@ class HomeFragment : Fragment() {
                 settings.autoStartBluetoothDeviceName = device.name
                 Toast.makeText(requireContext(), "Device selected: ${device.name}", Toast.LENGTH_SHORT).show()
                 
-                // Now that we have a device, continue compatibility check
-                checkNativeAaCompatibility()
+                // If we are currently in Native AA mode, start the server
+                if (settings.wifiConnectionMode == 3) {
+                    resetBluetoothAndStartServer()
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -180,9 +184,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val appSettings = App.provide(requireContext()).settings
+
         // Check Safety Disclaimer
-        if (!App.provide(requireContext()).settings.hasAcceptedDisclaimer) {
-            SafetyDisclaimerDialog.show(childFragmentManager)
+        if (!appSettings.hasAcceptedDisclaimer) {
+            val dialog = SafetyDisclaimerDialog()
+            dialog.onDismissListener = {
+                // If disclaimer just accepted, check for Native AA compatibility
+                if (appSettings.wifiConnectionMode != 3) {
+                    checkNativeAaCompatibility(autoPrompt = true)
+                }
+            }
+            dialog.show(childFragmentManager, SafetyDisclaimerDialog.TAG)
+        } else {
+            // If disclaimer already accepted, check for Native AA compatibility
+            if (appSettings.wifiConnectionMode != 3) {
+                checkNativeAaCompatibility(autoPrompt = true)
+            }
         }
 
         self_mode_button = view.findViewById(R.id.self_mode_button)
@@ -195,8 +213,6 @@ class HomeFragment : Fragment() {
 
         setupListeners()
         updateProjectionButtonText()
-
-        val appSettings = App.provide(requireContext()).settings
 
         // 1. Priority: Auto-Connect last session (WiFi/USB)
         if (appSettings.autoConnectLastSession && !hasAttemptedAutoConnect && !AapService.isConnected) {

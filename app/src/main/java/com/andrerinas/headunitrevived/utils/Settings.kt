@@ -205,6 +205,10 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("has-accepted-disclaimer", false)
         set(value) { prefs.edit().putBoolean("has-accepted-disclaimer", value).apply() }
 
+    var hasSeenNativeAaPrompt: Boolean
+        get() = prefs.getBoolean("has-seen-native-aa-prompt", false)
+        set(value) { prefs.edit().putBoolean("has-seen-native-aa-prompt", value).apply() }
+
     var autoConnectLastSession: Boolean
         get() = prefs.getBoolean("auto-connect-last-session", false)
         set(value) { prefs.edit().putBoolean("auto-connect-last-session", value).apply() }

@@ -15,6 +15,8 @@ import com.andrerinas.headunitrevived.R
 
 class SafetyDisclaimerDialog : DialogFragment() {
 
+    var onDismissListener: (() -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Use custom theme for transparent background (CardView handles background)
@@ -40,6 +42,7 @@ class SafetyDisclaimerDialog : DialogFragment() {
         btnAccept.setOnClickListener {
             // Save setting
             App.provide(requireContext()).settings.hasAcceptedDisclaimer = true
+            onDismissListener?.invoke()
             dismiss()
         }
 

@@ -144,8 +144,8 @@
         <item>Natives AA (Experimentell)</item>
     </string-array>
 
-    <string name="supported_nativeaa">Kompatibler BT-Adapter erkannt</string>
-    <string name="supported_nativeaa_desc">Es sieht so aus, als ob dein BT-Adapter für natives Android Auto Wireless verwendet werden kann. Bluetooth wird nun kurz aus- und wieder eingeschaltet, um die erforderlichen Änderungen vorzunehmen. Bitte lösche die BT-Kopplung zwischen deinem Handy und diesem Gerät und kopple sie erneut. Dies ist notwendig, damit das Handy die neuen Funktionen des Geräts erkennt, andernfalls funktioniert Wireless Android Auto nicht.</string>
+    <string name="supported_nativeaa">Verbesserter Wireless-Support</string>
+    <string name="supported_nativeaa_desc">Gute Nachrichten! Dein Gerät unterstützt den Modus "Natives Wireless", der eine stabilere Verbindung ermöglicht. \n\nUm dies zu aktivieren, muss der Bluetooth-Cache erneuert werden. Bitte: \n1. Lösche die Kopplung auf deinem Handy \n2. Klicke OK zum Bluetooth-Neustart \n3. Kopple dein Handy neu \n\nMöchtest du jetzt auf "Natives AA" umschalten?</string>
     <string name="not_supported_nativeaa">Natives Wireless nicht unterstützt</string>
     <string name="not_supported_nativeaa_desc">Der Bluetooth-Stack deines Geräts unterstützt die erforderliche Dienstregistrierung für natives Android Auto Wireless nicht. Bitte verwende stattdessen die App "Wireless Helper" oder den Modus "Auto (Headunit Server)".</string>
     <string name="auto_connect_last_session">Auto-Connect letzte Sitzung</string>
@@ -204,6 +204,7 @@
     <string name="already_connected">Bereits verbunden</string>
     <string name="already_scanning">Scan läuft bereits…</string>
     <string name="searching_headunit_server">Suche nach Headunit Server…</string>
+    <string name="not_now">Jetzt nicht</string>
     <string name="already_searching_phone">Suche nach Handy läuft bereits…</string>
     <string name="searching_phone">Suche nach Handy…</string>
     <string name="key_mappings_reset">Tastenbelegung zurückgesetzt</string>

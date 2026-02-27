@@ -69,12 +69,12 @@ class WifiDirectManager(private val context: Context) {
                 
                 // Wait for IP with retries
                 Thread {
-                    var ip = getWifiDirectIp(group.`interface`)
+                    var ip = getLocalIpAddress()
                     var retries = 0
                     while (ip == null && retries < 10) {
                         AppLog.i("WifiDirect: Waiting for IP on interface ${group.`interface`}...")
                         Thread.sleep(500)
-                        ip = getWifiDirectIp(group.`interface`)
+                        ip = getLocalIpAddress()
                         retries++
                     }
                     
@@ -119,16 +119,26 @@ class WifiDirectManager(private val context: Context) {
         return "00:00:00:00:00:00"
     }
 
-    private fun getWifiDirectIp(ifaceName: String?): String? {
+    fun getLocalIpAddress(): String? {
         try {
             val interfaces = NetworkInterface.getNetworkInterfaces()
             while (interfaces.hasMoreElements()) {
                 val iface = interfaces.nextElement()
-                if (ifaceName != null && iface.name != ifaceName) continue
-                
-                // If no name, check for p2p-wlan or similar
-                if (ifaceName == null && !iface.name.contains("p2p")) continue
-
+                val addresses = iface.inetAddresses
+                while (addresses.hasMoreElements()) {
+                    val addr = addresses.nextElement()
+                    if (!addr.isLoopbackAddress && addr is java.net.Inet4Address) {
+                        AppLog.d("WifiDirect: Found local IP ${addr.hostAddress} on interface ${iface.name}")
+                        // Prioritize p2p interface
+                        if (iface.name.contains("p2p")) return addr.hostAddress
+                    }
+                }
+            }
+            
+            // Fallback: second pass for any non-loopback if no p2p found yet
+            val interfaces2 = NetworkInterface.getNetworkInterfaces()
+            while (interfaces2.hasMoreElements()) {
+                val iface = interfaces2.nextElement()
                 val addresses = iface.inetAddresses
                 while (addresses.hasMoreElements()) {
                     val addr = addresses.nextElement()
@@ -138,7 +148,7 @@ class WifiDirectManager(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
-            AppLog.e("WifiDirect: Error getting IP", e)
+            AppLog.e("WifiDirect: Error getting local IP", e)
         }
         return null
     }

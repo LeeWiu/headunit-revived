@@ -350,7 +350,8 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     private fun startWirelessServer() {
-        if (wirelessServer != null) return
+        stopWirelessServer()
+        AppLog.i("Starting Wireless TCP Server on port 5288...")
         wirelessServer = WirelessServer().apply { start() }
         
         val mode = App.provide(this).settings.wifiConnectionMode
@@ -449,35 +450,37 @@ class AapService : Service(), UsbReceiver.Listener {
                 }
 
                 while (running) {
+                    AppLog.d("WirelessServer: Waiting for connection on port 5288...")
                     val clientSocket = serverSocket?.accept();
                     if (clientSocket != null) {
-                        AppLog.i("Wireless client connected from ${clientSocket.inetAddress}:${clientSocket.port}");
+                        AppLog.i("WirelessServer: Client connected from ${clientSocket.inetAddress}:${clientSocket.port}");
                         
                         serviceScope.launch {
-                            if (isConnected) {
-                                AppLog.w("Already connected, dropping wireless client");
-                                withContext(Dispatchers.IO) {
-                                    try { clientSocket.close() } catch (e: Exception) {}
+                            try {
+                                if (isConnected) {
+                                    AppLog.w("WirelessServer: Already connected, dropping wireless client");
+                                    withContext(Dispatchers.IO) { clientSocket.close() }
+                                } else {
+                                    AppLog.i("WirelessServer: Connection accepted. Setting up AapTransport...");
+                                    pendingConnectionType = Settings.CONNECTION_TYPE_WIFI;
+                                    pendingConnectionIp = clientSocket.inetAddress.hostAddress ?:"";
+                                    pendingConnectionUsbDevice = "";
+
+                                    val conn = SocketAccessoryConnection(clientSocket, this@AapService);
+                                    accessoryConnection = conn;
+
+                                    val attemptId = connectionAttemptId.incrementAndGet();
+                                    val success = withContext(Dispatchers.IO) {
+                                        AppLog.d("WirelessServer: Calling conn.connect()...");
+                                        conn.connect()
+                                    }
+                                    AppLog.i("WirelessServer: Handshake connect() result: $success");
+
+                                    onConnectionResult(success, attemptId, conn);
                                 }
-                            } else {
-                                AppLog.i("Wireless client accepted from ${clientSocket.inetAddress}. Initializing connection...");
-                                pendingConnectionType = Settings.CONNECTION_TYPE_WIFI;
-                                pendingConnectionIp = clientSocket.inetAddress.hostAddress ?:"";
-                                pendingConnectionUsbDevice = "";
-
-                                // Prepare and capture the connection instance
-                                val conn = SocketAccessoryConnection(clientSocket, this@AapService);
-                                accessoryConnection = conn;
-
-                                // mark this attempt before starting the blocking connect
-                                val attemptId = connectionAttemptId.incrementAndGet();
-                                
-                                val success = withContext(Dispatchers.IO) {
-                                    conn.connect()
-                                }
-                                AppLog.i("Wireless Socket connect() result: $success");
-
-                                onConnectionResult(success, attemptId, conn);
+                            } catch (e: Exception) {
+                                AppLog.e("WirelessServer: Error processing client connection", e)
+                                try { clientSocket.close() } catch (ex: Exception) {}
                             }
                         }
                     }
@@ -687,6 +690,7 @@ class AapService : Service(), UsbReceiver.Listener {
         var isConnected = false;
         var selfMode = false;
         var isScanning = false;
+        var isNativeHandshakeActive = false;
         var pendingSocket: java.net.Socket? = null;
         const val ACTION_START_SELF_MODE = "com.andrerinas.headunitrevived.ACTION_START_SELF_MODE";
         const val ACTION_START_WIRELESS = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS";
