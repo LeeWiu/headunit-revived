@@ -327,11 +327,8 @@ class AapService : Service(), UsbReceiver.Listener {
     private var networkDiscovery: NetworkDiscovery? = null
 
     private fun startNativeAaServer() {
-        if (nativeAaServer != null) {
-            AppLog.d("NativeAA: Server already active, skipping start.")
-            return
-        }
-        AppLog.i("NativeAA: Initializing Bluetooth server...")
+        AppLog.i("NativeAA: Initializing/Restarting Bluetooth server...")
+        stopNativeAaServer()
         
         // Signal system that we are in car mode
         try {

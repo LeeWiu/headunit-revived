@@ -249,6 +249,10 @@ class NativeAaBluetoothServer(private val context: Context) {
         try { hfpServerSocket?.close() } catch (e: Exception) {}
         aaServerSocket = null
         hfpServerSocket = null
+        currentSsid = null
+        currentPsk = null
+        currentIp = null
+        currentBssid = null
         wifiDirectManager.stop()
     }
 }

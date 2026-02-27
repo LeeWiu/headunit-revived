@@ -344,7 +344,7 @@ class HomeFragment : Fragment() {
                     if (AapService.isConnected) {
                         Toast.makeText(requireContext(), getString(R.string.already_connected), Toast.LENGTH_SHORT).show()
                     } else {
-                        checkNativeAaCompatibility()
+                        resetBluetoothAndStartServer()
                     }
                 }
                 else -> { // Manual (0) -> Open List
