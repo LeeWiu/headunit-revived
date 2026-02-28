@@ -164,7 +164,7 @@ class UsbListFragment : Fragment() {
                 mSettings.allowedDevices = allowedDevices
                 notifyDataSetChanged()
             } else {
-                if (AapService.isConnected) {
+                if (App.provide(mContext).commManager.isConnected) {
 
                     // Already connected -> bring existing projection to front
                     val aapIntent = AapProjectionActivity.intent(mContext).apply {

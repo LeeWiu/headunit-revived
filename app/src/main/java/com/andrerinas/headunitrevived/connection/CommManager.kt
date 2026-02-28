@@ -38,6 +38,12 @@ class CommManager(
     private val _backgroundNotification = BackgroundNotification(context)
 
     val connectionState = _connectionState.asStateFlow()
+    val isConnected: Boolean
+        get() = connectionState.value.let {
+            it is ConnectionState.Connected ||
+            it is ConnectionState.StartingTransport ||
+            it is ConnectionState.TransportStarted
+        }
 
     fun isConnectedToUsbDevice(device: UsbDevice): Boolean =
         (_connection as? UsbAccessoryConnection)?.isDeviceRunning(device) == true
@@ -171,6 +177,7 @@ class CommManager(
     fun disconnect() {
         if (_connectionState.value is ConnectionState.Disconnected) return
 
+        _connectionState.value = ConnectionState.Disconnected
         _scope.launch { doDisconnect() }
     }
 

@@ -144,7 +144,6 @@ class AapTransport(
 
     internal fun quit(clean: Boolean = false) {
         AppLog.i("AapTransport quitting (clean=$clean)")
-        AapService.isConnected = false
         context.sendBroadcast(DisconnectIntent(clean))
         micRecorder.listener = null
         pollThread?.quit()

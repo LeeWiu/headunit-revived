@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.andrerinas.headunitrevived.App
 import com.andrerinas.headunitrevived.R
 import com.andrerinas.headunitrevived.aap.AapProjectionActivity
 import com.andrerinas.headunitrevived.aap.AapService
@@ -34,7 +35,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         // If an Android Auto session is active, jump straight to projection activity
-        if (AapService.isConnected) {
+        if (App.provide(this).commManager.isConnected) {
             AppLog.i("MainActivity: Active session detected in onCreate, jumping to projection")
             val aapIntent = AapProjectionActivity.intent(this).apply {
                 putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
@@ -147,7 +148,7 @@ class MainActivity : BaseActivity() {
         setFullscreen()
 
         // If an Android Auto session is active, bring the projection activity to front
-        if (AapService.isConnected) {
+        if (App.provide(this).commManager.isConnected) {
             AppLog.i("MainActivity: Active session detected, bringing projection to front")
             val aapIntent = AapProjectionActivity.intent(this).apply {
                 putExtra(AapProjectionActivity.EXTRA_FOCUS, true)

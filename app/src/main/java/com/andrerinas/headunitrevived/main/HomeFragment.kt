@@ -28,6 +28,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class HomeFragment : Fragment() {
 
+    private val commManager get() = App.provide(requireContext()).commManager
+
     private lateinit var self_mode_button: Button
     private lateinit var usb: Button
     private lateinit var settings: Button
@@ -102,13 +104,13 @@ class HomeFragment : Fragment() {
         val appSettings = App.provide(requireContext()).settings
 
         // 1. Priority: Auto-Connect last session (WiFi/USB)
-        if (appSettings.autoConnectLastSession && !hasAttemptedAutoConnect && !AapService.isConnected) {
+        if (appSettings.autoConnectLastSession && !hasAttemptedAutoConnect && !commManager.isConnected) {
             hasAttemptedAutoConnect = true
             attemptAutoConnect()
         }
 
         // 2. Priority: Auto-Start Self Mode
-        if (appSettings.autoStartSelfMode && !hasAutoStarted && !AapService.isConnected) {
+        if (appSettings.autoStartSelfMode && !hasAutoStarted && !commManager.isConnected) {
             hasAutoStarted = true
             startSelfMode()
         }
@@ -116,7 +118,6 @@ class HomeFragment : Fragment() {
 
     private fun startSelfMode() {
         AapService.selfMode = true
-        AapService.isConnected = false
         val intent = Intent(requireContext(), AapService::class.java)
         intent.action = AapService.ACTION_START_SELF_MODE
         ContextCompat.startForegroundService(requireContext(), intent)
@@ -129,7 +130,7 @@ class HomeFragment : Fragment() {
 
         if (!appSettings.autoConnectLastSession ||
             !appSettings.hasAcceptedDisclaimer ||
-            AapService.isConnected) {
+            commManager.isConnected) {
             return
         }
 
@@ -177,7 +178,7 @@ class HomeFragment : Fragment() {
         }
 
         self_mode_button.setOnClickListener {
-            if (AapService.isConnected) {
+            if (commManager.isConnected) {
                 val aapIntent = Intent(requireContext(), AapProjectionActivity::class.java)
                 aapIntent.putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
                 startActivity(aapIntent)
@@ -202,7 +203,7 @@ class HomeFragment : Fragment() {
             val mode = App.provide(requireContext()).settings.wifiConnectionMode
             when (mode) {
                 1 -> { // Auto (Headunit Server) - One-Shot Scan
-                    if (AapService.isConnected) {
+                    if (commManager.isConnected) {
                         // Already connected, no toast needed
                     } else if (isScanning) {
                         Toast.makeText(requireContext(), getString(R.string.already_scanning), Toast.LENGTH_SHORT).show()
@@ -215,7 +216,7 @@ class HomeFragment : Fragment() {
                     }
                 }
                 2 -> { // Helper (Wireless Launcher)
-                    if (AapService.isConnected) {
+                    if (commManager.isConnected) {
                         // Already connected, no toast needed
                     } else if (isScanning) {
                         Toast.makeText(requireContext(), getString(R.string.already_searching_phone), Toast.LENGTH_SHORT).show()
@@ -246,7 +247,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateProjectionButtonText() {
-        if (AapService.isConnected) {
+        if (commManager.isConnected) {
             self_mode_text.text = getString(R.string.to_android_auto)
         } else {
             self_mode_text.text = getString(R.string.self_mode)
@@ -255,7 +256,7 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        AppLog.i("HomeFragment: onResume. isConnected=${AapService.isConnected}")
+        AppLog.i("HomeFragment: onResume. isConnected=${commManager.isConnected}")
         val filter = IntentFilter().apply {
             addAction(ConnectedIntent.action)
             addAction(DisconnectIntent.action)

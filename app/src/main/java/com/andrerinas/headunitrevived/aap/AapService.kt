@@ -38,7 +38,6 @@ import com.andrerinas.headunitrevived.utils.NightModeManager
 import kotlinx.coroutines.*
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicBoolean
 
 class AapService : Service(), UsbReceiver.Listener {
     private val serviceJob = Job()
@@ -51,7 +50,6 @@ class AapService : Service(), UsbReceiver.Listener {
     private var mediaSession: MediaSessionCompat? = null
 
     private val connectionAttemptId = AtomicInteger(0)
-    private val isConnecting = AtomicBoolean(false)
     private var isDestroying = false
 
     private val commManager get() = App.provide(this).commManager
@@ -69,7 +67,7 @@ class AapService : Service(), UsbReceiver.Listener {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == DisconnectIntent.action) {
                 val isClean = intent.getBooleanExtra(DisconnectIntent.EXTRA_CLEAN, false)
-                if (isConnected) {
+                if (commManager.isConnected) {
                     AppLog.i("AapService received disconnect intent (clean=$isClean) -> closing connection")
                     onDisconnect(isClean)
                 }
@@ -116,7 +114,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     private fun checkAlreadyConnectedUsb() {
         val settings = App.provide(this).settings
-        if (!settings.autoConnectLastSession || isConnected || isConnecting.get()) return
+        if (!settings.autoConnectLastSession || commManager.isConnected) return
 
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         val deviceList = usbManager.deviceList
@@ -155,7 +153,7 @@ class AapService : Service(), UsbReceiver.Listener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val (notificationIntent, requestCode) = if (isConnected) {
+        val (notificationIntent, requestCode) = if (commManager.isConnected) {
             AapProjectionActivity.intent(this).apply {
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             } to 100
@@ -165,7 +163,7 @@ class AapService : Service(), UsbReceiver.Listener {
             } to 101
         }
 
-        val contentText = if (isConnected) {
+        val contentText = if (commManager.isConnected) {
             getString(R.string.notification_projection_active)
         } else {
             getString(R.string.notification_service_running)
@@ -208,7 +206,7 @@ class AapService : Service(), UsbReceiver.Listener {
         if (intent?.action == ACTION_STOP_SERVICE) {
             AppLog.i("Stop action received.");
             isDestroying = true
-            if (isConnected) {
+            if (commManager.isConnected) {
                 commManager.disconnect()
             }
             stopForeground(true)
@@ -233,7 +231,7 @@ class AapService : Service(), UsbReceiver.Listener {
             }
             ACTION_DISCONNECT -> {
                 AppLog.i("Disconnect action received.");
-                if (isConnected) {
+                if (commManager.isConnected) {
                     commManager.disconnect()
                 }
             }
@@ -306,7 +304,7 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     private fun startDiscovery(oneShot: Boolean = false) {
-        if (isConnected || isConnecting.get() || (wirelessServer == null && !oneShot)) return
+        if (commManager.isConnected || (wirelessServer == null && !oneShot)) return
 
         // Ensure old discovery is stopped/cleaned
         networkDiscovery?.stop()
@@ -315,7 +313,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
         networkDiscovery = NetworkDiscovery(this, object : NetworkDiscovery.Listener {
             override fun onServiceFound(ip: String, port: Int, socket: java.net.Socket?) {
-                if (isConnected) {
+                if (commManager.isConnected) {
                     try { socket?.close() } catch (e: Exception) {}
                     return
                 }
@@ -347,7 +345,7 @@ class AapService : Service(), UsbReceiver.Listener {
                 // Schedule next scan in 10s
                 serviceScope.launch {
                     delay(10000)
-                    if (wirelessServer != null && !isConnected) {
+                    if (wirelessServer != null && !commManager.isConnected) {
                         startDiscovery()
                     }
                 }
@@ -402,7 +400,7 @@ class AapService : Service(), UsbReceiver.Listener {
                         AppLog.i("Wireless client connected: ${clientSocket.inetAddress}");
                         
                         serviceScope.launch {
-                            if (isConnected) {
+                            if (commManager.isConnected) {
                                 AppLog.w("Already connected, dropping wireless client")
                                 withContext(Dispatchers.IO) {
                                     try { clientSocket.close() } catch (e: Exception) {}
@@ -507,7 +505,6 @@ class AapService : Service(), UsbReceiver.Listener {
             }
 
             if (success) {
-                isConnected = true
                 updateNotification()
                 sendBroadcast(ConnectedIntent())
 
@@ -525,13 +522,12 @@ class AapService : Service(), UsbReceiver.Listener {
                 }
                 startActivity(aapIntent)
             }
-        } finally {
-            isConnecting.set(false)
+        } catch (e: Exception) {
+            AppLog.e("onConnectionResult failed", e)
         }
     }
 
     private fun onDisconnect(isClean: Boolean = false) {
-        isConnected = false
         if (!isDestroying) {
             updateNotification()
         }
@@ -551,7 +547,7 @@ class AapService : Service(), UsbReceiver.Listener {
             AppLog.i("AapService: Disconnected. Restarting discovery loop in 2s...")
             serviceScope.launch {
                 delay(2000)
-                if (!isConnected) startDiscovery()
+                if (!commManager.isConnected) startDiscovery()
             }
         } else if (!isClean) {
             val mode = App.provide(this).settings.wifiConnectionMode
@@ -559,7 +555,7 @@ class AapService : Service(), UsbReceiver.Listener {
                 AppLog.i("AapService: Unclean disconnect in Auto Mode. Retrying discovery in 2s...")
                 serviceScope.launch {
                     delay(2000)
-                    if (!isConnected) startDiscovery(oneShot = true)
+                    if (!commManager.isConnected) startDiscovery(oneShot = true)
                 }
             }
         }
@@ -581,7 +577,6 @@ class AapService : Service(), UsbReceiver.Listener {
     override fun onUsbPermission(granted: Boolean, connect: Boolean, device: UsbDevice) {}
 
     companion object {
-        var isConnected = false;
         var selfMode = false;
         var isScanning = false;
         const val ACTION_START_SELF_MODE = "com.andrerinas.headunitrevived.ACTION_START_SELF_MODE";

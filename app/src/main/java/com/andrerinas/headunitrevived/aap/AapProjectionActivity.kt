@@ -44,7 +44,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     private val videoWatchdogRunnable = object : Runnable {
         override fun run() {
             val loadingOverlay = findViewById<View>(R.id.loading_overlay)
-            if (loadingOverlay?.visibility == View.VISIBLE && AapService.isConnected) {
+            if (loadingOverlay?.visibility == View.VISIBLE && commManager.isConnected) {
                 AppLog.w("Watchdog: No video received. Requesting Keyframe (Unsolicited Focus)...")
                 commManager.send(VideoFocusEvent(gain = true, unsolicited = true))
                 watchdogHandler.postDelayed(this, 3000)

@@ -258,7 +258,7 @@ class SettingsFragment : Fragment() {
         requireContext().sendBroadcast(nightModeUpdateIntent)
 
         if (requiresRestart) {
-            if (AapService.isConnected) {
+            if (App.provide(requireContext()).commManager.isConnected) {
                 Toast.makeText(context, getString(R.string.stopping_service), Toast.LENGTH_SHORT).show()
                 val stopServiceIntent = Intent(requireContext(), AapService::class.java).apply {
                     action = AapService.ACTION_STOP_SERVICE
