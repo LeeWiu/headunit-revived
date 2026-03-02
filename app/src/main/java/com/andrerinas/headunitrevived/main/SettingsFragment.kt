@@ -578,14 +578,15 @@ class SettingsFragment : Fragment() {
             isChecked = pendingAutoStartOnUsb!!,
             onCheckedChanged = { isChecked ->
                 if (isChecked) {
+                    pendingAutoStartOnUsb = true
                     showExperimentalWarning(
                         onConfirm = {
-                            pendingAutoStartOnUsb = true
                             checkChanges()
                             updateSettingsList()
                         },
                         onCancel = {
                             pendingAutoStartOnUsb = false
+                            checkChanges()
                             updateSettingsList()
                         }
                     )
@@ -617,14 +618,15 @@ class SettingsFragment : Fragment() {
             isChecked = pendingUsbStabilityCheck!!,
             onCheckedChanged = { isChecked ->
                 if (isChecked) {
+                    pendingUsbStabilityCheck = true
                     showExperimentalWarning(
                         onConfirm = {
-                            pendingUsbStabilityCheck = true
                             checkChanges()
                             updateSettingsList()
                         },
                         onCancel = {
                             pendingUsbStabilityCheck = false
+                            checkChanges()
                             updateSettingsList()
                         }
                     )
