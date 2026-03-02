@@ -25,7 +25,6 @@ import com.andrerinas.headunitrevived.connection.CommManager
 import com.andrerinas.headunitrevived.contract.KeyIntent
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import com.andrerinas.headunitrevived.decoder.VideoDecoder
 import com.andrerinas.headunitrevived.decoder.VideoDimensionsListener
 import com.andrerinas.headunitrevived.utils.AppLog
@@ -274,12 +273,12 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             is CommManager.ConnectionState.Connected -> {
                 // Fallback: AapService didn't start transport yet (e.g. service restarted).
                 // Night mode sync is handled by AapService's TransportStarted observer.
-                Thread({
-                    runBlocking { commManager.startTransport() }
+                lifecycleScope.launch {
+                    commManager.startTransport()
                     if (commManager.connectionState.value !is CommManager.ConnectionState.TransportStarted) {
                         commManager.disconnect()
                     }
-                }, "TransportStart").start()
+                }
             }
             is CommManager.ConnectionState.StartingTransport -> {
                 // AapService already started the handshake in parallel with the activity opening.

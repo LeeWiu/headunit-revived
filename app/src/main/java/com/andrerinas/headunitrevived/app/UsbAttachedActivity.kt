@@ -64,13 +64,12 @@ class UsbAttachedActivity : Activity() {
         val usbMode = UsbAccessoryMode(usbManager)
         AppLog.i("Switching USB device to accessory mode " + deviceCompat.uniqueName)
         Toast.makeText(this, getString(R.string.switching_usb_accessory_mode, deviceCompat.uniqueName), Toast.LENGTH_SHORT).show()
-        if (usbMode.connectAndSwitch(device)) {
-            Toast.makeText(this, getString(R.string.success), Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, getString(R.string.failed), Toast.LENGTH_SHORT).show()
-        }
-
-        finish()
+        // Run the USB control transfers on a background thread — they block for several
+        // hundred ms and must not execute on the main thread (ANR risk).
+        Thread {
+            usbMode.connectAndSwitch(device)
+            runOnUiThread { finish() }
+        }.start()
     }
 
     override fun onNewIntent(intent: Intent) {

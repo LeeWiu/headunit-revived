@@ -30,7 +30,7 @@ class UsbAccessoryConnection(private val usbMgr: UsbManager, private val device:
         }
     }
 
-    override suspend fun connect() = withContext(Dispatchers.Main) {
+    override suspend fun connect() = withContext(Dispatchers.IO) {
         return@withContext try {
             connect(device)
         } catch (e: UsbOpenException) {

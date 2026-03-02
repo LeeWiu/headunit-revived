@@ -97,7 +97,6 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
                     }
                 }
                 
-                transport.soTimeout = 15000
                 // Chinese Headunit Mediatek Correction
                 try {
                     transport.connect(InetSocketAddress(ip, port), 5000)
@@ -111,6 +110,9 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
                 }
                 // Chinese Headunit Mediatek Correction
             }
+            // Applied unconditionally so both outbound and WirelessServer-accepted sockets
+            // detect a dead phone within 3 s instead of blocking forever.
+            transport.soTimeout = 3000
             transport.tcpNoDelay = true
             transport.keepAlive = true
             transport.reuseAddress = true

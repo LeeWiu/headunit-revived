@@ -152,7 +152,9 @@ class AapTransport(
         sendThread?.quit()
         
         try {
-            pollThread?.join(1000)
+            // Don't join the poll thread from within itself — it would block for the full
+            // timeout since the thread can't finish while it's waiting for itself to finish.
+            if (Thread.currentThread() != pollThread) pollThread?.join(1000)
             sendThread?.join(1000)
         } catch (e: InterruptedException) {
             AppLog.e("Failed to join threads", e)

@@ -389,6 +389,10 @@ class AapService : Service(), UsbReceiver.Listener {
             if (retryCount > 0) {
                 AppLog.i("Retrying USB connection (attempt ${retryCount + 1}/$maxRetries)...")
                 delay(1500)
+                // A USB reattach during the delay could have already started a new connection;
+                // bail out to avoid two parallel retry loops competing on the same device.
+                if (commManager.isConnected ||
+                    commManager.connectionState.value is CommManager.ConnectionState.Connecting) return
             }
             commManager.connect(device)
             success = commManager.connectionState.value is CommManager.ConnectionState.Connected
@@ -596,31 +600,34 @@ class AapService : Service(), UsbReceiver.Listener {
     // -------------------------------------------------------------------------
 
     /**
-     * Background thread that listens for incoming TCP connections on port 5288.
+     * Coroutine-based server that listens for incoming TCP connections on port 5288.
      *
      * Registers the service over mDNS (NSD) as `_aawireless._tcp` so Android Auto
      * Wireless clients can discover it automatically. Each accepted socket is handed
      * off to [CommManager.connect] on the service coroutine scope. Only one connection
      * is allowed at a time; subsequent sockets are closed immediately.
+     *
+     * Uses [isActive] for cooperative cancellation. [stopServer] cancels the job and
+     * closes the server socket to unblock the blocking [ServerSocket.accept] call.
      */
-    private inner class WirelessServer : Thread() {
+    private inner class WirelessServer {
         private var serverSocket: ServerSocket? = null
         private var nsdManager: NsdManager? = null
         private var registrationListener: NsdManager.RegistrationListener? = null
-        private var running = true
+        private var job: Job? = null
 
-        override fun run() {
+        fun start() {
             nsdManager = getSystemService(Context.NSD_SERVICE) as NsdManager
             registerNsd()
 
-            try {
-                serverSocket = ServerSocket(5288).apply { reuseAddress = true }
-                AppLog.i("Wireless Server listening on port 5288")
-                logLocalNetworkInterfaces()
+            job = serviceScope.launch(Dispatchers.IO) {
+                try {
+                    serverSocket = ServerSocket(5288).apply { reuseAddress = true }
+                    AppLog.i("Wireless Server listening on port 5288")
+                    logLocalNetworkInterfaces()
 
-                while (running) {
-                    val clientSocket = serverSocket?.accept()
-                    if (clientSocket != null) {
+                    while (isActive) {
+                        val clientSocket = serverSocket?.accept() ?: break
                         AppLog.i("Wireless client connected: ${clientSocket.inetAddress}")
                         serviceScope.launch {
                             if (commManager.isConnected) {
@@ -634,11 +641,12 @@ class AapService : Service(), UsbReceiver.Listener {
                             }
                         }
                     }
+                } catch (e: Exception) {
+                    if (isActive) AppLog.e("Wireless server error", e)
+                } finally {
+                    unregisterNsd()
+                    try { serverSocket?.close() } catch (e: Exception) {}
                 }
-            } catch (e: Exception) {
-                if (running) AppLog.e("Wireless server error", e)
-            } finally {
-                unregisterNsd()
             }
         }
 
@@ -682,7 +690,9 @@ class AapService : Service(), UsbReceiver.Listener {
         }
 
         fun stopServer() {
-            running = false
+            job?.cancel()
+            job = null
+            // Close the socket to unblock the accept() call in the coroutine.
             try { serverSocket?.close() } catch (e: Exception) {}
         }
     }
