@@ -394,6 +394,7 @@ class AapService : Service(), UsbReceiver.Listener {
             }
             ACTION_RESET_USB -> {
                 resetUsbAndReconnect()
+            }
             ACTION_REQUEST_NIGHT_MODE_UPDATE -> {
                 AppLog.i("Night mode update action received.");
                 nightModeManager?.resendCurrentState()

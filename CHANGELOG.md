@@ -10,7 +10,7 @@
 - Added more mediasession logic to gain audio focus and audio routing
 - Merged Retry Button on connect screen, thanks to @andrecuellar
 - Merged auto connect usb feature, thanks to @andrecuellar
-- 
+
 ### v.1.14.3
 - New Feature: Added **App Shortcuts** for quick Connect/Disconnect. Now compatible with Samsung Modes & Routines.
 - New Feature: Registered HURev as an official system navigation provider (Category: Maps).
