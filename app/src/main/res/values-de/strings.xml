@@ -164,6 +164,8 @@
     <string name="usb_stability_timeout">Stabilitäts-Zeitlimit</string>
     <string name="usb_stability_timeout_description">Sekunden, die das Gerät verbunden bleiben muss, bevor es automatisch verbunden oder erneut verbunden wird (%d s)</string>
     <string name="usb_device_settling">Warten auf Stabilisierung des USB-Geräts…</string>
+    <string name="max_auto_retry_attempts">Max. automatische Wiederverbindungsversuche</string>
+    <string name="max_auto_retry_attempts_description">Anzahl der automatischen Wiederverbindungsversuche (%d)</string>
     <string name="video_codec">Video Codec</string>
     <string name="fps_limit">FPS Limit</string>
     <string name="save">Speichern</string>
@@ -257,6 +259,11 @@
     <string name="shortcut_connect_desc">Mit letztem Gerät verbinden</string>
     <string name="shortcut_disconnect_title">Trennen</string>
     <string name="shortcut_disconnect_desc">Aktuelle Sitzung beenden</string>
+    <string name="retry">Wiederholen</string>
+    <string name="retry_connection_title">Verbindung wiederholen</string>
+    <string name="retry_connection_option">Android Auto wiederholen</string>
+    <string name="reset_usb_option">USB-Verbindung zurücksetzen</string>
+    <string name="reset_usb_timeout">USB-Gerät nicht gefunden. Bitte Verbindung prüfen.</string>
     <string name="shortcut_night_mode_auto_title">Modus: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Automatischen Nachtmodus wiederherstellen</string>
     <string name="shortcut_night_mode_day_title">Modus: Tag</string>

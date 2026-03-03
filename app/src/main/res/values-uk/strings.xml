@@ -162,6 +162,8 @@
     <string name="usb_stability_timeout">Таймаут стабільності</string>
     <string name="usb_stability_timeout_description">Секунди, протягом яких пристрій має залишатися підключеним перед автопідключенням або перепідключенням (%d с)</string>
     <string name="usb_device_settling">Очікування стабілізації USB-пристрою…</string>
+    <string name="max_auto_retry_attempts">Макс. спроб автопідключення</string>
+    <string name="max_auto_retry_attempts_description">Кількість автоматичних спроб перепідключення (%d)</string>
     <string name="video_codec">Відеокодек</string>
     <string name="fps_limit">Обмеження FPS</string>
     <string name="save">Зберегти</string>
@@ -249,6 +251,11 @@
     <string name="failed">Помилка</string>
     <string name="failed_start_android_auto">Не вдалося запустити Android Auto</string>
     <string name="android_auto_starting">Запуск Android Auto…</string>
+    <string name="retry">Повторити</string>
+    <string name="retry_connection_title">Повторити підключення</string>
+    <string name="retry_connection_option">Повторити Android Auto</string>
+    <string name="reset_usb_option">Скинути USB-підключення</string>
+    <string name="reset_usb_timeout">USB-пристрій не знайдено. Перевірте підключення.</string>
     <string name="notification_service_running">Headunit Revived запущено</string>
     <string name="notification_projection_active">Трансляція Android Auto активна</string>
     <string name="shortcut_connect_title">Підключити</string>

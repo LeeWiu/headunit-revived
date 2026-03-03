@@ -93,6 +93,7 @@ class SettingsFragment : Fragment() {
     private var pendingAutoStartOnUsb: Boolean? = null
     private var pendingUsbStabilityCheck: Boolean? = null
     private var pendingUsbStabilityTimeout: Int? = null
+    private var pendingMaxAutoRetryAttempts: Int? = null
 
     private var pendingMediaVolumeOffset: Int? = null
     private var pendingAssistantVolumeOffset: Int? = null
@@ -139,6 +140,7 @@ class SettingsFragment : Fragment() {
         pendingAutoStartOnUsb = settings.autoStartOnUsb
         pendingUsbStabilityCheck = settings.usbStabilityCheck
         pendingUsbStabilityTimeout = settings.usbStabilityTimeout
+        pendingMaxAutoRetryAttempts = settings.maxAutoRetryAttempts
         pendingScreenOrientation = settings.screenOrientation
         pendingAppLanguage = settings.appLanguage
         
@@ -245,6 +247,7 @@ class SettingsFragment : Fragment() {
         pendingAutoStartOnUsb?.let { settings.autoStartOnUsb = it }
         pendingUsbStabilityCheck?.let { settings.usbStabilityCheck = it }
         pendingUsbStabilityTimeout?.let { settings.usbStabilityTimeout = it }
+        pendingMaxAutoRetryAttempts?.let { settings.maxAutoRetryAttempts = it }
         pendingScreenOrientation?.let { settings.screenOrientation = it }
 
         pendingMediaVolumeOffset?.let { settings.mediaVolumeOffset = it }
@@ -340,6 +343,7 @@ class SettingsFragment : Fragment() {
                         pendingAutoStartOnUsb != settings.autoStartOnUsb ||
                         pendingUsbStabilityCheck != settings.usbStabilityCheck ||
                         pendingUsbStabilityTimeout != settings.usbStabilityTimeout ||
+                        pendingMaxAutoRetryAttempts != settings.maxAutoRetryAttempts ||
                         pendingScreenOrientation != settings.screenOrientation ||
                         pendingAppLanguage != settings.appLanguage ||
                         pendingInsetLeft != settings.insetLeft ||
@@ -639,6 +643,21 @@ class SettingsFragment : Fragment() {
                 }
             ))
         }
+
+        items.add(SettingItem.SliderSettingEntry(
+            stableId = "maxAutoRetryAttempts",
+            nameResId = R.string.max_auto_retry_attempts,
+            value = getString(R.string.max_auto_retry_attempts_description, pendingMaxAutoRetryAttempts!!),
+            sliderValue = pendingMaxAutoRetryAttempts!!.toFloat(),
+            valueFrom = 1f,
+            valueTo = 10f,
+            stepSize = 1f,
+            onValueChanged = { value ->
+                pendingMaxAutoRetryAttempts = value.toInt()
+                checkChanges()
+                updateSettingsList()
+            }
+        ))
 
         // --- Graphic Settings ---
         items.add(SettingItem.CategoryHeader("graphic", R.string.category_graphic))

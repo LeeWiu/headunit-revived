@@ -162,6 +162,8 @@
     <string name="usb_stability_timeout">Таймаут стабильности</string>
     <string name="usb_stability_timeout_description">Секунды, в течение которых устройство должно оставаться подключённым перед автоподключением или переподключением (%d с)</string>
     <string name="usb_device_settling">Ожидание стабилизации USB-устройства…</string>
+    <string name="max_auto_retry_attempts">Макс. попыток автоподключения</string>
+    <string name="max_auto_retry_attempts_description">Количество автоматических попыток переподключения (%d)</string>
     <string name="video_codec">Видеокодек</string>
     <string name="fps_limit">Ограничение FPS</string>
     <string name="save">Сохранить</string>
@@ -261,4 +263,9 @@
     <string name="shortcut_night_mode_day_desc">Принудительный дневной режим</string>
     <string name="shortcut_night_mode_night_title">Режим: Ночь</string>
     <string name="shortcut_night_mode_night_desc">Принудительный ночной режим</string>
+    <string name="retry">Повторить</string>
+    <string name="retry_connection_title">Повторить подключение</string>
+    <string name="retry_connection_option">Повторить Android Auto</string>
+    <string name="reset_usb_option">Сбросить USB-подключение</string>
+    <string name="reset_usb_timeout">USB-устройство не найдено. Проверьте подключение.</string>
 </resources>

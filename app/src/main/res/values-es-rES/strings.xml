@@ -162,6 +162,8 @@
     <string name="usb_stability_timeout">Tiempo de espera de estabilidad</string>
     <string name="usb_stability_timeout_description">Segundos que el dispositivo debe permanecer conectado antes de conectar o reconectar automáticamente (%d s)</string>
     <string name="usb_device_settling">Esperando a que el dispositivo USB se estabilice…</string>
+    <string name="max_auto_retry_attempts">Máx. intentos de reconexión automática</string>
+    <string name="max_auto_retry_attempts_description">Número de intentos de reconexión automática (%d)</string>
     <string name="video_codec">Códec de vídeo</string>
     <string name="fps_limit">Límite FPS</string>
     <string name="save">Guardar</string>
@@ -261,4 +263,9 @@
     <string name="shortcut_night_mode_day_desc">Forzar modo día</string>
     <string name="shortcut_night_mode_night_title">Modo: Noche</string>
     <string name="shortcut_night_mode_night_desc">Forzar modo noche</string>
+    <string name="retry">Reintentar</string>
+    <string name="retry_connection_title">Reintentar conexión</string>
+    <string name="retry_connection_option">Reintentar Android Auto</string>
+    <string name="reset_usb_option">Restablecer conexión USB</string>
+    <string name="reset_usb_timeout">Dispositivo USB no encontrado. Compruebe la conexión.</string>
 </resources>

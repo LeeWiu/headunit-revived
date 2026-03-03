@@ -155,6 +155,8 @@
     <string name="usb_stability_timeout">Stabilitási időkorlát</string>
     <string name="usb_stability_timeout_description">Másodpercek, ameddig az eszköznek csatlakozva kell maradnia az automatikus csatlakozás vagy újracsatlakozás előtt (%d mp)</string>
     <string name="usb_device_settling">Várakozás az USB-eszköz stabilizálódására…</string>
+    <string name="max_auto_retry_attempts">Max. automatikus újracsatlakozási kísérletek</string>
+    <string name="max_auto_retry_attempts_description">Automatikus újracsatlakozási kísérletek száma (%d)</string>
     <string name="auto_connect_settings">Automatikus csatlakozás beállítások</string>
     <string name="auto_connect_settings_description">Az automatikus csatlakozási módok és prioritásuk konfigurálása</string>
     <string name="auto_connect_help">Ezek a módszerek automatikusan futnak az alkalmazás megnyitásakor. Engedélyezze a kívántakat, majd húzza őket a sorrend beállításához. Az első sikeres engedélyezett módszer kerül felhasználásra.</string>
@@ -262,4 +264,9 @@
     <string name="shortcut_night_mode_day_desc">Nappali mód kényszerítése</string>
     <string name="shortcut_night_mode_night_title">Mód: Éjszakai</string>
     <string name="shortcut_night_mode_night_desc">Éjszakai mód kényszerítése</string>
+    <string name="retry">Újra</string>
+    <string name="retry_connection_title">Kapcsolat újrapróbálása</string>
+    <string name="retry_connection_option">Android Auto újrapróbálása</string>
+    <string name="reset_usb_option">USB kapcsolat visszaállítása</string>
+    <string name="reset_usb_timeout">USB eszköz nem található. Ellenőrizze a csatlakozást.</string>
 </resources>

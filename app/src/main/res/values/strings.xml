@@ -164,6 +164,8 @@
     <string name="usb_stability_timeout">Stability timeout</string>
     <string name="usb_stability_timeout_description">Seconds the device must stay connected before auto-connecting or reconnecting (%d s)</string>
     <string name="usb_device_settling">Waiting for USB device to stabilize…</string>
+    <string name="max_auto_retry_attempts">Max auto-reconnect attempts</string>
+    <string name="max_auto_retry_attempts_description">Number of automatic reconnection attempts (%d)</string>
     <string name="video_codec">Video Codec</string>
     <string name="fps_limit">FPS Limit</string>
     <string name="save">Save</string>
@@ -251,6 +253,11 @@
     <string name="failed">Failed</string>
     <string name="failed_start_android_auto">Failed to start Android Auto</string>
     <string name="android_auto_starting">Android Auto is starting…</string>
+    <string name="retry">Retry</string>
+    <string name="retry_connection_title">Retry Connection</string>
+    <string name="retry_connection_option">Retry Android Auto</string>
+    <string name="reset_usb_option">Reset USB Connection</string>
+    <string name="reset_usb_timeout">USB device not found. Please check connection.</string>
     <string name="notification_service_running">Headunit Revived is running</string>
     <string name="notification_projection_active">Android Auto is projected</string>
     <string name="shortcut_connect_title">Connect</string>
