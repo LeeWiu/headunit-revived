@@ -29,9 +29,7 @@ class NightMode(private val settings: Settings, val hasGPSLocation: Boolean) {
                         currentMinutes >= start || currentMinutes <= end
                     }
                     
-                    if (settings.debugMode) {
-                        AppLog.i("NightMode Check: Now=$currentMinutes, Start=$start, End=$end, Result=$isNight")
-                    }
+                    AppLog.d("NightMode Check: Now=$currentMinutes, Start=$start, End=$end, Result=$isNight")
                     isNight
                 }
                 Settings.NightMode.LIGHT_SENSOR -> {
