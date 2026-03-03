@@ -174,6 +174,7 @@
     <string name="enable">Engedélyezés</string>
     <string name="experimental_feature_title">Kísérleti funkció</string>
     <string name="experimental_feature_message">Ez a funkció kísérleti jellegű, és nem feltétlenül működik megfelelően minden eszközön. Szeretné engedélyezni?</string>
+    <string name="experimental_feature_usb_hint">Ha az automatikus USB-csatlakozást fogja használni, kérjük, először tesztelje ezzel a lehetőséggel kikapcsolva.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Hang</string>

@@ -172,6 +172,7 @@
     <string name="enable">Inschakelen</string>
     <string name="experimental_feature_title">Experimentele functie</string>
     <string name="experimental_feature_message">Deze functie is experimenteel en werkt mogelijk niet correct op alle apparaten. Wilt u deze inschakelen?</string>
+    <string name="experimental_feature_usb_hint">Als u automatische USB-verbinding gaat gebruiken, test dan eerst met deze optie uitgeschakeld.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>

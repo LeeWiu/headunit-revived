@@ -175,6 +175,7 @@
     <string name="enable">Enable</string>
     <string name="experimental_feature_title">Experimental Feature</string>
     <string name="experimental_feature_message">This feature is experimental and may not work correctly on all devices. Do you want to enable it?</string>
+    <string name="experimental_feature_usb_hint">If you are going to use USB auto-connect, please first test with this option turned off.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>

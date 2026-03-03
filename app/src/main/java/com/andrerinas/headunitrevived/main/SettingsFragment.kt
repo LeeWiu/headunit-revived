@@ -581,24 +581,9 @@ class SettingsFragment : Fragment() {
             descriptionResId = R.string.auto_start_usb_description,
             isChecked = pendingAutoStartOnUsb!!,
             onCheckedChanged = { isChecked ->
-                if (isChecked) {
-                    pendingAutoStartOnUsb = true
-                    updateSettingsList()
-                    showExperimentalWarning(
-                        onConfirm = {
-                            checkChanges()
-                        },
-                        onCancel = {
-                            pendingAutoStartOnUsb = false
-                            checkChanges()
-                            updateSettingsList()
-                        }
-                    )
-                } else {
-                    pendingAutoStartOnUsb = false
-                    checkChanges()
-                    updateSettingsList()
-                }
+                pendingAutoStartOnUsb = isChecked
+                checkChanges()
+                updateSettingsList()
             }
         ))
 
@@ -1249,9 +1234,11 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showExperimentalWarning(onConfirm: () -> Unit, onCancel: () -> Unit) {
+        val message = getString(R.string.experimental_feature_message) + "\n\n" +
+            getString(R.string.experimental_feature_usb_hint)
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.experimental_feature_title)
-            .setMessage(R.string.experimental_feature_message)
+            .setMessage(message)
             .setPositiveButton(R.string.enable) { _, _ -> onConfirm() }
             .setNegativeButton(R.string.cancel) { _, _ -> onCancel() }
             .setOnCancelListener { onCancel() }

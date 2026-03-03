@@ -173,6 +173,7 @@
     <string name="enable">Включить</string>
     <string name="experimental_feature_title">Экспериментальная функция</string>
     <string name="experimental_feature_message">Эта функция является экспериментальной и может работать некорректно на всех устройствах. Хотите включить её?</string>
+    <string name="experimental_feature_usb_hint">Если вы собираетесь использовать автоподключение USB, сначала протестируйте с этой опцией выключенной.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Аудио</string>

@@ -175,6 +175,7 @@
     <string name="enable">Povolit</string>
     <string name="experimental_feature_title">Experimentální funkce</string>
     <string name="experimental_feature_message">Tato funkce je experimentální a nemusí správně fungovat na všech zařízeních. Chcete ji povolit?</string>
+    <string name="experimental_feature_usb_hint">Pokud budete používat automatické připojení USB, nejprve otestujte s touto volbou vypnutou.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Audio</string>

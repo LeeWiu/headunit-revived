@@ -173,6 +173,7 @@
     <string name="enable">Увімкнути</string>
     <string name="experimental_feature_title">Експериментальна функція</string>
     <string name="experimental_feature_message">Ця функція є експериментальною і може працювати некоректно на деяких пристроях. Бажаєте увімкнути її?</string>
+    <string name="experimental_feature_usb_hint">Якщо ви збираєтесь використовувати автопідключення USB, спочатку протестуйте з цією опцією вимкненою.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Звук</string>

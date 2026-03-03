@@ -173,6 +173,7 @@
     <string name="enable">Ativar</string>
     <string name="experimental_feature_title">Recurso experimental</string>
     <string name="experimental_feature_message">Este recurso é experimental e pode não funcionar corretamente em todos os dispositivos. Deseja ativá-lo?</string>
+    <string name="experimental_feature_usb_hint">Se você for usar a conexão automática USB, primeiro teste com esta opção desativada.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">Áudio</string>

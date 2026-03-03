@@ -172,6 +172,7 @@
     <string name="enable">啟用</string>
     <string name="experimental_feature_title">實驗性功能</string>
     <string name="experimental_feature_message">此功能為實驗性質，可能無法在所有裝置上正常運作。您要啟用嗎？</string>
+    <string name="experimental_feature_usb_hint">如果您要使用 USB 自動連線，請先在關閉此選項的情況下進行測試。</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">音訊</string>
