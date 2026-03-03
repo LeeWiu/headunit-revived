@@ -251,4 +251,16 @@
     <string name="failed">Selhalo</string>
     <string name="failed_start_android_auto">Spuštění Android Auto selhalo</string>
     <string name="android_auto_starting">Android Auto se spouští…</string>
+    <string name="notification_service_running">Headunit Revived je spuštěna</string>
+    <string name="notification_projection_active">Android Auto je promítáno</string>
+    <string name="shortcut_connect_title">Připojit</string>
+    <string name="shortcut_connect_desc">Připojit k poslednímu známému zařízení</string>
+    <string name="shortcut_disconnect_title">Odpojit</string>
+    <string name="shortcut_disconnect_desc">Ukončit aktuální relaci</string>
+    <string name="shortcut_night_mode_auto_title">Režim: Auto</string>
+    <string name="shortcut_night_mode_auto_desc">Obnovit automatický noční režim</string>
+    <string name="shortcut_night_mode_day_title">Režim: Den</string>
+    <string name="shortcut_night_mode_day_desc">Vynutit denní režim</string>
+    <string name="shortcut_night_mode_night_title">Režim: Noc</string>
+    <string name="shortcut_night_mode_night_desc">Vynutit noční režim</string>
 </resources>

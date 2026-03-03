@@ -249,4 +249,16 @@
     <string name="failed">Niepowodzenie</string>
     <string name="failed_start_android_auto">Uruchomienie Android Auto nie powiodło się</string>
     <string name="android_auto_starting">Android Auto uruchamia się…</string>
+    <string name="notification_service_running">Headunit Revived działa</string>
+    <string name="notification_projection_active">Android Auto jest wyświetlane</string>
+    <string name="shortcut_connect_title">Połącz</string>
+    <string name="shortcut_connect_desc">Połącz z ostatnim urządzeniem</string>
+    <string name="shortcut_disconnect_title">Rozłącz</string>
+    <string name="shortcut_disconnect_desc">Zakończ obecną sesję</string>
+    <string name="shortcut_night_mode_auto_title">Tryb: Auto</string>
+    <string name="shortcut_night_mode_auto_desc">Przywróć automatyczny tryb nocny</string>
+    <string name="shortcut_night_mode_day_title">Tryb: Dzień</string>
+    <string name="shortcut_night_mode_day_desc">Wymuś tryb dzienny</string>
+    <string name="shortcut_night_mode_night_title">Tryb: Noc</string>
+    <string name="shortcut_night_mode_night_desc">Wymuś tryb nocny</string>
 </resources>

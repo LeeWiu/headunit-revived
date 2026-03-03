@@ -76,6 +76,8 @@ adb shell am start -a android.intent.action.VIEW -d "headunit://connect?ip=192.1
 - Fixed BT Permission Bug
 - Changed the Twilight-Calculator for better switch to day/night on auto mode to prevent to bright display
 - Added more mediasession logic to gain audio focus and audio routing
+- Merged Retry Button on connect screen, thanks to @andrecuellar
+- Merged auto connect usb feature, thanks to @andrecuellar
 
 ### v.1.14.3
 - **Automation:** Added App Shortcuts for Samsung Modes & Routines support.

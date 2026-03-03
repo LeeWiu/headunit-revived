@@ -116,8 +116,12 @@
     <string name="usb_auto_connect_description">الاتصال تلقائيا بجهاز USB معروف عند فتح التطبيق.</string>
     <string name="auto_start_bt_label">التشغيل التلقائي عبر البلوتوث</string>
     <string name="auto_start_bt_description">فتح Headunit Revived تلقائيا عند اتصال جهاز بلوتوث محدد.</string>
+    <string name="auto_start_usb_label">تشغيل تلقائي عند توصيل USB</string>
+    <string name="auto_start_usb_description">فتح التطبيق تلقائيا عند توصيل جهاز USB</string>
     <string name="select_bt_device">اختر جهاز البلوتوث</string>
     <string name="bt_device_not_set">غير محدد</string>
+    <string name="bt_permission_denied_title">مطلوب إذن البلوتوث</string>
+    <string name="bt_permission_denied_message">إذن البلوتوث مطلوب لاختيار الأجهزة المقترنة. يرجى منحه في إعدادات التطبيق.</string>
     <string name="overlay_permission_title">إذن البدء في الخلفية</string>
     <string name="overlay_permission_description">للسماح لـ Headunit Revived بالفتح التلقائي عند اتصال البلوتوث، يرجى تفعيل إذن "العرض فوق التطبيقات الأخرى" في الشاشة التالية.</string>
     <string name="open_settings">الإعدادات</string>
@@ -144,12 +148,32 @@
     </string-array>
     <string name="auto_connect_last_session">الاتصال التلقائي بالجلسة الأخيرة</string>
     <string name="auto_connect_last_session_description">إعادة الاتصال تلقائيا بآخر جهاز مستخدم عند بدء التطبيق</string>
+    <string name="auto_connect_single_usb">اتصال تلقائي بجهاز USB</string>
+    <string name="auto_connect_single_usb_description">الاتصال تلقائيا عند توفر جهاز واحد متوافق فقط</string>
+    <string name="auto_connect_settings">إعدادات الاتصال التلقائي</string>
+    <string name="auto_connect_settings_description">تكوين طرق الاتصال التلقائي وترتيب أولوياتها</string>
+    <string name="auto_connect_help">تعمل هذه الطرق تلقائيا عند فتح التطبيق. قم بتمكين الطرق التي تريدها، ثم اسحب لضبط الترتيب. سيتم استخدام أول طريقة ممكّنة تنجح.</string>
+    <string name="auto_connect_priority">الأولوية %d</string>
+    <string name="auto_connect_all_disabled">الكل معطل</string>
+    <string name="drag_to_reorder">اسحب لإعادة الترتيب</string>
+    <string name="move_up">تحريك للأعلى</string>
+    <string name="move_down">تحريك للأسفل</string>
+    <string name="auto_connecting_single_usb">جار الاتصال تلقائيا بجهاز USB…</string>
+    <string name="usb_stability_check">فحص استقرار محول USB</string>
+    <string name="usb_stability_check_description">مكن هذا الخيار إذا كان لديك محول Android Auto لاسلكي ينقطع اتصاله ويعيد الاتصال عدة مرات قبل أن يعمل بشكل صحيح</string>
+    <string name="usb_stability_timeout">مهلة الاستقرار</string>
+    <string name="usb_stability_timeout_description">الثواني التي يجب أن يظل فيها الجهاز متصلاً قبل الاتصال التلقائي أو إعادة الاتصال (%d ثانية)</string>
+    <string name="usb_device_settling">في انتظار استقرار جهاز USB…</string>
     <string name="video_codec">ترميز الفيديو</string>
     <string name="fps_limit">حد معدل الإطارات</string>
     <string name="save">حفظ</string>
     <string name="save_and_restart">حفظ (يلزم إعادة الاتصال)</string>
     <string name="add_new">إضافة جديد</string>
     <string name="cancel">إلغاء</string>
+    <string name="enable">تمكين</string>
+    <string name="experimental_feature_title">ميزة تجريبية</string>
+    <string name="experimental_feature_message">هذه الميزة تجريبية وقد لا تعمل بشكل صحيح على جميع الأجهزة. هل تريد تمكينها؟</string>
+    <string name="experimental_feature_usb_hint">إذا كنت ستستخدم الاتصال التلقائي عبر USB، فيرجى الاختبار أولا مع إيقاف تشغيل هذا الخيار.</string>
 
     <!-- Audio Settings -->
     <string name="category_audio">الصوت</string>
@@ -233,4 +257,10 @@
     <string name="shortcut_connect_desc">الاتصال بآخر جهاز معروف</string>
     <string name="shortcut_disconnect_title">قطع الاتصال</string>
     <string name="shortcut_disconnect_desc">إنهاء الجلسة الحالية</string>
+    <string name="shortcut_night_mode_auto_title">الوضع: تلقائي</string>
+    <string name="shortcut_night_mode_auto_desc">استعادة الوضع الليلي التلقائي</string>
+    <string name="shortcut_night_mode_day_title">الوضع: نهاري</string>
+    <string name="shortcut_night_mode_day_desc">فرض الوضع النهاري</string>
+    <string name="shortcut_night_mode_night_title">الوضع: ليلي</string>
+    <string name="shortcut_night_mode_night_desc">فرض الوضع الليلي</string>
 </resources>

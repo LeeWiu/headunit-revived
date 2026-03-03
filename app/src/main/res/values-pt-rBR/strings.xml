@@ -249,4 +249,16 @@
     <string name="failed">Falha</string>
     <string name="failed_start_android_auto">Falha ao iniciar Android Auto</string>
     <string name="android_auto_starting">Android Auto está iniciando…</string>
+    <string name="notification_service_running">Headunit Revived está em execução</string>
+    <string name="notification_projection_active">Android Auto está projetado</string>
+    <string name="shortcut_connect_title">Conectar</string>
+    <string name="shortcut_connect_desc">Conectar ao último dispositivo conhecido</string>
+    <string name="shortcut_disconnect_title">Desconectar</string>
+    <string name="shortcut_disconnect_desc">Encerrar sessão atual</string>
+    <string name="shortcut_night_mode_auto_title">Modo: Auto</string>
+    <string name="shortcut_night_mode_auto_desc">Restaurar modo noturno automático</string>
+    <string name="shortcut_night_mode_day_title">Modo: Dia</string>
+    <string name="shortcut_night_mode_day_desc">Forçar modo dia</string>
+    <string name="shortcut_night_mode_night_title">Modo: Noite</string>
+    <string name="shortcut_night_mode_night_desc">Forçar modo noite</string>
 </resources>

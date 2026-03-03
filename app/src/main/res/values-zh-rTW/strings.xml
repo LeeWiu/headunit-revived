@@ -248,4 +248,16 @@
     <string name="failed">失敗</string>
     <string name="failed_start_android_auto">啟動 Android Auto 失敗</string>
     <string name="android_auto_starting">Android Auto 啟動中…</string>
+    <string name="notification_service_running">Headunit Revived 執行中</string>
+    <string name="notification_projection_active">Android Auto 投射中</string>
+    <string name="shortcut_connect_title">連接</string>
+    <string name="shortcut_connect_desc">連接至上次使用的裝置</string>
+    <string name="shortcut_disconnect_title">斷開連接</string>
+    <string name="shortcut_disconnect_desc">結束目前的會話</string>
+    <string name="shortcut_night_mode_auto_title">模式：自動</string>
+    <string name="shortcut_night_mode_auto_desc">恢復自動夜間模式</string>
+    <string name="shortcut_night_mode_day_title">模式：日間</string>
+    <string name="shortcut_night_mode_day_desc">強制日間模式</string>
+    <string name="shortcut_night_mode_night_title">模式：夜間</string>
+    <string name="shortcut_night_mode_night_desc">強制夜間模式</string>
 </resources>

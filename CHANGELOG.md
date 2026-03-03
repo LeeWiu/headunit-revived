@@ -8,6 +8,8 @@
 - Fixed BT Permission Bug
 - Changed the Twilight-Calculator for better switch to day/night on auto mode to prevent to bright display
 - Added more mediasession logic to gain audio focus and audio routing
+- Merged Retry Button on connect screen, thanks to @andrecuellar
+- Merged auto connect usb feature, thanks to @andrecuellar
 - 
 ### v.1.14.3
 - New Feature: Added **App Shortcuts** for quick Connect/Disconnect. Now compatible with Samsung Modes & Routines.

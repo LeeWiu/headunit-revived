@@ -249,4 +249,16 @@
     <string name="failed">Ошибка</string>
     <string name="failed_start_android_auto">Не удалось запустить Android Auto</string>
     <string name="android_auto_starting">Запуск Android Auto…</string>
+    <string name="notification_service_running">Headunit Revived запущен</string>
+    <string name="notification_projection_active">Трансляция Android Auto активна</string>
+    <string name="shortcut_connect_title">Подключить</string>
+    <string name="shortcut_connect_desc">Подключиться к последнему устройству</string>
+    <string name="shortcut_disconnect_title">Отключить</string>
+    <string name="shortcut_disconnect_desc">Завершить текущий сеанс</string>
+    <string name="shortcut_night_mode_auto_title">Режим: Авто</string>
+    <string name="shortcut_night_mode_auto_desc">Вернуть авто-переключение темы</string>
+    <string name="shortcut_night_mode_day_title">Режим: День</string>
+    <string name="shortcut_night_mode_day_desc">Принудительный дневной режим</string>
+    <string name="shortcut_night_mode_night_title">Режим: Ночь</string>
+    <string name="shortcut_night_mode_night_desc">Принудительный ночной режим</string>
 </resources>

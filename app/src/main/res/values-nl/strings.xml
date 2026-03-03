@@ -248,4 +248,16 @@
     <string name="failed">Mislukt</string>
     <string name="failed_start_android_auto">Starten van Android Auto mislukt</string>
     <string name="android_auto_starting">Android Auto start op…</string>
+    <string name="notification_service_running">Headunit Revived is actief</string>
+    <string name="notification_projection_active">Android Auto wordt geprojecteerd</string>
+    <string name="shortcut_connect_title">Verbinden</string>
+    <string name="shortcut_connect_desc">Verbinden met laatst bekende apparaat</string>
+    <string name="shortcut_disconnect_title">Verbinding verbreken</string>
+    <string name="shortcut_disconnect_desc">Beëindig huidige sessie</string>
+    <string name="shortcut_night_mode_auto_title">Modus: Auto</string>
+    <string name="shortcut_night_mode_auto_desc">Herstel automatische nachtmodus</string>
+    <string name="shortcut_night_mode_day_title">Modus: Dag</string>
+    <string name="shortcut_night_mode_day_desc">Forceer dagmodus</string>
+    <string name="shortcut_night_mode_night_title">Modus: Nacht</string>
+    <string name="shortcut_night_mode_night_desc">Forceer nachtmodus</string>
 </resources>

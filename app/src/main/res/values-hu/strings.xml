@@ -256,4 +256,10 @@
     <string name="shortcut_connect_desc">Kapcsolódás az utolsó ismert eszközhöz</string>
     <string name="shortcut_disconnect_title">Leválasztás</string>
     <string name="shortcut_disconnect_desc">Az aktuális munkamenet befejezése</string>
+    <string name="shortcut_night_mode_auto_title">Mód: Auto</string>
+    <string name="shortcut_night_mode_auto_desc">Automatikus éjszakai mód visszaállítása</string>
+    <string name="shortcut_night_mode_day_title">Mód: Nappali</string>
+    <string name="shortcut_night_mode_day_desc">Nappali mód kényszerítése</string>
+    <string name="shortcut_night_mode_night_title">Mód: Éjszakai</string>
+    <string name="shortcut_night_mode_night_desc">Éjszakai mód kényszerítése</string>
 </resources>
