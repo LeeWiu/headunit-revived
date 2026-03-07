@@ -273,4 +273,13 @@
     <string name="setup_widescreen_detected">Pantalla panorámica detectada.</string>
     <string name="auto_optimize">Optimizar ajustes automáticamente</string>
     <string name="auto_optimize_desc">Ejecuta el chequeo del sistema para encontrar los mejores ajustes para tu dispositivo.</string>
+    <string name="fullscreen_none">Normal (Barras visibles)</string>
+    <string name="fullscreen_immersive">Inmersivo (Barras ocultas)</string>
+    <string name="fullscreen_status_only">Ocultar solo barra de estado</string>
+    <string name="log_level">Nivel de log</string>
+    <string name="log_level_description">Elija el nivel de detalle de los mensajes de log para depuración.</string>
+    <string name="start_log_capture">Iniciar captura de log</string>
+    <string name="start_log_capture_description">Comienza a registrar los logs del sistema en un archivo.</string>
+    <string name="stop_log_capture">Detener captura de log</string>
+    <string name="stop_log_capture_description">Detiene la grabación y guarda el archivo de log.</string>
 </resources>

@@ -272,4 +272,13 @@
     <string name="setup_widescreen_detected">Szélesvásznú kijelző észlelve.</string>
     <string name="auto_optimize">Beállítások automatikus optimalizálása</string>
     <string name="auto_optimize_desc">Rendszerellenőrzés futtatása az eszközhöz legjobban illő beállítások megtalálásához.</string>
+    <string name="fullscreen_none">Normal (All bars visible)</string>
+    <string name="fullscreen_immersive">Immersive (All bars hidden)</string>
+    <string name="fullscreen_status_only">Hide status bar only</string>
+    <string name="log_level">Log Level</string>
+    <string name="log_level_description">Choose the detail level of log output for debugging.</string>
+    <string name="start_log_capture">Start log capture</string>
+    <string name="start_log_capture_description">Begins recording system logs to a file.</string>
+    <string name="stop_log_capture">Stop log capture</string>
+    <string name="stop_log_capture_description">Stops recording and saves the log file.</string>
 </resources>

@@ -57,14 +57,14 @@ adb shell am start -a android.intent.action.VIEW -d "headunit://connect?ip=192.1
 - **Google Maps in Portrait Mode:** Touch interactions (searching, scrolling) within Google Maps may not work as expected when using Portrait Mode on some devices. **Fix:** Try reducing the **Pixel density (DPI)** setting to **below 200** (e.g., 190) in the app settings. This often restores full functionality.
 
 ## Changelog
-### v.1.15.1
-- New Feature: Added **Auto-Optimization Wizard** to automatically find the best Resolution, DPI, and Codec settings for your hardware.
-- Bugfix: Fixed **Self Mode** failing to start in offline/hotspot scenarios (Network ID 0 fix).
-- Bugfix: Improved **Audio Routing**. The phone is now more likely to route audio to the headunit immediately upon connection by using an early-initialized MediaSession with remote playback metadata.
-- Bugfix: Fixed **GPS Speed** calculation. Speeds were previously doubled due to an incorrect unit conversion (knots instead of mm/s).
-- UI: Improved Settings readability on small screens by allowing multi-line descriptions.
+### v.2.0.0
+- **Wi-Fi Direct (P2P) Support:** Connect without a shared network or hotspot.
+- **New CommManager:** Refactored connection core for maximum stability and performance.
+- **Advanced Fullscreen:** New "Hide Status Bar Only" mode for better hardware button compatibility.
+- **Auto-Optimization:** Setup wizard for hardware-based setting recommendations.
+- **Audio & GPS Fixes:** Improved routing reliability and accurate speed reporting.
 
-### v.1.15.0
+### v.1.15.1
 - Added arabic language thanks to A5H0
 - Added new intent for setting day/night mode for maps
 - Added new window flags for older devices to finally fix fullscreen issues

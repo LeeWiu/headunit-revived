@@ -273,4 +273,13 @@
     <string name="setup_widescreen_detected">Виявлено широкоформатний дисплей.</string>
     <string name="auto_optimize">Автоматично оптимізувати налаштування</string>
     <string name="auto_optimize_desc">Запустити перевірку системи, щоб знайти найкращі налаштування для вашого пристрою.</string>
-</resources>
+    <string name="fullscreen_none">Звичайний (Усі панелі видимі)</string>
+    <string name="fullscreen_immersive">Повне занурення (Усі панелі приховані)</string>
+    <string name="fullscreen_status_only">Приховати лише рядок стану</string>
+    <string name="log_level">Рівень логування</string>
+    <string name="log_level_description">Виберіть рівень деталізації виводу логів для налагодження.</string>
+    <string name="start_log_capture">Почати запис лога</string>
+    <string name="start_log_capture_description">Починає запис системних логів у файл.</string>
+    <string name="stop_log_capture">Зупинити запис лога</string>
+    <string name="stop_log_capture_description">Зупиняє запис і зберігає файл лога.</string>
+    </resources>

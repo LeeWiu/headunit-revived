@@ -63,7 +63,7 @@ class SettingsFragment : Fragment() {
     private var pendingUseGps: Boolean? = null
     private var pendingResolution: Int? = null
     private var pendingDpi: Int? = null
-    private var pendingFullscreen: Boolean? = null
+    private var pendingFullscreenMode: Settings.FullscreenMode? = null
     private var pendingViewMode: Settings.ViewMode? = null
     private var pendingForceSoftware: Boolean? = null
     private var pendingRightHandDrive: Boolean? = null
@@ -118,7 +118,7 @@ class SettingsFragment : Fragment() {
         pendingUseGps = settings.useGpsForNavigation
         pendingResolution = settings.resolutionId
         pendingDpi = settings.dpiPixelDensity
-        pendingFullscreen = settings.startInFullscreenMode
+        pendingFullscreenMode = settings.fullscreenMode
         pendingViewMode = settings.viewMode
         pendingForceSoftware = settings.forceSoftwareDecoding
         pendingRightHandDrive = settings.rightHandDrive
@@ -222,7 +222,7 @@ class SettingsFragment : Fragment() {
         pendingUseGps?.let { settings.useGpsForNavigation = it }
         pendingResolution?.let { settings.resolutionId = it }
         pendingDpi?.let { settings.dpiPixelDensity = it }
-        pendingFullscreen?.let { settings.startInFullscreenMode = it }
+        pendingFullscreenMode?.let { settings.fullscreenMode = it }
         pendingViewMode?.let { settings.viewMode = it }
         pendingForceSoftware?.let { settings.forceSoftwareDecoding = it }
         pendingRightHandDrive?.let { settings.rightHandDrive = it }
@@ -314,7 +314,7 @@ class SettingsFragment : Fragment() {
                         pendingUseGps != settings.useGpsForNavigation ||
                         pendingResolution != settings.resolutionId ||
                         pendingDpi != settings.dpiPixelDensity ||
-                        pendingFullscreen != settings.startInFullscreenMode ||
+                        pendingFullscreenMode != settings.fullscreenMode ||
                         pendingViewMode != settings.viewMode ||
                         pendingForceSoftware != settings.forceSoftwareDecoding ||
                         pendingRightHandDrive != settings.rightHandDrive ||
@@ -634,15 +634,31 @@ class SettingsFragment : Fragment() {
             }
         ))
 
-        items.add(SettingItem.ToggleSettingEntry(
+        items.add(SettingItem.SettingEntry(
             stableId = "startInFullscreenMode",
             nameResId = R.string.start_in_fullscreen_mode,
-            descriptionResId = R.string.start_in_fullscreen_mode_description,
-            isChecked = pendingFullscreen!!,
-            onCheckedChanged = { isChecked ->
-                pendingFullscreen = isChecked
-                checkChanges()
-                updateSettingsList()
+            value = when (pendingFullscreenMode) {
+                Settings.FullscreenMode.NONE -> getString(R.string.fullscreen_none)
+                Settings.FullscreenMode.IMMERSIVE -> getString(R.string.fullscreen_immersive)
+                Settings.FullscreenMode.STATUS_ONLY -> getString(R.string.fullscreen_status_only)
+                else -> getString(R.string.auto)
+            },
+            onClick = {
+                val modes = arrayOf(
+                    getString(R.string.fullscreen_none),
+                    getString(R.string.fullscreen_immersive),
+                    getString(R.string.fullscreen_status_only)
+                )
+                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                    .setTitle(R.string.start_in_fullscreen_mode)
+                    .setSingleChoiceItems(modes, pendingFullscreenMode?.value ?: 0) { dialog, which ->
+                        pendingFullscreenMode = Settings.FullscreenMode.fromInt(which)
+                        checkChanges()
+                        dialog.dismiss()
+                        updateSettingsList()
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
             }
         ))
 

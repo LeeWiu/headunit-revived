@@ -63,8 +63,11 @@
     <string name="margin_right">Rechts</string>
     <string name="margin_bottom">Unten</string>
 
-    <string name="start_in_fullscreen_mode">Im Vollbildmodus starten</string>
-    <string name="start_in_fullscreen_mode_description">Vollbildmodus umschalten. Neustart erforderlich.</string>
+    <string name="start_in_fullscreen_mode">Bildschirm-Modus</string>
+    <string name="start_in_fullscreen_mode_description">Legt fest, wie Systemleisten (Status- und Navigationsleiste) behandelt werden.</string>
+    <string name="fullscreen_none">Normal (Alle Leisten sichtbar)</string>
+    <string name="fullscreen_immersive">Vollbild (Alle Leisten ausgeblendet)</string>
+    <string name="fullscreen_status_only">Nur Statusleiste ausblenden</string>
 
     <string name="usb_status">USB Status: %s</string>
     <string name="projection_status">Projektions-Status: %s</string>
@@ -273,4 +276,10 @@
     <string name="setup_widescreen_detected">Widescreen-Display erkannt.</string>
     <string name="auto_optimize">Einstellungen automatisch optimieren</string>
     <string name="auto_optimize_desc">System-Check ausführen, um die besten Werte für dieses Gerät zu finden.</string>
+    <string name="log_level">Log-Level</string>
+    <string name="log_level_description">Wähle den Detailgrad der Log-Ausgaben für Debugging-Zwecke.</string>
+    <string name="start_log_capture">Log-Aufzeichnung starten</string>
+    <string name="start_log_capture_description">Startet das Mitschreiben von System-Logs in eine Datei.</string>
+    <string name="stop_log_capture">Log-Aufzeichnung stoppen</string>
+    <string name="stop_log_capture_description">Stoppt die Aufzeichnung und speichert die Log-Datei.</string>
 </resources>

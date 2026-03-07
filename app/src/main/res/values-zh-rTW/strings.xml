@@ -272,4 +272,13 @@
     <string name="setup_widescreen_detected">偵測到寬螢幕顯示。</string>
     <string name="auto_optimize">自動最佳化設定</string>
     <string name="auto_optimize_desc">執行系統檢查，為您的裝置尋找最佳設定。</string>
+    <string name="fullscreen_none">正常（顯示所有欄位）</string>
+    <string name="fullscreen_immersive">沉浸模式（隱藏所有欄位）</string>
+    <string name="fullscreen_status_only">僅隱藏狀態列</string>
+    <string name="log_level">日誌級別</string>
+    <string name="log_level_description">選擇日誌輸出的詳細程度以進行偵錯。</string>
+    <string name="start_log_capture">開始擷取日誌</string>
+    <string name="start_log_capture_description">開始將系統日誌記錄到檔案中。</string>
+    <string name="stop_log_capture">停止擷取日誌</string>
+    <string name="stop_log_capture_description">停止記錄並儲存日誌檔案。</string>
 </resources>

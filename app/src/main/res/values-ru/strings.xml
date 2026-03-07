@@ -272,5 +272,14 @@
     <string name="setup_apply">Применить</string>
     <string name="setup_widescreen_detected">Обнаружен широкоформатный дисплей.</string>
     <string name="auto_optimize">Автоматическая оптимизация</string>
-    <string name="auto_optimize_desc">Запустить проверку системы для подбора лучших настроек для вашего устройства.</string>
+    <string name="auto_optimize_desc">Запустить проверку системы для подбора лучших настроек für вашего устройства.</string>
+    <string name="fullscreen_none">Обычный (Все панели видны)</string>
+    <string name="fullscreen_immersive">Погружение (Все панели скрыты)</string>
+    <string name="fullscreen_status_only">Скрыть только строку состояния</string>
+    <string name="log_level">Уровень логирования</string>
+    <string name="log_level_description">Выберите уровень детализации логов für отладки.</string>
+    <string name="start_log_capture">Начать запись лога</string>
+    <string name="start_log_capture_description">Начинает запись системных логов в файл.</string>
+    <string name="stop_log_capture">Остановить запись лога</string>
+    <string name="stop_log_capture_description">Останавливает запись и сохраняет файл лога.</string>
 </resources>

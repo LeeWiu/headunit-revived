@@ -27,6 +27,7 @@ import com.andrerinas.headunitrevived.R
 import com.andrerinas.headunitrevived.aap.protocol.messages.NightModeEvent
 import com.andrerinas.headunitrevived.connection.CommManager
 import com.andrerinas.headunitrevived.connection.NetworkDiscovery
+import com.andrerinas.headunitrevived.connection.WifiDirectManager
 import android.support.v4.media.session.MediaSessionCompat
 import com.andrerinas.headunitrevived.connection.UsbAccessoryMode
 import com.andrerinas.headunitrevived.connection.UsbDeviceCompat
@@ -65,6 +66,7 @@ class AapService : Service(), UsbReceiver.Listener {
     private lateinit var uiModeManager: UiModeManager
     private lateinit var usbReceiver: UsbReceiver
     private var nightModeManager: NightModeManager? = null
+    private var wifiDirectManager: WifiDirectManager? = null
     private var wirelessServer: WirelessServer? = null
     private var networkDiscovery: NetworkDiscovery? = null
     private var mediaSession: MediaSessionCompat? = null
@@ -124,7 +126,25 @@ class AapService : Service(), UsbReceiver.Listener {
         observeConnectionState()
         registerReceivers()
 
+        // Initialize MediaSession early to be ready for early focus requests
+        mediaSession = MediaSessionCompat(this, "HeadunitRevived").apply {
+            setCallback(object : MediaSessionCompat.Callback() {})
+            setPlaybackToRemote(object : androidx.media.VolumeProviderCompat(
+                androidx.media.VolumeProviderCompat.VOLUME_CONTROL_RELATIVE, 100, 50
+            ) {
+                override fun onAdjustVolume(direction: Int) {
+                    // Handle volume buttons from phone if needed
+                }
+            })
+            setMetadata(android.support.v4.media.MediaMetadataCompat.Builder()
+                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, "Android Auto")
+                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, "Connected")
+                .build())
+            isActive = true
+        }
+
         startService(GpsLocationService.intent(this))
+        wifiDirectManager = WifiDirectManager(this)
         initWifiMode()
         checkAlreadyConnectedUsb()
     }
@@ -282,7 +302,10 @@ class AapService : Service(), UsbReceiver.Listener {
 
     /** Starts [WirelessServer] if the user has configured server WiFi mode (mode == 2). */
     private fun initWifiMode() {
-        if (App.provide(this).settings.wifiConnectionMode == 2) startWirelessServer()
+        if (App.provide(this).settings.wifiConnectionMode == 2) {
+            startWirelessServer()
+            wifiDirectManager?.makeVisible()
+        }
     }
 
     override fun onDestroy() {
@@ -290,6 +313,7 @@ class AapService : Service(), UsbReceiver.Listener {
         isDestroying = true
         stopForeground(true)
         stopWirelessServer()
+        wifiDirectManager?.stop()
         mediaSession?.isActive = false
         mediaSession?.release()
         mediaSession = null
@@ -690,7 +714,7 @@ class AapService : Service(), UsbReceiver.Listener {
         val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             connectivityManager.activeNetwork else null
-        val networkToUse = activeNetwork ?: createFakeNetwork(99999)
+        val networkToUse = activeNetwork ?: createFakeNetwork(0)
         val fakeWifiInfo = createFakeWifiInfo()
 
         val magicalIntent = Intent().apply {
@@ -850,6 +874,8 @@ class AapService : Service(), UsbReceiver.Listener {
     companion object {
         /** `true` while a Self Mode session is active. */
         var selfMode = false
+
+        val wifiDirectName = MutableStateFlow<String?>(null)
 
         /**
          * Emits `true` while a WiFi NSD scan is in progress.

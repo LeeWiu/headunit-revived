@@ -1,4 +1,14 @@
 # Changelog
+
+### v.2.0.0
+- **Wi-Fi Direct (P2P) Support:** Connect your phone to the headunit without a shared network or hotspot. The headunit now automatically becomes visible as a P2P peer.
+- **Refactored Connection Core:** Complete rewrite of the internal connection handling using the new **CommManager**. Improved stability, faster handshakes, and better coroutine integration.
+- **Enhanced Fullscreen Logic:** Choose between "Immersive" (hide all), "Status Only" (keep navigation bars), or "None". Improved compatibility for devices where buttons were previously obscured.
+- **Auto-Optimization Wizard:** Automatically recommends the best Resolution, DPI, and Codec for your specific hardware.
+- **Early MediaSession Initialization:** Fixes audio routing issues where the phone would sometimes play sound through its own speakers instead of the headunit.
+- **GPS Speed Fix:** Accurate speed reporting for navigation apps by correcting unit conversions.
+- **New Logging System:** Integrated log level control and file capture for easier debugging.
+
 ### v.1.15.1
 - New Feature: Added **Auto-Optimization Wizard** to automatically find the best Resolution, DPI, and Codec settings for your hardware.
 - Bugfix: Fixed **Self Mode** failing to start in offline/hotspot scenarios (Network ID 0 fix).
