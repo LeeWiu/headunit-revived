@@ -12,6 +12,10 @@ import com.andrerinas.headunitrevived.utils.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * A transparent activity that handles App Shortcuts and Deep Links.
+ * It translates incoming intents into service actions for AapService.
+ */
 class AutomationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +60,14 @@ class AutomationActivity : AppCompatActivity() {
                 }
                 ContextCompat.startForegroundService(this, stopIntent)
             }
+            "exit" -> {
+                val exitIntent = Intent(this, AapService::class.java).apply {
+                    this.action = AapService.ACTION_STOP_SERVICE
+                }
+                ContextCompat.startForegroundService(this, exitIntent)
+                // Broadcast a finish request to close MainActivity if it's open
+                sendBroadcast(Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES"))
+            }
             "nightmode" -> {
                 val state = data.getQueryParameter("state")
                 applyNightMode(state)
@@ -77,6 +89,13 @@ class AutomationActivity : AppCompatActivity() {
                     this.action = AapService.ACTION_DISCONNECT
                 }
                 ContextCompat.startForegroundService(this, stopIntent)
+            }
+            "com.andrerinas.headunitrevived.ACTION_STOP_SERVICE" -> {
+                val exitIntent = Intent(this, AapService::class.java).apply {
+                    this.action = AapService.ACTION_STOP_SERVICE
+                }
+                ContextCompat.startForegroundService(this, exitIntent)
+                sendBroadcast(Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES"))
             }
         }
     }

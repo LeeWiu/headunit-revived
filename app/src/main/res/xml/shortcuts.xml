@@ -24,6 +24,18 @@
     </shortcut>
 
     <shortcut
+        android:shortcutId="exit_app"
+        android:enabled="true"
+        android:icon="@drawable/ic_exit_to_app_white_24dp"
+        android:shortcutShortLabel="@string/shortcut_exit_title"
+        android:shortcutLongLabel="@string/shortcut_exit_desc">
+        <intent
+            android:action="com.andrerinas.headunitrevived.ACTION_STOP_SERVICE"
+            android:targetPackage="com.andrerinas.headunitrevived"
+            android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity" />
+    </shortcut>
+
+    <shortcut
         android:shortcutId="night_mode_day"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_day"

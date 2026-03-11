@@ -249,6 +249,8 @@
     <string name="shortcut_connect_desc">الاتصال بآخر جهاز معروف</string>
     <string name="shortcut_disconnect_title">قطع الاتصال</string>
     <string name="shortcut_disconnect_desc">إنهاء الجلسة الحالية</string>
+    <string name="shortcut_exit_title">إغلاق التطبيق</string>
+    <string name="shortcut_exit_desc">إيقاف جميع الخدمات وإغلاق التطبيق</string>
     <string name="shortcut_night_mode_auto_title">الوضع: تلقائي</string>
     <string name="shortcut_night_mode_auto_desc">استعادة الوضع الليلي التلقائي</string>
     <string name="shortcut_night_mode_day_title">الوضع: نهاري</string>

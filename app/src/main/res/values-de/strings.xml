@@ -252,6 +252,8 @@
     <string name="shortcut_connect_desc">Mit letztem Gerät verbinden</string>
     <string name="shortcut_disconnect_title">Trennen</string>
     <string name="shortcut_disconnect_desc">Aktuelle Sitzung beenden</string>
+    <string name="shortcut_exit_title">App beenden</string>
+    <string name="shortcut_exit_desc">Alle Dienste stoppen und App schließen</string>
     <string name="reset_usb_option">USB-Verbindung zurücksetzen</string>
     <string name="reset_usb_timeout">USB-Gerät nicht gefunden. Bitte Verbindung prüfen.</string>
     <string name="shortcut_night_mode_auto_title">Modus: Auto</string>

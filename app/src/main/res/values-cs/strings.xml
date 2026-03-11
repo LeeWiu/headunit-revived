@@ -249,6 +249,8 @@
     <string name="shortcut_connect_desc">Připojit k poslednímu známému zařízení</string>
     <string name="shortcut_disconnect_title">Odpojit</string>
     <string name="shortcut_disconnect_desc">Ukončit aktuální relaci</string>
+    <string name="shortcut_exit_title">Ukončit aplikaci</string>
+    <string name="shortcut_exit_desc">Zastavit všechny služby a zavřít aplikaci</string>
     <string name="shortcut_night_mode_auto_title">Režim: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Obnovit automatický noční režim</string>
     <string name="shortcut_night_mode_day_title">Režim: Den</string>

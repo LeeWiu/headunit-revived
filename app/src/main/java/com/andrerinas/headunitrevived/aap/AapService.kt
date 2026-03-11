@@ -105,7 +105,10 @@ class AapService : Service(), UsbReceiver.Listener {
                 .setState(state, 0, 1.0f)
                 .setActions(android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY or
                            android.support.v4.media.session.PlaybackStateCompat.ACTION_PAUSE or
-                           android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP)
+                           android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP or
+                           android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                           android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                           android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_PAUSE)
                 .build()
         )
         AppLog.d("MediaSession: State updated to ${if (isPlaying) "PLAYING" else "STOPPED"}")
@@ -140,7 +143,29 @@ class AapService : Service(), UsbReceiver.Listener {
 
         // Initialize MediaSession early to be ready for early focus requests
         mediaSession = MediaSessionCompat(this, "HeadunitRevived").apply {
-            setCallback(object : MediaSessionCompat.Callback() {})
+            setCallback(object : MediaSessionCompat.Callback() {
+                override fun onPlay() { commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PLAY, true); commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PLAY, false) }
+                override fun onPause() { commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE, true); commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE, false) }
+                override fun onSkipToNext() { commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_NEXT, true); commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_NEXT, false) }
+                override fun onSkipToPrevious() { commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS, true); commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS, false) }
+                override fun onStop() { commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_STOP, true); commManager.send(android.view.KeyEvent.KEYCODE_MEDIA_STOP, false) }
+                
+                override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+                    // This handles generic media button intents (e.g. from Bluetooth headsets)
+                    val keyEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT, android.view.KeyEvent::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
+                    }
+                    keyEvent?.let {
+                        val isPress = it.action == android.view.KeyEvent.ACTION_DOWN
+                        commManager.send(it.keyCode, isPress)
+                        return true
+                    }
+                    return super.onMediaButtonEvent(mediaButtonEvent)
+                }
+            })
             setPlaybackToRemote(object : androidx.media.VolumeProviderCompat(
                 androidx.media.VolumeProviderCompat.VOLUME_CONTROL_RELATIVE, 100, 50
             ) {
@@ -224,7 +249,22 @@ class AapService : Service(), UsbReceiver.Listener {
     private fun onConnected() {
         isSwitchingToAccessory.set(false)
         updateNotification()
-        mediaSession = MediaSessionCompat(this, "HeadunitRevived").apply { isActive = true }
+        
+        // Fix: Don't create a new session if one is already active, just ensure it's active.
+        // If we must recreate it, we should release the old one first.
+        if (mediaSession == null) {
+            mediaSession = MediaSessionCompat(this, "HeadunitRevived").apply {
+                setCallback(object : MediaSessionCompat.Callback() {})
+                // Add the remote volume provider here as well if it was lost
+                setPlaybackToRemote(object : androidx.media.VolumeProviderCompat(
+                    androidx.media.VolumeProviderCompat.VOLUME_CONTROL_RELATIVE, 100, 50
+                ) {
+                    override fun onAdjustVolume(direction: Int) {}
+                })
+            }
+        }
+        mediaSession?.isActive = true
+        
         serviceScope.launch { commManager.startHandshake() }
         startActivity(AapProjectionActivity.intent(this).apply {
             putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
@@ -852,8 +892,12 @@ class AapService : Service(), UsbReceiver.Listener {
         private var job: Job? = null
 
         fun start() {
-            nsdManager = getSystemService(Context.NSD_SERVICE) as NsdManager
-            registerNsd()
+            nsdManager = getSystemService(Context.NSD_SERVICE) as? NsdManager
+            if (nsdManager == null) {
+                AppLog.e("WirelessServer: NsdManager not available on this device.")
+            } else {
+                registerNsd()
+            }
 
             job = serviceScope.launch(Dispatchers.IO) {
                 try {

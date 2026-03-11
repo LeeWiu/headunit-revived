@@ -57,15 +57,20 @@ adb shell am start -a android.intent.action.VIEW -d "headunit://connect?ip=192.1
 - **Google Maps in Portrait Mode:** Touch interactions (searching, scrolling) within Google Maps may not work as expected when using Portrait Mode on some devices. **Fix:** Try reducing the **Pixel density (DPI)** setting to **below 200** (e.g., 190) in the app settings. This often restores full functionality.
 
 ## Changelog
+### v.2.0.1
+- Fixed: Multiple volume sliders appearing on modern devices (Pixel 9 fix)
+- Added: Support for Media Button emulation (SWC improvement for MacroDroid etc.)
+- Added: App shortcut and deep link for full app exit (headunit://exit)
+- Added: Improved Wi-Fi Direct reliability with recursive discovery and ping handoff
+
 ### v.2.0.0
-- **Wi-Fi Direct (P2P) Support:** Connect your phone to the headunit without a shared network or hotspot. The headunit now automatically becomes visible as a P2P peer.
-- **Refactored Connection Core:** Complete rewrite of the internal connection handling using the new **CommManager**. Improved stability, faster handshakes, and better coroutine integration.
-- **Enhanced Fullscreen Logic:** Choose between "Immersive" (hide all), "Status Only" (keep navigation bars), or "None". Improved compatibility for devices where buttons were previously obscured.
-- **Auto-Optimization Wizard:** Automatically recommends the best Resolution, DPI, and Codec for your specific hardware.
-- **Early MediaSession Initialization:** Fixes audio routing issues where the phone would sometimes play sound through its own speakers instead of the headunit.
-- **GPS Speed Fix:** Accurate speed reporting for navigation apps by correcting unit conversions.
-- **New Logging System:** Integrated log level control and file capture for easier debugging.
-- **IMPORTANT** Fixing Android Auto 16.4 intents for selfmode. In Wireless Helper too. Please update to 1.2.0
+- Added Wi-Fi Direct (P2P): Support. Connect your phone to the headunit without a shared network or hotspot. The headunit now automatically becomes visible as a P2P peer.
+- Refactored Connection Core: Complete rewrite of the internal connection handling using the new **CommManager**. Improved stability, faster handshakes, and better coroutine integration.
+- Enhanced Fullscreen Logic: Choose between "Immersive" (hide all), "Status Only" (keep navigation bars), or "None". Improved compatibility for devices where buttons were previously obscured.
+- Added Auto-Optimization Wizard: Automatically recommends the best Resolution, DPI, and Codec for your specific hardware.
+- Added Early MediaSession Initialization: Fixes audio routing issues where the phone would sometimes play sound through its own speakers instead of the headunit.
+- Added New Logging System: Integrated log level control and file capture for easier debugging.
+- **IMPORTANT** Fixing
 
 ### v.1.15.1
 - Added arabic language thanks to A5H0

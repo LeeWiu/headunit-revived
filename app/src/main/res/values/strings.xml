@@ -260,6 +260,8 @@
     <string name="shortcut_connect_desc">Connect to last known device</string>
     <string name="shortcut_disconnect_title">Disconnect</string>
     <string name="shortcut_disconnect_desc">End current session</string>
+    <string name="shortcut_exit_title">Exit App</string>
+    <string name="shortcut_exit_desc">Stop all services and close the app</string>
     <string name="shortcut_night_mode_auto_title">Mode: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Restore automatic night mode</string>
     <string name="shortcut_night_mode_day_title">Mode: Day</string>

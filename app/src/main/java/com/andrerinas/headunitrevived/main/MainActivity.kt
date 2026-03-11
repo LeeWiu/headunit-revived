@@ -33,6 +33,15 @@ class MainActivity : BaseActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    private val finishReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context, intent: Intent) {
+            if (intent.action == "com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES") {
+                AppLog.i("MainActivity: Received finish request. Closing.")
+                finishAffinity()
+            }
+        }
+    }
+
     interface KeyListener {
         fun onKeyEvent(event: KeyEvent?): Boolean
     }
@@ -103,6 +112,20 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        ContextCompat.registerReceiver(
+            this, finishReceiver,
+            android.content.IntentFilter("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES"),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try { unregisterReceiver(finishReceiver) } catch (e: Exception) {}
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
@@ -136,6 +159,13 @@ class MainActivity : BaseActivity() {
                     action = AapService.ACTION_DISCONNECT
                 }
                 ContextCompat.startForegroundService(this, stopIntent)
+            } else if (data?.scheme == "headunit" && data.host == "exit") {
+                AppLog.i("Received full exit intent")
+                val exitIntent = Intent(this, AapService::class.java).apply {
+                    action = AapService.ACTION_STOP_SERVICE
+                }
+                ContextCompat.startForegroundService(this, exitIntent)
+                finishAffinity() // Close all activities in this task
             } else if (data?.scheme == "geo" || data?.scheme == "google.navigation" || data?.host == "maps.google.com") {
                 AppLog.i("Received navigation intent: $data")
                 // In the future, we could parse coordinates and send to AA via a custom message

@@ -251,6 +251,8 @@
     <string name="shortcut_connect_desc">Підключитися до останнього пристрою</string>
     <string name="shortcut_disconnect_title">Відключити</string>
     <string name="shortcut_disconnect_desc">Завершити поточний сеанс</string>
+    <string name="shortcut_exit_title">Вийти з програми</string>
+    <string name="shortcut_exit_desc">Зупинити всі служби та закрити програму</string>
     <string name="shortcut_night_mode_auto_title">Режим: Авто</string>
     <string name="shortcut_night_mode_auto_desc">Повернути авто-перемикання теми</string>
     <string name="shortcut_night_mode_day_title">Режим: День</string>

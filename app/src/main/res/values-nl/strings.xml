@@ -250,6 +250,8 @@
     <string name="shortcut_connect_desc">Verbinden met laatst bekende apparaat</string>
     <string name="shortcut_disconnect_title">Verbinding verbreken</string>
     <string name="shortcut_disconnect_desc">Beëindig huidige sessie</string>
+    <string name="shortcut_exit_title">App afsluiten</string>
+    <string name="shortcut_exit_desc">Alle services stoppen und app sluiten</string>
     <string name="shortcut_night_mode_auto_title">Modus: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Herstel automatische nachtmodus</string>
     <string name="shortcut_night_mode_day_title">Modus: Dag</string>

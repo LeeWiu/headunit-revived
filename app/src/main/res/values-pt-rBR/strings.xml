@@ -251,6 +251,8 @@
     <string name="shortcut_connect_desc">Conectar ao último dispositivo conhecido</string>
     <string name="shortcut_disconnect_title">Desconectar</string>
     <string name="shortcut_disconnect_desc">Encerrar sessão atual</string>
+    <string name="shortcut_exit_title">Sair do aplicativo</string>
+    <string name="shortcut_exit_desc">Parar todos os servicios e fechar o aplicativo</string>
     <string name="shortcut_night_mode_auto_title">Modo: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Restaurar modo noturno automático</string>
     <string name="shortcut_night_mode_day_title">Modo: Dia</string>

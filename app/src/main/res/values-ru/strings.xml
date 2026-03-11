@@ -249,6 +249,8 @@
     <string name="shortcut_connect_desc">Подключиться к последнему устройству</string>
     <string name="shortcut_disconnect_title">Отключить</string>
     <string name="shortcut_disconnect_desc">Завершить текущий сеанс</string>
+    <string name="shortcut_exit_title">Выйти из приложения</string>
+    <string name="shortcut_exit_desc">Остановить все службы и закрыть приложение</string>
     <string name="shortcut_night_mode_auto_title">Режим: Авто</string>
     <string name="shortcut_night_mode_auto_desc">Вернуть авто-переключение темы</string>
     <string name="shortcut_night_mode_day_title">Режим: День</string>

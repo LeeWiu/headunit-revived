@@ -250,7 +250,9 @@
     <string name="shortcut_connect_title">Połącz</string>
     <string name="shortcut_connect_desc">Połącz z ostatnim urządzeniem</string>
     <string name="shortcut_disconnect_title">Rozłącz</string>
-    <string name="shortcut_disconnect_desc">Zakończ obecną sesję</string>
+    <string name="shortcut_disconnect_desc">Zakończ bieżącą sesję</string>
+    <string name="shortcut_exit_title">Zamknij aplikację</string>
+    <string name="shortcut_exit_desc">Zatrzymaj wszystkie usługi i zamknij aplikację</string>
     <string name="shortcut_night_mode_auto_title">Tryb: Auto</string>
     <string name="shortcut_night_mode_auto_desc">Przywróć automatyczny tryb nocny</string>
     <string name="shortcut_night_mode_day_title">Tryb: Dzień</string>
